@@ -3,5 +3,823 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
 }
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ AUTH (Better Auth) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+model User {
+  id               String    @id @default(uuid(7)) @db.Uuid
+  name             String                       // nombre visible ("Ana")
+  email            String    @unique
+  emailVerified Boolean   @default(false) @map("email_verified")
+  image            String?
+  username         String?   @unique            // plugin username, en minÃºsculas
+  displayUsername  String?                      // plugin username, como lo escribiÃ³
+  isPlatformAdmin Boolean   @default(false) @map("is_platform_admin") // hogaria: dueÃ±o de la instancia
+  blockedAt DateTime? @db.Timestamptz(3) @map("blocked_at") // hogaria: acceso revocado
+  aiNoticeAcceptedAt DateTime? @db.Timestamptz(3) @map("ai_notice_accepted_at") // hogaria: aceptÃ³ el aviso de privacidad de IA
+  preferInitialsAvatar Boolean @default(false) @map("prefer_initials_avatar") // hogaria: mostrar iniciales en lugar de la foto de Google
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+
+  sessions             Session[]
+  accounts             Account[]
+  memberships          GroupMember[]
+  dietProfile          DietProfile?
+  workSchedules        WorkSchedule[]
+  workShiftOverrides   WorkShiftOverride[]
+  pushSubscriptions    PushSubscription[]
+  notificationPrefs    NotificationPreference?
+  reminders            Reminder[]
+  aiConversations      AiConversation[]
+  @@map("users")
+}
+
+model Session {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  userId     String   @db.Uuid
+  token      String   @unique
+  expiresAt DateTime @db.Timestamptz(3) @map("expires_at")
+  ipAddress  String?
+  userAgent  String?
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Account {
+  id                    String    @id @default(uuid(7)) @db.Uuid
+  userId                String    @db.Uuid
+  accountId             String
+  providerId            String    // "credential" | "google"
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt DateTime? @db.Timestamptz(3) @map("access_token_expires_at")
+  refreshTokenExpiresAt DateTime? @db.Timestamptz(3) @map("refresh_token_expires_at")
+  scope                 String?
+  password              String?   // hash (solo providerId = credential)
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@map("accounts")
+}
+
+model Verification {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  identifier String
+  value      String
+  expiresAt DateTime @db.Timestamptz(3) @map("expires_at")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  @@index([identifier])
+  @@map("verifications")
+}
+
+enum SecurityEventType {
+  LOGIN_SUCCESS
+  LOGIN_FAILED
+  LOGOUT
+  PASSWORD_CHANGED
+  PASSWORD_RESET_REQUESTED
+  SESSION_REVOKED
+  SIGNUP_WITH_INVITE
+  SIGNUP_REJECTED_NO_INVITE
+  ACCOUNT_DELETED
+  DATA_EXPORTED
+  ACCOUNT_BLOCKED      // userId = usuario bloqueado; identifier = id del administrador
+  ACCOUNT_UNBLOCKED    // userId = usuario desbloqueado; identifier = id del administrador
+  EMAIL_VERIFIED       // opcional (P3)
+}
+
+model SecurityEvent {
+  id         String            @id @default(uuid(7)) @db.Uuid
+  userId     String?           @db.Uuid   // sin FK: debe sobrevivir al borrado de la cuenta
+  type SecurityEventType @map("type")
+  identifier String?           // email/username intentado (fallos de login) o id del administrador (ACCOUNT_BLOCKED/UNBLOCKED)
+  ipAddress  String?
+  userAgent  String?
+  createdAt DateTime          @default(now()) @db.Timestamptz(3) @map("created_at")
+  @@index([userId, createdAt])
+  @@map("security_events")
+}
+// RetenciÃ³n: 180 dÃ­as (handler `retention.purge` de `MaintenanceCron`, como mucho una vez cada 24 h; spec 03 RN-03-24).
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ GRUPOS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+model Group {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  name        String                      // "Casa Baiges"
+  emoji       String    @default("ðŸ ")
+  timezone    String    @default("Europe/Madrid")
+  createdById String?   @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+
+  members          GroupMember[]
+  invites          GroupInvite[]
+  shoppingLists    ShoppingList[]
+  products         Product[]
+  recipes          Recipe[]
+  mealPlanEntries  MealPlanEntry[]
+  tasks            Task[]
+  calendarEvents   CalendarEvent[]
+  expenseCategories ExpenseCategory[]
+  expenses         Expense[]
+  budgets          Budget[]
+  bills            Bill[]
+  activity         ActivityLog[]
+  aiUsage          AiUsage[]
+  @@map("groups")
+}
+
+/// Colores de "calle" (identidad de miembro). Valores = nombres de token en DESIGN.md.
+enum LaneColor {
+  CORAL
+  SUN
+  LEAF
+  SEA
+  VIOLET
+  ROSE
+  ORANGE
+  SLATE
+}
+
+model GroupMember {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  groupId   String    @db.Uuid
+  userId    String    @db.Uuid
+  laneColor LaneColor @map("lane_color") // Ãºnico dentro del grupo mientras queden colores libres
+  joinedAt DateTime  @default(now()) @db.Timestamptz(3) @map("joined_at")
+  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@map("group_members")
+}
+
+model GroupInvite {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  groupId     String    @db.Uuid
+  createdById String?   @db.Uuid
+  tokenHash   String    @unique             // SHA-256 del token; el token en claro solo va en el enlace
+  expiresAt DateTime  @db.Timestamptz(3) @map("expires_at") // createdAt + 10 dÃ­as
+  usedAt DateTime? @db.Timestamptz(3) @map("used_at")
+  usedById    String?   @db.Uuid
+  revokedAt DateTime? @db.Timestamptz(3) @map("revoked_at")
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@index([groupId])
+  @@map("group_invites")
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ COMPRA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+/// Pasillos del sÃºper. Etiquetas ES en packages/shared (AISLE_LABELS).
+enum Aisle {
+  FRUITS_VEGETABLES
+  MEAT
+  FISH
+  DAIRY_EGGS
+  BAKERY
+  PANTRY
+  FROZEN
+  DRINKS
+  SNACKS
+  CLEANING
+  HYGIENE
+  BABY
+  PETS
+  OTHER
+}
+
+model ShoppingList {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  groupId     String    @db.Uuid
+  name        String                    // "Mercadona", "Farmacia"
+  emoji       String?
+  position Int @map("position") // orden manual
+  createdById String?   @db.Uuid
+  archivedAt DateTime? @db.Timestamptz(3) @map("archived_at")
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  items       ShoppingItem[]
+  @@index([groupId])
+  @@map("shopping_lists")
+}
+
+model ShoppingItem {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  groupId     String    @db.Uuid
+  listId      String    @db.Uuid
+  productId   String?   @db.Uuid          // enlace al catÃ¡logo del grupo
+  name        String                      // texto visible
+  quantity Decimal?  @db.Decimal(10, 2) @map("quantity")
+  unit        String?                     // ver UNITS en shared ("ud", "kg", "g", "l", "ml", "paquete", "lata", "botella", "docena", "bolsa")
+  note        String?
+  aisle Aisle     @default(OTHER) @map("aisle")
+  checked Boolean   @default(false) @map("checked")
+  checkedAt DateTime? @db.Timestamptz(3) @map("checked_at")
+  checkedById String?   @db.Uuid
+  addedById   String?   @db.Uuid
+  position Int @map("position")
+  version Int       @default(1) @map("version") // se incrementa en cada update; resoluciÃ³n por elemento
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+  list        ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  product     Product?     @relation(fields: [productId], references: [id], onDelete: SetNull)
+  @@index([listId, checked])
+  @@index([groupId])
+  @@map("shopping_items")
+}
+
+/// CatÃ¡logo aprendido del grupo: alimenta autocompletado, frecuentes, indispensables e historial.
+model Product {
+  id              String    @id @default(uuid(7)) @db.Uuid
+  groupId         String    @db.Uuid
+  name            String
+  normalizedName  String                  // minÃºsculas, sin acentos, singular simple (shared.normalizeProductName)
+  aisle Aisle     @default(OTHER) @map("aisle")
+  defaultUnit     String?
+  defaultQuantity Decimal?  @db.Decimal(10, 2) @map("default_quantity")
+  isEssential Boolean   @default(false) @map("is_essential") // "indispensable"
+  purchaseCount Int       @default(0) @map("purchase_count")
+  lastPurchasedAt DateTime? @db.Timestamptz(3) @map("last_purchased_at")
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group           Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  items           ShoppingItem[]
+  purchases       Purchase[]
+  @@unique([groupId, normalizedName])
+  @@map("products")
+}
+
+model Purchase {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  groupId       String   @db.Uuid
+  productId     String   @db.Uuid
+  listId        String?  @db.Uuid
+  shoppingItemId String? @db.Uuid           // sin relaciÃ³n ni FK (el item se borra al vaciar comprados); permite deshacer la compra al desmarcar (spec 04, RN-04-19)
+  quantity Decimal? @db.Decimal(10, 2) @map("quantity")
+  unit          String?
+  purchasedById String?  @db.Uuid
+  purchasedAt DateTime @default(now()) @db.Timestamptz(3) @map("purchased_at")
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  @@index([groupId, purchasedAt])
+  @@index([shoppingItemId])
+  @@map("purchases")
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ RECETAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum RecipeSource {
+  MANUAL
+  AI_FRIDGE
+  AI_CHAT
+}
+
+enum Diet {
+  OMNIVORE
+  VEGETARIAN
+  VEGAN
+  PESCATARIAN
+}
+
+/// 14 alÃ©rgenos de declaraciÃ³n obligatoria en la UE (Reglamento 1169/2011).
+enum Allergen {
+  GLUTEN
+  CRUSTACEANS
+  EGGS
+  FISH
+  PEANUTS
+  SOY
+  MILK
+  TREE_NUTS
+  CELERY
+  MUSTARD
+  SESAME
+  SULPHITES
+  LUPIN
+  MOLLUSCS
+}
+
+model Recipe {
+  id            String       @id @default(uuid(7)) @db.Uuid
+  groupId       String       @db.Uuid
+  title         String
+  description   String?
+  servings Int          @default(4) @map("servings")
+  prepMinutes Int? @map("prep_minutes")
+  cookMinutes Int? @map("cook_minutes")
+  difficulty Difficulty? @map("difficulty")
+  tags          String[]                    // libres, en minÃºsculas ("rÃ¡pida", "batch cooking")
+  utensils      String[]                    // ver UTENSILS en shared ("horno", "airfryer", "thermomix"â€¦)
+  allergens Allergen[] @map("allergens")
+  suitableDiets Diet[] @map("suitable_diets") // dietas compatibles; se guarda expandida: VEGAN â‡’ VEGETARIAN â‡’ PESCATARIAN â‡’ OMNIVORE (spec 05, RN-05-05)
+  source RecipeSource @default(MANUAL) @map("source")
+  isFavorite Boolean      @default(false) @map("is_favorite")
+  searchText    String       @default("")   // tÃ­tulo + etiquetas + nombres de ingredientes con normalizeProductName; bÃºsqueda con ILIKE sin `unaccent`
+  createdById   String?      @db.Uuid
+  deletedAt DateTime?    @db.Timestamptz(3) @map("deleted_at")
+  createdAt DateTime     @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime     @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group         Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  ingredients   RecipeIngredient[]
+  steps         RecipeStep[]
+  mealPlanEntries MealPlanEntry[]
+  @@index([groupId])
+  @@map("recipes")
+}
+
+model RecipeIngredient {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  recipeId  String   @db.Uuid
+  position Int @map("position")
+  name      String
+  quantity Decimal? @db.Decimal(10, 2) @map("quantity")
+  unit      String?
+  note      String?                      // "picada fina"
+  optional Boolean  @default(false) @map("optional")
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  @@index([recipeId])
+  @@map("recipe_ingredients")
+}
+
+model RecipeStep {
+  id       String @id @default(uuid(7)) @db.Uuid
+  recipeId String @db.Uuid
+  position Int @map("position")
+  text     String
+  recipe   Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  @@index([recipeId])
+  @@map("recipe_steps")
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ COMIDAS Y DIETA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+enum MealSlot {
+  BREAKFAST     // Desayuno
+  MID_MORNING   // Media maÃ±ana
+  LUNCH         // Comida
+  SNACK         // Merienda
+  DINNER        // Cena
+}
+
+model MealPlanEntry {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  groupId     String    @db.Uuid
+  date DateTime  @db.Date @map("date")
+  slot MealSlot @map("slot")
+  recipeId    String?   @db.Uuid
+  title       String?                     // texto libre si no hay receta ("Sobras", "Cena fuera")
+  servings Int? @map("servings")
+  forUserIds  String[]  @db.Uuid          // vacÃ­o = todo el grupo
+  note        String?
+  createdById String?   @db.Uuid
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group       Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  recipe      Recipe?   @relation(fields: [recipeId], references: [id], onDelete: SetNull)
+  @@index([groupId, date])
+  @@map("meal_plan_entries")
+}
+// Regla: recipeId o title es obligatorio (validado en zod). Puede haber varias entradas por franja, como mucho 10 por (groupId, date, slot).
+// forUserIds se valida contra los miembros actuales al escribir y se filtra al leer. Si un miembro sale, se le quita de forUserIds
+// y se BORRAN las entradas que eran solo para Ã©l (spec 06, RN-06-30).
+
+model DietProfile {
+  id          String     @id @default(uuid(7)) @db.Uuid
+  userId      String     @unique @db.Uuid
+  diet Diet       @default(OMNIVORE) @map("diet")
+  allergens Allergen[] @map("allergens")
+  otherRestrictions String[]               // "sin lactosa", "bajo en sal"
+  dislikes    String[]                     // "coliflor"
+  notes       String?
+  healthConsentAt DateTime? @db.Timestamptz(3) @map("health_consent_at") // consentimiento explÃ­cito (art. 9.2.a RGPD) para tratar alergias y restricciones; obligatorio si allergens u otherRestrictions no estÃ¡n vacÃ­os (spec 06)
+  updatedAt DateTime   @updatedAt @db.Timestamptz(3) @map("updated_at")
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("diet_profiles")
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ TAREAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+enum RotationMode {
+  NONE          // asignaciÃ³n fija (currentAssigneeId) o sin asignar
+  ROUND_ROBIN   // rota por rotationUserIds al completar o saltar
+}
+
+model Task {
+  id                    String       @id @default(uuid(7)) @db.Uuid
+  groupId               String       @db.Uuid
+  title                 String
+  description           String?
+  emoji                 String?
+  rrule                 String?                    // RFC 5545 RRULE sin DTSTART (la referencia es el nextDueAt vigente); null = puntual
+  nextDueAt DateTime?    @db.Timestamptz(3) @map("next_due_at") // prÃ³xima ocurrencia pendiente; en tareas de todo el dÃ­a, 00:00 locales del grupo
+  allDay Boolean      @default(true) @map("all_day") // true: vence "ese dÃ­a"; false: a una hora
+  reminderMinutesBefore Int? @map("reminder_minutes_before") // null = sin recordatorio
+  rotationMode RotationMode @default(NONE) @map("rotation_mode")
+  rotationUserIds       String[]     @db.Uuid      // orden de la rotaciÃ³n
+  currentAssigneeId     String?      @db.Uuid
+  archivedAt DateTime?    @db.Timestamptz(3) @map("archived_at") // != null: tarea puntual hecha (o archivada)
+  createdById           String?      @db.Uuid
+  createdAt DateTime     @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime     @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group                 Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  completions           TaskCompletion[]
+  @@index([groupId, nextDueAt])
+  @@map("tasks")
+}
+
+model TaskCompletion {
+  id            String   @id @default(uuid(7)) @db.Uuid
+  taskId        String   @db.Uuid
+  groupId       String   @db.Uuid
+  dueAt DateTime? @db.Timestamptz(3) @map("due_at") // ocurrencia que se cierra
+  assigneeId    String?  @db.Uuid             // a quiÃ©n le tocaba
+  completedById String?  @db.Uuid             // quiÃ©n la hizo de verdad
+  skipped Boolean  @default(false) @map("skipped") // "saltar esta vez"
+  completedAt DateTime @default(now()) @db.Timestamptz(3) @map("completed_at")
+  task          Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  @@index([taskId, completedAt])
+  @@map("task_completions")
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ HORARIOS DE TRABAJO (personales) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+model WorkSchedule {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  name      String                         // "Horario de invierno"
+  validFrom DateTime  @db.Date @map("valid_from")
+  validTo DateTime? @db.Date @map("valid_to") // null = indefinido
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slots     WorkScheduleSlot[]
+  @@index([userId])
+  @@map("work_schedules")
+}
+// Regla: los rangos [validFrom, validTo] de un mismo usuario no se solapan.
+
+model WorkScheduleSlot {
+  id         String       @id @default(uuid(7)) @db.Uuid
+  scheduleId String       @db.Uuid
+  weekday Int @map("weekday") // 1 = lunes â€¦ 7 = domingo (ISO 8601)
+  startTime  String                         // "08:00"
+  endTime    String                         // "15:00"; si endTime < startTime el turno acaba al dÃ­a siguiente; endTime = startTime no se permite
+  label      String?                        // "Turno maÃ±ana", "Teletrabajo"
+  schedule   WorkSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  @@index([scheduleId])
+  @@map("work_schedule_slots")
+}
+
+enum ShiftOverrideType {
+  DAY_OFF     // Libre
+  VACATION    // Vacaciones
+  SICK        // Baja
+  CUSTOM      // Horario distinto ese dÃ­a (usa startTime/endTime)
+}
+
+model WorkShiftOverride {
+  id        String            @id @default(uuid(7)) @db.Uuid
+  userId    String            @db.Uuid
+  date DateTime          @db.Date @map("date")
+  type ShiftOverrideType @map("type")
+  startTime String?
+  endTime   String?
+  note      String?
+  createdAt DateTime          @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime          @updatedAt @db.Timestamptz(3) @map("updated_at")
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([userId, date])
+  @@map("work_shift_overrides")
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ CALENDARIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+enum EventCategory {
+  GENERAL
+  BIRTHDAY
+  MEDICAL
+  SCHOOL
+  WORK
+  SOCIAL
+  TRAVEL
+  OTHER
+}
+
+model CalendarEvent {
+  id                    String        @id @default(uuid(7)) @db.Uuid
+  groupId               String        @db.Uuid
+  ownerId               String        @db.Uuid     // solo el dueÃ±o edita/borra
+  title                 String
+  description           String?
+  location              String?
+  category EventCategory @default(GENERAL) @map("category")
+  allDay Boolean       @default(false) @map("all_day") // todo el dÃ­a: startsAt = 00:00 local del primer dÃ­a y endsAt = 00:00 local del dÃ­a siguiente al Ãºltimo (exclusivo), en la zona del grupo
+  startsAt DateTime      @db.Timestamptz(3) @map("starts_at")
+  endsAt DateTime      @db.Timestamptz(3) @map("ends_at")
+  rrule                 String?                    // recurrencia (cumpleaÃ±os: FREQ=YEARLY)
+  exdates DateTime[]    @db.Timestamptz(3) @map("exdates") // instantes UTC de inicio de las ocurrencias originales excluidas
+  reminderMinutesBefore Int[] @map("reminder_minutes_before") // p.ej. [1440, 60]
+  createdAt DateTime      @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime      @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group                 Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@index([groupId, startsAt])
+  @@index([ownerId])
+  @@map("calendar_events")
+}
+// Nota: ownerId sin relaciÃ³n Prisma ni FK a User; al borrar la cuenta se borran sus eventos por servicio (spec 16, RN-16-21) y al salir del grupo, por el hook de E09 (ADR-019).
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ GASTOS DE OCIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+model ExpenseCategory {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  groupId    String    @db.Uuid
+  name       String                       // "Restaurantes"
+  emoji      String
+  position Int @map("position")
+  archivedAt DateTime? @db.Timestamptz(3) @map("archived_at")
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group      Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  expenses   Expense[]
+  @@unique([groupId, name])
+  @@map("expense_categories")
+}
+// CategorÃ­as por defecto al crear grupo: Restaurantes ðŸ½ï¸, Ocio ðŸŽŸï¸, Viajes âœˆï¸, Ropa ðŸ‘•, Suscripciones ðŸ“º, Deporte ðŸƒ, Regalos ðŸŽ, Caprichos ðŸ«, Otros ðŸ“¦
+
+enum ExpenseSource {
+  MANUAL
+  AI_RECEIPT
+}
+
+model Expense {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  groupId     String        @db.Uuid
+  ownerId     String        @db.Uuid       // solo el dueÃ±o edita/borra; todos ven
+  categoryId  String        @db.Uuid
+  amountCents Int @map("amount_cents") // > 0
+  date DateTime      @db.Date @map("date")
+  description String
+  merchant    String?
+  source ExpenseSource @default(MANUAL) @map("source")
+  createdAt DateTime      @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime      @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group       Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  category    ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  @@index([groupId, date])
+  @@index([ownerId, date])
+  @@map("expenses")
+}
+
+model Budget {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  groupId     String   @db.Uuid
+  userId      String   @db.Uuid           // presupuesto personal del usuario en ese grupo
+  categoryId  String?  @db.Uuid           // null = presupuesto total mensual. Sin FK: al borrar o archivar la categorÃ­a, el servicio borra los presupuestos de esa categorÃ­a
+  amountCents Int @map("amount_cents") // mensual, > 0
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@unique([groupId, userId, categoryId])
+  @@map("budgets")
+}
+// Ojo: en PostgreSQL los NULL no colisionan en UNIQUE. El servicio garantiza un Ãºnico budget total (categoryId null) por usuario y grupo.
+// MigraciÃ³n: aÃ±adir Ã­ndice Ãºnico parcial  CREATE UNIQUE INDEX ... ON budgets(group_id, user_id) WHERE category_id IS NULL;
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ GASTOS FIJOS Y FACTURAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+enum BillCategory {
+  RENT
+  MORTGAGE
+  ELECTRICITY
+  WATER
+  GAS
+  INTERNET
+  PHONE
+  INSURANCE
+  SUBSCRIPTION
+  COMMUNITY
+  TAXES
+  SCHOOL
+  OTHER
+}
+
+enum BillFrequency {
+  WEEKLY
+  MONTHLY
+  BIMONTHLY
+  QUARTERLY
+  SEMIANNUAL
+  YEARLY
+}
+
+model Bill {
+  id                   String        @id @default(uuid(7)) @db.Uuid
+  groupId              String        @db.Uuid
+  name                 String                     // "Luz"
+  provider             String?                    // "Iberdrola"
+  category BillCategory @map("category")
+  estimatedAmountCents Int? @map("estimated_amount_cents")
+  frequency BillFrequency @map("frequency")
+  dueDay Int @map("due_day") // dÃ­a del mes 1-31 (si no existe â†’ Ãºltimo dÃ­a); WEEKLY: 1-7 ISO
+  startDate DateTime      @db.Date @map("start_date") // primer periodo
+  endDate DateTime?     @db.Date @map("end_date")
+  reminderDaysBefore Int?          @default(3) @map("reminder_days_before") // null = sin aviso
+  responsibleUserId    String?       @db.Uuid     // quiÃ©n recibe el aviso; null = todos
+  notes                String?
+  createdById          String?       @db.Uuid
+  archivedAt DateTime?     @db.Timestamptz(3) @map("archived_at")
+  createdAt DateTime      @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime      @updatedAt @db.Timestamptz(3) @map("updated_at")
+  group                Group         @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  payments             BillPayment[]
+  @@index([groupId])
+  @@map("bills")
+}
+
+enum BillPaymentStatus {
+  PENDING
+  PAID
+}
+
+model BillPayment {
+  id            String            @id @default(uuid(7)) @db.Uuid
+  billId        String            @db.Uuid
+  groupId       String            @db.Uuid
+  periodDueDate DateTime          @db.Date @map("period_due_date") // vencimiento de ese periodo
+  amountCents Int? @map("amount_cents") // importe real
+  status BillPaymentStatus @default(PENDING) @map("status")
+  paidAt DateTime?         @db.Timestamptz(3) @map("paid_at")
+  paidById      String?           @db.Uuid
+  note          String?
+  createdAt DateTime          @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime          @updatedAt @db.Timestamptz(3) @map("updated_at")
+  bill          Bill              @relation(fields: [billId], references: [id], onDelete: Cascade)
+  @@unique([billId, periodDueDate])
+  @@index([groupId, periodDueDate])
+  @@map("bill_payments")
+}
+// Se materializan los periodos con vencimiento en [primer dÃ­a del mes actual, hoy + 60 dÃ­as] (handler `bills.materialize` del tick de 6 h
+// + al crear, editar o restaurar la factura). Al editar se borran los PENDING desde el mes actual que ya no encajan; los PAID no se tocan.
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ NOTIFICACIONES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+model PushSubscription {
+  id            String    @id @default(uuid(7)) @db.Uuid
+  userId        String    @db.Uuid
+  endpoint      String    @unique
+  p256dh        String
+  auth          String
+  userAgent     String?
+  failureCount Int       @default(0) @map("failure_count") // se borra al llegar a 3 o con 404/410
+  lastSuccessAt DateTime? @db.Timestamptz(3) @map("last_success_at")
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+model NotificationPreference {
+  userId          String  @id @db.Uuid
+  tasks Boolean @default(true) @map("tasks")
+  events Boolean @default(true) @map("events")
+  bills Boolean @default(true) @map("bills")
+  quietHoursStart String?                   // "23:00" (hora local del grupo) â€” los avisos se posponen al final
+  quietHoursEnd   String?                   // "08:00"
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("notification_preferences")
+}
+
+enum ReminderSource {
+  TASK
+  EVENT
+  BILL
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELLED
+  MISSED
+}
+
+model Reminder {
+  id         String         @id @default(uuid(7)) @db.Uuid
+  userId     String         @db.Uuid
+  groupId    String         @db.Uuid
+  sourceType ReminderSource @map("source_type")
+  sourceId   String         @db.Uuid
+  occurrenceAt DateTime     @db.Timestamptz(3) @map("occurrence_at") // ocurrencia a la que se refiere
+  fireAt DateTime       @db.Timestamptz(3) @map("fire_at") // cuÃ¡ndo enviar (UTC)
+  title      String
+  body       String
+  url        String                             // deep link de la PWA (rutas en espaÃ±ol, docs/08): "/g/<groupId>/tareas?destacar=<taskId>",
+                                                // "/g/<groupId>/calendario?fecha=<YYYY-MM-DD>&destacar=<eventId>[&ocurrencia=<ISO>]", "/g/<groupId>/facturas?destacar=<billPaymentId>"
+  status ReminderStatus @default(PENDING) @map("status")
+  sentAt DateTime?      @db.Timestamptz(3) @map("sent_at")
+  createdAt DateTime       @default(now()) @db.Timestamptz(3) @map("created_at")
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([sourceType, sourceId, userId, fireAt])
+  @@index([status, fireAt])
+  @@map("reminders")
+}
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ ACTIVIDAD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+model ActivityLog {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  groupId    String   @db.Uuid
+  actorId    String?  @db.Uuid
+  entityType String                         // "shopping_item", "task", â€¦ (ver ACTIVITY_ENTITY en shared)
+  entityId   String   @db.Uuid
+  action     String                         // "created" | "updated" | "deleted" | "checked" | "completed" | "skipped" | "joined" | "left" | "removed" | "revoked" | â€¦
+  summary    String                         // texto ES generado en servidor: "aÃ±adiÃ³ Leche a Mercadona"
+  metadata Json? @map("metadata")
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@index([groupId, createdAt])
+  @@map("activity_logs")
+}
+// RetenciÃ³n: 90 dÃ­as (handler `retention.purge` de `MaintenanceCron`, como mucho una vez cada 24 h; spec 03 RN-03-24).
+
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ IA â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+enum AiFeature {
+  FRIDGE_DETECT
+  FRIDGE_RECIPES
+  CHAT
+  RECEIPT
+}
+
+model AiUsage {
+  id           String    @id @default(uuid(7)) @db.Uuid
+  groupId      String    @db.Uuid
+  userId       String?   @db.Uuid
+  feature AiFeature @map("feature")
+  model        String
+  inputTokens Int       @default(0) @map("input_tokens")
+  outputTokens Int       @default(0) @map("output_tokens")
+  success Boolean @map("success")
+  errorCode    String?
+  createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
+  group        Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  @@index([groupId, feature, createdAt])
+  @@map("ai_usage")
+}
+
+model AiConversation {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  groupId   String   @db.Uuid
+  userId    String   @db.Uuid                 // privada: solo su autor la ve
+  title     String
+  createdAt DateTime @default(now()) @db.Timestamptz(3) @map("created_at")
+  updatedAt DateTime @updatedAt @db.Timestamptz(3) @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  AiMessage[]
+  @@index([userId, groupId, updatedAt])
+  @@index([updatedAt])                       // purga de retenciÃ³n
+  @@map("ai_conversations")
+}
+// groupId sin FK a Group: se borran a mano al borrar el grupo (spec 02, RN-02-21) y al salir del grupo (spec 14, RN-14-07).
+// RetenciÃ³n: se borran las conversaciones con updatedAt de hace mÃ¡s de 180 dÃ­as (handler `assistant.purge` de MaintenanceCron, â‰¤ 1 vez cada 24 h).
+// LÃ­mites: 100 conversaciones por usuario y grupo, 200 mensajes USER + ASSISTANT por conversaciÃ³n (spec 14).
+
+enum AiMessageRole {
+  USER
+  ASSISTANT
+  TOOL
+}
+
+model AiMessage {
+  id             String        @id @default(uuid(7)) @db.Uuid
+  conversationId String        @db.Uuid
+  role AiMessageRole @map("role")
+  content        String        @db.Text
+  toolName       String?
+  toolPayload Json? @map("tool_payload") // argumentos/resultado de la herramienta
+  pendingAction Json? @map("pending_action") // acciÃ³n de escritura propuesta que requiere confirmaciÃ³n
+  createdAt DateTime      @default(now()) @db.Timestamptz(3) @map("created_at")
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  @@index([conversationId, createdAt])
+  @@map("ai_messages")
+}
+// Uso por rol (spec 14 Â§4):
+//   USER      â†’ content = texto del usuario.
+//   ASSISTANT â†’ content = respuesta; si es una propuesta, content = summary y pendingAction = objeto de spec 14 Â§5.2
+//               (estados PENDING | EXECUTING | CONFIRMED | REJECTED | FAILED | EXPIRED; caduca a las 24 h).
+//   TOOL      â†’ content = "", toolName y toolPayload = { args, result } (resultado recortado a 8 KB). Nunca sale de la API.

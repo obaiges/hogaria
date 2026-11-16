@@ -110,11 +110,11 @@ Arrancar la API NestJS (adaptador Express) con configuraciÃ³n validada, logs e
 Trasladar el esquema canÃ³nico de `docs/02-modelo-datos.md` a `apps/api/prisma/schema.prisma` con todos los `@map`/`@@map` a `snake_case`, y generar la migraciÃ³n inicial con el Ã­ndice Ãºnico parcial de `budgets`.
 
 **Criterios de aceptaciÃ³n**
-- [ ] Todos los modelos, enums, relaciones, Ã­ndices y `@@unique` de `docs/02-modelo-datos.md` estÃ¡n en el schema, con columnas en `snake_case` (`@map`) y tablas en plural (`@@map`).
-- [ ] Los IDs son `@default(uuid(7)) @db.Uuid` y los instantes `@db.Timestamptz(3)`; los dÃ­as `@db.Date`.
+- [x] Todos los modelos, enums, relaciones, Ã­ndices y `@@unique` de `docs/02-modelo-datos.md` estÃ¡n en el schema, con columnas en `snake_case` (`@map`) y tablas en plural (`@@map`).
+- [x] Los IDs son `@default(uuid(7)) @db.Uuid` y los instantes `@db.Timestamptz(3)`; los dÃ­as `@db.Date`.
 - [ ] La migraciÃ³n `0001_init` incluye a mano `CREATE UNIQUE INDEX budgets_group_user_total_key ON budgets(group_id, user_id) WHERE category_id IS NULL;`.
 - [ ] `pnpm db:migrate` aplica la migraciÃ³n en la BBDD local y `prisma migrate reset --force --skip-seed` funciona contra `hogaria_test`.
-- [ ] Un test comprueba que los nombres de modelos y enums del cliente generado coinciden con una lista esperada (detecta divergencias con el documento).
+- [x] Un test comprueba que los nombres de modelos y enums del cliente generado coinciden con una lista esperada (detecta divergencias con el documento).
 
 **Notas tÃ©cnicas**
 - Las tablas de Better Auth deben coincidir con lo que espera su adaptador de Prisma; si `npx @better-auth/cli generate` propone diferencias de campos, gana `docs/02-modelo-datos.md` y se ajusta la configuraciÃ³n de Better Auth (`fields` mapping) en HOG-050.
