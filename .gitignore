@@ -1,0 +1,26 @@
+# Dependencias y builds
+node_modules/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# Tests
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# Entorno (solo se versiona .env.example)
+.env
+.env.*
+!.env.example
+
+# Herramientas locales
+.impeccable/
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/*
+!.vscode/extensions.json

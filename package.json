@@ -1,0 +1,30 @@
+{
+  "name": "hogaria",
+  "private": true,
+  "version": "0.0.0",
+  "description": "PWA para gestionar un hogar compartido en tiempo real",
+  "packageManager": "pnpm@10.5.2",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint && eslint --max-warnings=0 *.js",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "db:migrate": "pnpm --filter @hogaria/api db:migrate",
+    "db:seed": "pnpm --filter @hogaria/api db:seed",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@hogaria/config": "workspace:*",
+    "eslint": "9.39.5",
+    "prettier": "3.10.0",
+    "turbo": "2.11.10",
+    "typescript": "6.0.3"
+  }
+}

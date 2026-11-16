@@ -1,0 +1,39 @@
+<!doctype html><html lang="es"><!-- Maqueta de referencia (no es código de producción). Abrir en el navegador; añadir data-theme="dark" en <html> para ver el modo oscuro. --><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Barlow",Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:16px}
+.sign{font-family:"Barlow Condensed","Arial Narrow",sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+header{background:var(--shell);color:var(--on-shell);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+header b{font-size:18px}.av{width:32px;height:32px;border-radius:50%;background:var(--lane-sea);color:#fff;display:grid;place-items:center;font-size:13px;font-weight:600}
+.hero{background:var(--shell);color:var(--on-shell);padding:0 16px 14px}
+.hero .date{font-size:28px}
+.sec{font-size:13px;color:var(--ink-muted);padding:18px 16px 8px}
+.rope{height:6px;margin:0 16px;background:radial-gradient(circle,var(--rope-bead) 3px,transparent 3.5px) 0 0/12px 6px}
+.rope.limit{background:radial-gradient(circle,var(--rope-red) 3px,transparent 3.5px) 0 0/24px 6px,radial-gradient(circle,var(--grout-strong) 3px,transparent 3.5px) 12px 0/24px 6px}
+.lane{margin:6px 16px;min-height:56px;border-left:4px solid var(--c);background:color-mix(in oklab,var(--c) 10%,var(--surface));border-radius:0 6px 6px 0;padding:8px 12px;display:flex;gap:10px;align-items:flex-start}
+.lane .who{font-size:14px;width:58px;padding-top:4px}
+.chips{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:6px}.chip{font-size:14px;background:var(--surface);border:1px solid var(--grout);border-radius:4px;padding:4px 8px}
+.ripple{background:linear-gradient(90deg,var(--primary-soft) 0 70%,color-mix(in oklab,var(--c) 10%,var(--surface)) 100%)}
+.figs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--grout);margin:8px 16px;border:1px solid var(--grout);border-radius:10px;overflow:hidden}
+.fig{background:var(--surface);padding:12px}.fig .n{font-size:44px;line-height:1;font-variant-numeric:tabular-nums}.fig .l{font-size:12px;color:var(--ink-muted);font-weight:500}
+.fig.lim .n{color:var(--rope-red)}
+nav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--surface);border-top:1px solid var(--grout);display:flex;justify-content:space-around;align-items:center;font-size:12px;color:var(--ink-muted)}
+nav span{display:flex;flex-direction:column;align-items:center;gap:2px}nav .on{color:var(--primary);font-weight:600}nav i{display:block;width:22px;height:22px;border:2px solid currentColor;border-radius:5px}
+nav .on i{background:var(--primary-soft)}
+.fab{position:fixed;right:16px;bottom:80px;width:56px;height:56px;border-radius:16px;background:var(--primary);color:var(--on-primary);display:grid;place-items:center;font-size:30px}
+</style></head><body>
+<header><b>🏠 Casa Baiges ▾</b><div class="av">ÓB</div></header>
+<div class="hero"><div class="sign date">Mié 11 nov</div></div>
+<div class="sec sign">Hoy, por calles</div>
+<div class="lane" style="--c:var(--lane-coral)"><div class="who sign">Ana</div><div class="chips"><span class="chip">Turno 08:00–15:00</span><span class="chip">☐ Fregar</span><span class="chip">Dentista 17:30</span></div></div>
+<div class="rope"></div>
+<div class="lane ripple" style="--c:var(--lane-sea)"><div class="who sign">Óscar</div><div class="chips"><span class="chip">Turno 09:00–17:00</span><span class="chip">☐ Sacar basura</span></div></div>
+<div class="rope"></div>
+<div class="lane" style="--c:var(--lane-sun)"><div class="who sign">Lucía</div><div class="chips"><span class="chip">Colegio 09:00–16:30</span><span class="chip">Natación 18:00</span></div></div>
+<div class="sec sign">De un vistazo</div>
+<div class="figs"><div class="fig"><div class="n sign">4</div><div class="l sign">Quedan en Mercadona</div></div><div class="fig lim"><div class="n sign">64,20 €</div><div class="l sign">Luz · vencida ayer</div></div></div>
+<div class="sec sign">Comidas de hoy</div>
+<div class="lane" style="--c:var(--agua-400);border-left-color:var(--grout-strong)"><div class="who sign">Comida</div><div class="chips"><span class="chip">Lentejas con verduras</span></div></div>
+<div class="fab">+</div>
+<nav><span class="on"><i></i>Inicio</span><span><i></i>Compra</span><span><i></i>Comidas</span><span><i></i>Tareas</span><span><i></i>Más</span></nav>
+</body></html>

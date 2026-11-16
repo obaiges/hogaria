@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 320" role="img" aria-labelledby="t">
+  <title id="t">Hogaria</title>
+  <!-- Versión horizontal. Al implementar (HOG-007) convertir el texto a trazados con Barlow Condensed 600. -->
+  <g transform="translate(16 16) scale(0.5625)">
+    <defs><clipPath id="tile"><rect width="512" height="512" rx="112"/></clipPath></defs>
+    <g clip-path="url(#tile)">
+      <rect width="512" height="512" fill="#14A19E"/>
+      <path d="M0 384 C 43 364 85 364 128 384 S 213 404 256 384 S 341 364 384 384 S 469 404 512 384 V512 H0 Z" fill="#0E817F"/>
+    </g>
+    <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M120 236 L256 120 L392 236" stroke-width="36"/>
+      <path d="M196 232 V424 M316 232 V424" stroke-width="30"/>
+      <path d="M196 292 H316 M196 346 H316" stroke-width="22"/>
+    </g>
+    <path d="M64 384 C 96 370 128 370 160 384 M352 384 C 384 398 416 398 448 384" fill="none" stroke="#CFF4F1" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <text x="350" y="214" font-family="'Barlow Condensed', 'Arial Narrow', sans-serif" font-weight="600" font-size="176" letter-spacing="7" fill="#E3F4F3">HOGARIA</text>
+</svg>
