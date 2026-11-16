@@ -13,7 +13,10 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 
 ---
 
-| HOG-005 | Crear el esqueleto de pps/web (Vite, React, Router, Query, Tailwind v4 y PWA) | E00 | P0 | 5 | HOG-001, HOG-002 |
+## 🟡 In Progress
+| ID | Título | Épica | Prio | Pts | Depende de |
+|---|---|---|---|---|---|
+| HOG-005 | Crear el esqueleto de `apps/web` (Vite, React, Router, Query, Tailwind v4 y PWA) | E00 | P0 | 5 | HOG-001, HOG-002 |
 
 ## 🟦 To Do
 | ID | Título | Épica | Prio | Pts | Depende de |
