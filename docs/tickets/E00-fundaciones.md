@@ -138,14 +138,14 @@ Trasladar el esquema canÃ³nico de `docs/02-modelo-datos.md` a `apps/api/prisma
 Arrancar la SPA con React 19, React Router en modo *data*, TanStack Query, Tailwind CSS v4 y vite-plugin-pwa en modo `injectManifest`, con manifest e iconos generados desde el logo.
 
 **Criterios de aceptaciÃ³n**
-- [ ] `apps/web` con Vite + React + TypeScript; estructura de carpetas de `docs/01-arquitectura.md#estructura-del-monorepo` (`app/`, `components/ui/`, `components/pool/`, `features/`, `lib/`, `styles/`).
-- [ ] `app/router.tsx` con `createBrowserRouter` y rutas placeholder para todas las de `docs/08-convenciones.md#rutas-de-la-pwa-espaÃ±ol-fijadas` (cada una renderiza su tÃ­tulo).
-- [ ] `app/providers/QueryProvider.tsx` con `QueryClient` (`staleTime` 30 s, `retry` 1 en queries, `networkMode: 'always'` en mutaciones).
-- [ ] Tailwind v4 con `@tailwindcss/vite`; `styles/index.css` importa `styles/tokens.css` (vacÃ­o hasta HOG-007).
-- [ ] vite-plugin-pwa (`strategies: 'injectManifest'`, `srcDir: 'src'`, `filename: 'sw.ts'`) con `sw.ts` mÃ­nimo que precachea el *shell*; manifest con `name: "Hogaria"`, `short_name: "Hogaria"`, `lang: "es"`, `display: "standalone"`, `start_url: "/"`, `theme_color` y `background_color` de `DESIGN.md` Â§11.
-- [ ] Iconos 192, 512, 512 *maskable* y `apple-touch-icon` 180 en `public/`, generados desde `docs/design/logo.svg` (fondo opaco del token indicado en `DESIGN.md` Â§11).
-- [ ] Proxy de Vite: `/api` y `/realtime` (con `ws: true`) â†’ `http://localhost:3000`.
-- [ ] `apps/web/.env.example` segÃºn `docs/06-despliegue.md`. `pnpm --filter web build` genera `dist/` sin errores.
+- [x] `apps/web` con Vite + React + TypeScript; estructura de carpetas de `docs/01-arquitectura.md#estructura-del-monorepo` (`app/`, `components/ui/`, `components/pool/`, `features/`, `lib/`, `styles/`).
+- [x] `app/router.tsx` con `createBrowserRouter` y rutas placeholder para todas las de `docs/08-convenciones.md#rutas-de-la-pwa-espaÃ±ol-fijadas` (cada una renderiza su tÃ­tulo).
+- [x] `app/providers/QueryProvider.tsx` con `QueryClient` (`staleTime` 30 s, `retry` 1 en queries, `networkMode: 'always'` en mutaciones).
+- [x] Tailwind v4 con `@tailwindcss/vite`; `styles/index.css` importa `styles/tokens.css` (vacÃ­o hasta HOG-007).
+- [x] vite-plugin-pwa (`strategies: 'injectManifest'`, `srcDir: 'src'`, `filename: 'sw.ts'`) con `sw.ts` mÃ­nimo que precachea el *shell*; manifest con `name: "Hogaria"`, `short_name: "Hogaria"`, `lang: "es"`, `display: "standalone"`, `start_url: "/"`, `theme_color` y `background_color` de `DESIGN.md` Â§11.
+- [x] Iconos 192, 512, 512 *maskable* y `apple-touch-icon` 180 en `public/`, generados desde `docs/design/logo.svg` (fondo opaco del token indicado en `DESIGN.md` Â§11).
+- [x] Proxy de Vite: `/api` y `/realtime` (con `ws: true`) â†’ `http://localhost:3000`.
+- [x] `apps/web/.env.example` segÃºn `docs/06-despliegue.md`. `pnpm --filter web build` genera `dist/` sin errores.
 
 **Notas tÃ©cnicas**
 - `lang="es"` en `index.html` y `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">`.

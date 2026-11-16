@@ -1,0 +1,40 @@
+{
+  "name": "@hogaria/web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "PWA de Hogaria (Vite + React)",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.json && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --max-warnings=0 .",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hogaria/shared": "workspace:*",
+    "@tanstack/react-query": "5.107.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-router": "7.17.0"
+  },
+  "devDependencies": {
+    "@hogaria/config": "workspace:*",
+    "@tailwindcss/vite": "4.3.5",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.0",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "5.1.1",
+    "eslint": "9.39.5",
+    "jsdom": "27.0.1",
+    "tailwindcss": "4.3.5",
+    "typescript": "6.0.3",
+    "vite": "8.3.8",
+    "vite-plugin-pwa": "1.2.0",
+    "vitest": "5.1.0",
+    "workbox-precaching": "7.4.0",
+    "workbox-window": "7.4.0"
+  }
+}
