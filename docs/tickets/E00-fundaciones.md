@@ -112,8 +112,8 @@ Trasladar el esquema canÃ³nico de `docs/02-modelo-datos.md` a `apps/api/prisma
 **Criterios de aceptaciÃ³n**
 - [x] Todos los modelos, enums, relaciones, Ã­ndices y `@@unique` de `docs/02-modelo-datos.md` estÃ¡n en el schema, con columnas en `snake_case` (`@map`) y tablas en plural (`@@map`).
 - [x] Los IDs son `@default(uuid(7)) @db.Uuid` y los instantes `@db.Timestamptz(3)`; los dÃ­as `@db.Date`.
-- [ ] La migraciÃ³n `0001_init` incluye a mano `CREATE UNIQUE INDEX budgets_group_user_total_key ON budgets(group_id, user_id) WHERE category_id IS NULL;`.
-- [ ] `pnpm db:migrate` aplica la migraciÃ³n en la BBDD local y `prisma migrate reset --force --skip-seed` funciona contra `hogaria_test`.
+- [x] La migración `0001_init` incluye a mano `CREATE UNIQUE INDEX budgets_group_user_total_key ON budgets("groupId", "userId") WHERE "categoryId" IS NULL;`.
+- [x] `pnpm db:migrate` (`prisma migrate deploy`) aplica la migración en la BBDD local y `prisma migrate reset --force` funciona contra `hogaria_test`.
 - [x] Un test comprueba que los nombres de modelos y enums del cliente generado coinciden con una lista esperada (detecta divergencias con el documento).
 
 **Notas tÃ©cnicas**
