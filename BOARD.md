@@ -28,6 +28,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-001 | Crear el monorepo con pnpm, Turborepo y configuración compartida | E00 | P0 | 3 | — |
 | HOG-002 | Crear `packages/shared` con dinero, fechas, errores, constantes y tipos de tiempo real | E00 | P0 | 5 | HOG-001 |
 | HOG-003 | Crear el esqueleto de `apps/api` con NestJS, Prisma, Postgres local y `/health` | E00 | P0 | 3 | HOG-001, HOG-002 |
+| HOG-004 | Escribir el esquema Prisma completo y la primera migración | E00 | P0 | 3 | HOG-003 |
 
 ---
 
@@ -36,7 +37,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ### Fase 0 · Fundaciones — 20 tickets, 66 pts
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-005 | Crear el esqueleto de `apps/web` (Vite, React, Router, Query, Tailwind v4 y PWA) | E00 | P0 | 5 | HOG-001, HOG-002 |
 | HOG-006 | Implementar el manejo global de errores y el `apiClient` web con `X-Client-Mutation-Id` | E00 | P0 | 3 | HOG-002, HOG-003, HOG-005 |
 | HOG-007 | Aplicar los tokens de diseño, las fuentes Barlow autoalojadas y el tema claro/oscuro | E00 | P0 | 3 | HOG-005 |
 | HOG-008 | Adaptar los componentes UI base de shadcn al sistema "Piscina municipal" | E00 | P0 | 5 | HOG-007 |

@@ -1,11 +1,3 @@
-corepack : Loaded Prisma config from prisma.config.ts.
-En línea: 1 Carácter: 219
-+ ... ARATOR---"; corepack pnpm@10.5.2 --filter @hogaria/api exec prisma mi ...
-+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: (Loaded Prisma c...isma.config.ts.:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-
 -- CreateSchema
 CREATE SCHEMA IF NOT EXISTS "public";
 
@@ -861,4 +853,4 @@ ALTER TABLE "ai_messages" ADD CONSTRAINT "ai_messages_conversationId_fkey" FOREI
 
 
 -- Partial unique index (HOG-004): solo un presupuesto total por usuario y grupo
-CREATE UNIQUE INDEX budgets_group_user_total_key ON budgets(group_id, user_id) WHERE category_id IS NULL;
+CREATE UNIQUE INDEX budgets_group_user_total_key ON budgets("groupId", "userId") WHERE "categoryId" IS NULL;
