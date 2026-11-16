@@ -1,5 +1,6 @@
-﻿import { describe, expect, it } from 'vitest';
-import { validateEnv } from '../src/config/env.js';
+import { describe, expect, it } from 'vitest';
+
+import { validateEnv } from './env.js';
 
 describe('validateEnv', () => {
   it('lanza un error legible si falta DATABASE_URL', () => {

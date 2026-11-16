@@ -2,6 +2,7 @@
   "name": "@hogaria/api",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "description": "API de Hogaria (NestJS + Prisma)",
   "scripts": {
     "dev": "nest start --watch",

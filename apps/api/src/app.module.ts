@@ -1,7 +1,9 @@
-﻿import { Module } from '@nestjs/common';
+import { randomUUID } from 'node:crypto';
+
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerModule } from 'nestjs-pino';
-import { randomUUID } from 'node:crypto';
+
 import { validateEnv } from './config/env.js';
 import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';

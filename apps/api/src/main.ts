@@ -1,6 +1,8 @@
-﻿import 'reflect-metadata';
+import 'reflect-metadata';
+
 import { NestFactory } from '@nestjs/core';
 import { Logger } from 'nestjs-pino';
+
 import { AppModule } from './app.module.js';
 
 async function bootstrap() {
@@ -11,4 +13,4 @@ async function bootstrap() {
   await app.listen(port, '0.0.0.0');
 }
 
-bootstrap();
+void bootstrap();
