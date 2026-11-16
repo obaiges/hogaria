@@ -1,9 +1,12 @@
-import { randomUUID } from 'node:crypto';
+﻿import { randomUUID } from 'node:crypto';
 
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
 import { LoggerModule } from 'nestjs-pino';
 
+import { requestContextMiddleware } from './common/context/request-context.js';
+import { ProblemDetailsFilter } from './common/filters/problem-details.filter.js';
 import { validateEnv } from './config/env.js';
 import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
@@ -33,5 +36,10 @@ import { PrismaModule } from './prisma/prisma.module.js';
     PrismaModule,
     HealthModule,
   ],
+  providers: [{ provide: APP_FILTER, useClass: ProblemDetailsFilter }],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(requestContextMiddleware).forRoutes('*');
+  }
+}
