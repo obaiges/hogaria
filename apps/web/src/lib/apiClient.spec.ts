@@ -23,7 +23,7 @@ describe('apiClient', () => {
   it('añade X-Client-Mutation-Id en mutaciones y lo registra antes de enviar', async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'content-type': 'application/json' } }));
     await api.post('/x', { body: { a: 1 } });
-    const [, init] = fetchMock.mock.calls[0];
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     const id = (init.headers as Record<string, string>)['X-Client-Mutation-Id'];
     expect(id).toMatch(/^[0-9a-f-]{36}$/i);
     expect(hasMutation(id)).toBe(true);
@@ -32,7 +32,7 @@ describe('apiClient', () => {
   it('no añade X-Client-Mutation-Id en GET', async () => {
     fetchMock.mockResolvedValue(new Response(JSON.stringify({ ok: true }), { status: 200, headers: { 'content-type': 'application/json' } }));
     await api.get('/x');
-    const [, init] = fetchMock.mock.calls[0];
+    const [, init] = fetchMock.mock.calls[0] as [string, RequestInit];
     expect((init.headers as Record<string, string>)['X-Client-Mutation-Id']).toBeUndefined();
   });
 

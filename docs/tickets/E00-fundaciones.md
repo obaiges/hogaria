@@ -159,35 +159,34 @@ Arrancar la SPA con React 19, React Router en modo *data*, TanStack Query, Tailw
 ---
 
 
-### HOG-007 Ã‚Â· Aplicar los tokens de diseÃƒÂ±o, las fuentes Barlow autoalojadas y el tema claro/oscuro
+### HOG-007 — Aplicar los tokens de diseño, las fuentes Barlow autoalojadas y el tema claro/oscuro
 
-- **Ãƒâ€°pica:** E00 Ã‚Â· **Fase:** 0 Ã‚Â· **Prioridad:** P0 Ã‚Â· **Puntos:** 3
+- **Épica:** E00 — **Fase:** 0 — **Prioridad:** P0 — **Puntos:** 3
 - **Capa:** web
 - **Depende de:** HOG-005
-- **Spec:** `DESIGN.md` Ã‚Â§3Ã¢â‚¬â€œÃ‚Â§6 y Ã‚Â§11 Ã‚Â· ADR-016
+- **Spec:** `DESIGN.md` §3–§6 y §11 — ADR-016
 
-**DescripciÃƒÂ³n**
-Llevar el sistema "Piscina municipal" a la web: tokens CSS de `docs/design/tokens.css`, tipografÃƒÂ­as Barlow y Barlow Condensed servidas desde el propio dominio, tema claro/oscuro y logos con el texto convertido a trazados.
+**Descripción**
+Llevar el sistema "Piscina municipal" a la web: tokens CSS de `docs/design/tokens.css`, tipografías Barlow y Barlow Condensed servidas desde el propio dominio, tema claro/oscuro y logos con el texto convertido a trazados.
 
-**Criterios de aceptaciÃƒÂ³n**
-- [ ] `apps/web/src/styles/tokens.css` contiene los tokens de `docs/design/tokens.css` (colores, `--lane-*`, `--rope-*`, tipografÃƒÂ­a, radios, `--ease-water`) sin valores inventados; Tailwind v4 los expone con `@theme`.
-- [ ] `@fontsource/barlow` (pesos que indique `DESIGN.md` Ã‚Â§4) y `@fontsource/barlow-condensed` (500 y 600) importados localmente; ninguna peticiÃƒÂ³n a Google Fonts.
-- [ ] Modo oscuro por `prefers-color-scheme` y forzable con `data-theme="light|dark"` en `<html>`; `lib/theme.ts` guarda la preferencia (`'system' | 'light' | 'dark'`) en `localStorage` con `try/catch`.
-- [ ] `<meta name="theme-color">` cambia con el tema.
-- [ ] `docs/design/logo-horizontal.svg` y `-dark.svg` tienen el texto "HOGARIA" convertido a trazados (`DESIGN.md` Ã‚Â§11) y se copian a `apps/web/src/assets/`.
-- [ ] PÃƒÂ¡gina `/dev/tokens` (solo en desarrollo) que muestra colores, calles, tipografÃƒÂ­a y escala, para revisiÃƒÂ³n visual en 375 px y en oscuro.
+**Criterios de aceptación**
+- [x] `apps/web/src/styles/tokens.css` contiene los tokens de `docs/design/tokens.css` (colores, `--lane-*`, `--rope-*`, tipografía, radios, `--ease-water`) sin valores inventados; Tailwind v4 los expone con `@theme`.
+- [x] `@fontsource/barlow` (pesos 400/500/600 según `DESIGN.md` §4) y `@fontsource/barlow-condensed` (500 y 600) importados localmente; ninguna petición a Google Fonts.
+- [x] Modo oscuro por `prefers-color-scheme` y forzable con `data-theme="light|dark"` en `<html>`; `lib/theme.ts` guarda la preferencia (`'system' | 'light' | 'dark'`) en `localStorage` con `try/catch`.
+- [x] `<meta name="theme-color">` cambia con el tema.
+- [x] `docs/design/logo-horizontal.svg` y `-dark.svg` tienen el texto "HOGARIA" convertido a trazados (`DESIGN.md` §11) y se copian a `apps/web/src/assets/`.
+- [x] Página `/dev/tokens` (solo en desarrollo) que muestra colores, calles, tipografía y escala, para revisión visual en 375 px y en oscuro.
 
-**Notas tÃƒÂ©cnicas**
+**Notas técnicas**
 - `font-display: swap`. Inputs a 16 px (evita el zoom de iOS).
 - Si `DESIGN.md` y `docs/design/tokens.css` difieren, gana `DESIGN.md` y se corrige `tokens.css`.
 
 **Tests**
-- Unit: `theme.spec.ts` (preferencia guardada; `localStorage` que lanza no rompe).
-- IntegraciÃƒÂ³n: Ã¢â‚¬â€
-- E2E: Ã¢â‚¬â€
+- Unit: `apps/web/src/lib/theme.spec.ts` (preferencia guardada; `localStorage` que lanza no rompe).
+- Integración: —
+- E2E: —
 
 ---
-
 ### HOG-008 Ã‚Â· Adaptar los componentes UI base de shadcn al sistema "Piscina municipal"
 
 - **Ãƒâ€°pica:** E00 Ã‚Â· **Fase:** 0 Ã‚Â· **Prioridad:** P0 Ã‚Â· **Puntos:** 5

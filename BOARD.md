@@ -1,4 +1,4 @@
-﻿# BOARD — Hogaria
+# BOARD — Hogaria
 
 > **Única fuente de verdad del estado de los tickets.** Los archivos de `docs/tickets/` no llevan estado.
 > Flujo (ver `AGENTS.md` §4): coge el **primer** ticket de *To Do* → muévelo a *In Progress* → al terminar, a *Done* → rellena *To Do* con los siguientes de *Backlog* cuyas dependencias estén todas en *Done* (respetando el orden de la tabla, que ya está ordenada topológicamente).
@@ -20,7 +20,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ## To Do
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-007 | Aplicar los tokens de diseño, las fuentes Barlow autoalojadas y el tema claro/oscuro | E00 | P0 | 3 | HOG-005 |
+| HOG-008 | Adaptar los componentes UI base de shadcn al sistema "Piscina municipal" | E00 | P0 | 5 | HOG-007 |
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
 
 ## Done
@@ -32,6 +32,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-004 | Definir el esquema Prisma completo y la migración inicial | E00 | P0 | 5 | HOG-003 |
 | HOG-005 | Crear el esqueleto de `apps/web` con Vite, React, Router, Query, Tailwind y PWA | E00 | P0 | 5 | HOG-002 |
 | HOG-006 | Implementar el manejo global de errores y el `apiClient` web con `X-Client-Mutation-Id` | E00 | P0 | 3 | HOG-002, HOG-003, HOG-005 |
+| HOG-007 | Aplicar los tokens de diseño, las fuentes Barlow autoalojadas y el tema claro/oscuro | E00 | P0 | 3 | HOG-005 |
 
 ## Backlog (235)
 

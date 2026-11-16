@@ -1,1 +1,298 @@
-/* Tokens de diseño (vacío hasta HOG-007). */
+﻿/* Hogaria — "Piscina municipal" — tokens de diseño
+ * Fuente de verdad: DESIGN.md. Expuesto a Tailwind v4 con @theme.
+ */
+@theme {
+  --color-agua-50: #ECFBFA;
+  --color-agua-100: #CFF4F1;
+  --color-agua-200: #9FE8E3;
+  --color-agua-300: #63D6D0;
+  --color-agua-400: #2EBDB8;
+  --color-agua-500: #14A19E;
+  --color-agua-600: #0E817F;
+  --color-agua-700: #0F6766;
+  --color-agua-800: #115352;
+  --color-agua-900: #114545;
+  --color-agua-950: #04292A;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-grout: var(--grout);
+  --color-grout-strong: var(--grout-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-shell: var(--shell);
+  --color-on-shell: var(--on-shell);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary-soft: var(--on-primary-soft);
+  --color-focus-ring: var(--focus-ring);
+  --color-rope-red: var(--rope-red);
+  --color-rope-white: var(--rope-white);
+  --color-rope-bead: var(--rope-bead);
+  --color-lifeguard: var(--lifeguard);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning-ink: var(--warning-ink);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-lane-coral: var(--lane-coral);
+  --color-lane-sea: var(--lane-sea);
+  --color-lane-sun: var(--lane-sun);
+  --color-lane-leaf: var(--lane-leaf);
+  --color-lane-violet: var(--lane-violet);
+  --color-lane-rose: var(--lane-rose);
+  --color-lane-orange: var(--lane-orange);
+  --color-lane-slate: var(--lane-slate);
+
+  --font-ui: "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sign: "Barlow Condensed", "Barlow", system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-depth: 2.75rem;
+  --leading-tight: 1.2;
+  --leading-normal: 1.45;
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 999px;
+
+  --shadow-1: 0 1px 0 var(--grout);
+  --shadow-2: 0 2px 8px rgb(4 41 42 / 0.08), 0 1px 0 var(--grout);
+  --shadow-sheet: 0 -8px 24px rgb(4 41 42 / 0.14);
+
+  --ease-water: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+:root {
+  color-scheme: light;
+
+  /* ——— Agua (marca) ——— */
+  --agua-50:  #ECFBFA;
+  --agua-100: #CFF4F1;
+  --agua-200: #9FE8E3;
+  --agua-300: #63D6D0;
+  --agua-400: #2EBDB8;
+  --agua-500: #14A19E;   /* turquesa de marca */
+  --agua-600: #0E817F;
+  --agua-700: #0F6766;
+  --agua-800: #115352;
+  --agua-900: #114545;
+  --agua-950: #04292A;
+
+  /* ——— Superficies (azulejo) ——— */
+  --bg:             #F4FAFA;  /* suelo de azulejo */
+  --surface:        #FFFFFF;  /* tarjetas, hojas */
+  --surface-sunken: #E8F3F3;  /* campos, filas alternas */
+  --grout:          #D3E5E5;  /* juntas: bordes y divisores */
+  --grout-strong:   #B5D0D0;
+
+  /* ——— Tinta ——— */
+  --ink:        #0B2A2C;  /* 14.4:1 sobre --bg */
+  --ink-muted:  #4A6668;  /* 5.9:1 sobre --bg */
+  --ink-faint:  #6B8688;  /* 3.9:1: solo iconos, placeholders grandes, nunca texto de cuerpo */
+
+  /* ——— Shell: lámina de agua (cabecera) ——— */
+  --shell:      var(--agua-500);
+  --on-shell:   var(--agua-950);   /* 4.9:1 */
+
+  /* ——— Acción ——— */
+  --primary:         var(--agua-600);  /* botón primario */
+  --primary-hover:   var(--agua-700);
+  --on-primary:      #FFFFFF;          /* 4.7:1 */
+  --primary-soft:    var(--agua-100);  /* fondo de selección, chips activos */
+  --on-primary-soft: var(--agua-900);
+  --focus-ring:      var(--agua-500);
+
+  /* ——— Corchera y socorrista ——— */
+  --rope-red:    #D93A30;   /* límites: vencido, presupuesto superado, fecha límite */
+  --rope-white:  #FFFFFF;
+  --rope-bead:   var(--agua-300); /* corchera neutra */
+  --lifeguard:   #F2C230;   /* atención / aviso destacado (con --ink encima, 9.2:1) */
+
+  /* ——— Estados ——— */
+  --success:      #1E7F52;  --success-soft: #DDF3E8;
+  --warning-ink:  #8A5A00;  --warning-soft: #FFF4D6;
+  --danger:       #C62F37;  --danger-soft:  #FCE4E5;
+  --info:         var(--agua-700); --info-soft: var(--agua-50);
+
+  /* ——— Colores de calle (miembros) ——— >=3:1 sobre --surface y --bg */
+  --lane-coral:  #E5533F;
+  --lane-sea:    #2F6FD0;
+  --lane-sun:    #B88300;
+  --lane-leaf:   #238A55;
+  --lane-violet: #7E50CF;
+  --lane-rose:   #C94489;
+  --lane-orange: #CC6A14;
+  --lane-slate:  #5E707A;
+  /* Tinte de fondo de calle: color-mix(in oklab, var(--lane-x) 10%, var(--surface)) */
+
+  /* ——— Tipografía ——— */
+  --font-ui:      "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-sign:    "Barlow Condensed", "Barlow", system-ui, sans-serif;  /* rotulación: cifras de profundidad, etiquetas de calle */
+
+  --text-xs:   0.75rem;   /* 12 — metadatos */
+  --text-sm:   0.875rem;  /* 14 — secundario */
+  --text-base: 1rem;      /* 16 — cuerpo (nunca menos en inputs: evita zoom iOS) */
+  --text-lg:   1.125rem;  /* 18 — títulos de fila destacados */
+  --text-xl:   1.375rem;  /* 22 — título de pantalla */
+  --text-2xl:  1.75rem;   /* 28 — título grande / DepthFigure s */
+  --text-depth: 2.75rem;  /* 44 — DepthFigure l (Barlow Condensed) */
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.45;
+
+  /* ——— Espaciado (base 4) ——— */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px; --space-12: 48px;
+  --gutter: 16px;            /* margen lateral móvil */
+  --tap: 44px;               /* objetivo táctil mínimo */
+  --lane-height: 56px;       /* altura mínima de una calle */
+
+  /* ——— Radios (azulejo: esquinas casi rectas) ——— */
+  --radius-xs: 4px;   /* chips, checkboxes */
+  --radius-sm: 6px;   /* inputs, botones */
+  --radius-md: 10px;  /* tarjetas */
+  --radius-lg: 16px;  /* hojas inferiores (sheet) */
+  --radius-full: 999px;
+
+  /* ——— Elevación (mínima: la profundidad es el agua, no las sombras) ——— */
+  --shadow-1: 0 1px 0 var(--grout);
+  --shadow-2: 0 2px 8px rgb(4 41 42 / 0.08), 0 1px 0 var(--grout);
+  --shadow-sheet: 0 -8px 24px rgb(4 41 42 / 0.14);
+
+  /* ——— Movimiento ——— */
+  --ease-water: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-ripple: 700ms;
+
+  /* ——— Navegación ——— */
+  --header-height: 56px;
+  --bottomnav-height: 64px;  /* + env(safe-area-inset-bottom) */
+}
+
+/* Modo oscuro: "piscina de noche" */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg:             #061A1C;
+  --surface:        #0B2427;
+  --surface-sunken: #041315;
+  --grout:          #183A3E;
+  --grout-strong:   #24515A;
+
+  --ink:        #E3F4F3;  /* 14.3:1 */
+  --ink-muted:  #9BBDBE;  /* 8.0:1 */
+  --ink-faint:  #6E9294;
+
+  --shell:      var(--agua-800);
+  --on-shell:   #E3F4F3;  /* 7.8:1 */
+
+  --primary:         var(--agua-400);
+  --primary-hover:   var(--agua-300);
+  --on-primary:      var(--agua-950);  /* 6.7:1 */
+  --primary-soft:    #0F3B3D;
+  --on-primary-soft: var(--agua-100);
+  --focus-ring:      var(--agua-300);
+
+  --rope-red:   #FF6B5E;
+  --rope-white: #E3F4F3;
+  --rope-bead:  var(--agua-700);
+  --lifeguard:  #F5C842;
+
+  --success: #4CC98A; --success-soft: #0F3324;
+  --warning-ink: #F5C842; --warning-soft: #3A2E08;
+  --danger:  #FF7B82; --danger-soft: #3D1418;
+  --info:    var(--agua-300); --info-soft: #0F3B3D;
+
+  --lane-coral:  #FF8577;
+  --lane-sea:    #6AA6FF;
+  --lane-sun:    #F5C842;
+  --lane-leaf:   #4CC98A;
+  --lane-violet: #B193F5;
+  --lane-rose:   #F08CC0;
+  --lane-orange: #FFA45C;
+  --lane-slate:  #9AABB4;
+
+  --shadow-2: 0 2px 10px rgb(0 0 0 / 0.35), 0 1px 0 var(--grout);
+  --shadow-sheet: 0 -8px 24px rgb(0 0 0 / 0.45);
+}
+
+/* "Sistema" = sigue prefers-color-scheme; la app pone data-theme="dark" | "light" en <html>
+   resolviendo la preferencia del usuario (Perfil → Apariencia). */
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-fast: 0ms; --dur-base: 0ms; --dur-ripple: 0ms; }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --bg:             #061A1C;
+    --surface:        #0B2427;
+    --surface-sunken: #041315;
+    --grout:          #183A3E;
+    --grout-strong:   #24515A;
+
+    --ink:        #E3F4F3;
+    --ink-muted:  #9BBDBE;
+    --ink-faint:  #6E9294;
+
+    --shell:      var(--agua-800);
+    --on-shell:   #E3F4F3;
+
+    --primary:         var(--agua-400);
+    --primary-hover:   var(--agua-300);
+    --on-primary:      var(--agua-950);
+    --primary-soft:    #0F3B3D;
+    --on-primary-soft: var(--agua-100);
+    --focus-ring:      var(--agua-300);
+
+    --rope-red:   #FF6B5E;
+    --rope-white: #E3F4F3;
+    --rope-bead:  var(--agua-700);
+    --lifeguard:  #F5C842;
+
+    --success: #4CC98A; --success-soft: #0F3324;
+    --warning-ink: #F5C842; --warning-soft: #3A2E08;
+    --danger:  #FF7B82; --danger-soft: #3D1418;
+    --info:    var(--agua-300); --info-soft: #0F3B3D;
+
+    --lane-coral:  #FF8577;
+    --lane-sea:    #6AA6FF;
+    --lane-sun:    #F5C842;
+    --lane-leaf:   #4CC98A;
+    --lane-violet: #B193F5;
+    --lane-rose:   #F08CC0;
+    --lane-orange: #FFA45C;
+    --lane-slate:  #9AABB4;
+
+    --shadow-2: 0 2px 10px rgb(0 0 0 / 0.35), 0 1px 0 var(--grout);
+    --shadow-sheet: 0 -8px 24px rgb(0 0 0 / 0.45);
+  }
+}
