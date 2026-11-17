@@ -6,6 +6,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 
+import { AuthModule } from './auth/auth.module.js';
 import { requestContextMiddleware } from './common/context/request-context.js';
 import { ProblemDetailsFilter } from './common/filters/problem-details.filter.js';
 import { OriginCheckMiddleware } from './common/security/origin-check.middleware.js';
@@ -44,6 +45,7 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     ThrottlerModule.forRoot([{ name: 'default', ...DEFAULT_RATE_LIMIT }]),
     PrismaModule,
     ExternalServicesModule,
+    AuthModule,
     HealthModule,
     OpenApiModule,
     // Solo con NODE_ENV=test (e2e, HOG-011); vacío en desarrollo y producción.

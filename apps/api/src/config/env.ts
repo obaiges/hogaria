@@ -27,10 +27,16 @@ const envSchema = z.object({
   VAPID_SUBJECT: z.string().optional(),
 });
 
+const refinedEnvSchema = envSchema.superRefine((env, ctx) => {
+  if (env.NODE_ENV === 'production' && (env.BETTER_AUTH_SECRET ?? '').length < 32) {
+    ctx.addIssue({ code: 'custom', path: ['BETTER_AUTH_SECRET'], message: 'obligatoria en producción (mínimo 32 caracteres: openssl rand -base64 32)' });
+  }
+});
+
 export type Env = z.infer<typeof envSchema>;
 
 export function validateEnv(config: Record<string, unknown>): Env {
-  const result = envSchema.safeParse(config);
+  const result = refinedEnvSchema.safeParse(config);
   if (!result.success) {
     const messages = result.error.issues.map((i) => `${i.path.join('.') || 'env'}: ${i.message}`);
     throw new Error(`Configuración de entorno inválida:\n${messages.join('\n')}`);

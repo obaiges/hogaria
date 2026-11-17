@@ -22,8 +22,8 @@ export interface TwoMembers {
  * (cookies y almacenamiento propios) y con el dispositivo del proyecto (Pixel 7 o
  * iPhone 14). Para los e2e de tiempo real (E2E-05).
  *
- * `login: false` solo crea los usuarios y las páginas; hasta HOG-050 es la única opción
- * que funciona, porque `loginAs` aún no está disponible.
+ * Por defecto inicia sesión con los dos (`loginAs`); `login: false` solo crea los usuarios
+ * y las páginas.
  */
 export async function twoMembers(browser: Browser, options: { login?: boolean } = {}): Promise<TwoMembers> {
   const { login = true } = options;

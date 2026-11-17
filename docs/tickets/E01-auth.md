@@ -15,12 +15,12 @@
 Montar Better Auth en `/api/auth/*` sobre Prisma con email + contraseña y el plugin `username`, IDs UUIDv7, sesión deslizante de 365 días y cookies compartidas entre `hogaria.obaiges.com` y `api.hogaria.obaiges.com`.
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/auth/auth.ts` exporta `auth = betterAuth({...})` con `prismaAdapter`, `emailAndPassword` (`enabled`, `minPasswordLength: 10`, `maxPasswordLength: 128`, `requireEmailVerification: true`), plugin `username()` (3–30, validador de RN-01-09), `advanced.database.generateId: () => uuidv7()`, `advanced.crossSubDomainCookies` con `COOKIE_DOMAIN` (desactivado si está vacío), `advanced.cookiePrefix: 'hogaria'`, `session.expiresIn = 31536000`, `session.updateAge = 86400`, `session.cookieCache` desactivado, `trustedOrigins: [APP_URL]` y `secret: BETTER_AUTH_SECRET`.
-- [ ] `emailVerification` configurado según RN-01-11 con `sendVerificationEmail` delegando en el `EmailSender` inyectado (en test, `FakeEmailSender`; el envío real y las plantillas son HOG-054).
-- [ ] En `main.ts`, `app.use('/api/auth', toNodeHandler(auth))` se monta **antes** de `express.json()`.
-- [ ] `nameSchema`, `emailSchema`, `usernameSchema` y `signUpInput`/`signInInput` creados en `packages/shared/src/schemas/auth.ts`.
-- [ ] Registro y login por email y por username funcionan con `supertest` en integración (con el email marcado como verificado en la factory).
-- [ ] La factory `loginAs(user)` de HOG-010 queda operativa.
+- [x] `apps/api/src/auth/auth.ts` exporta `auth = betterAuth({...})` con `prismaAdapter`, `emailAndPassword` (`enabled`, `minPasswordLength: 10`, `maxPasswordLength: 128`, `requireEmailVerification: true`), plugin `username()` (3–30, validador de RN-01-09), `advanced.database.generateId: () => uuidv7()`, `advanced.crossSubDomainCookies` con `COOKIE_DOMAIN` (desactivado si está vacío), `advanced.cookiePrefix: 'hogaria'`, `session.expiresIn = 31536000`, `session.updateAge = 86400`, `session.cookieCache` desactivado, `trustedOrigins: [APP_URL]` y `secret: BETTER_AUTH_SECRET`.
+- [x] `emailVerification` configurado según RN-01-11 con `sendVerificationEmail` delegando en el `EmailSender` inyectado (en test, `FakeEmailSender`; el envío real y las plantillas son HOG-054).
+- [x] En `main.ts`, `app.use('/api/auth', toNodeHandler(auth))` se monta **antes** de `express.json()`.
+- [x] `nameSchema`, `emailSchema`, `usernameSchema` y `signUpInput`/`signInInput` creados en `packages/shared/src/schemas/auth.ts`.
+- [x] Registro y login por email y por username funcionan con `supertest` en integración (con el email marcado como verificado en la factory).
+- [x] La factory `loginAs(user)` de HOG-010 queda operativa.
 
 **Notas técnicas**
 - Si las tablas que espera Better Auth no coinciden con `docs/02-modelo-datos.md`, ajusta `user.fields`/`session.fields` en la configuración; no cambies el esquema sin actualizar el documento.

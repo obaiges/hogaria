@@ -18,6 +18,9 @@ export interface CreateUserOptions {
 
 let seq = 0;
 
+/** Contraseña en claro de cada usuario creado con `password` (la usa `loginAs`). */
+export const knownPasswords = new Map<string, string>();
+
 /** Crea un usuario único por llamada (`user1@test.local`, `user2@test.local`…). */
 export async function createUser(options: CreateUserOptions = {}): Promise<User> {
   seq += 1;
@@ -44,6 +47,7 @@ export async function createUser(options: CreateUserOptions = {}): Promise<User>
         password: await hashPassword(options.password),
       },
     });
+    knownPasswords.set(user.id, options.password);
   }
   return user;
 }

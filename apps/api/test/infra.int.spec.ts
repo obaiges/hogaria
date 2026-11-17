@@ -2,7 +2,7 @@ import { verifyPassword } from 'better-auth/crypto';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { createGroupWithMembers, createInvite, createUser, hashInviteToken, loginAs } from './factories/index.js';
+import { createGroupWithMembers, createInvite, createUser, hashInviteToken } from './factories/index.js';
 import { FakeEmailSender, FakeGeminiClient, FakeWebPushSender } from './fakes/index.js';
 import { createTestApp, type TestApp } from './utils/create-test-app.js';
 import { getTestPrisma } from './utils/prisma.js';
@@ -58,10 +58,6 @@ describe('infraestructura de tests (HOG-010)', () => {
       expect(revoked.invite.revokedAt).toBeInstanceOf(Date);
     });
 
-    it('loginAs aún no está disponible (HOG-050)', async () => {
-      const user = await createUser();
-      await expect(loginAs(user)).rejects.toThrow(/Not implemented/);
-    });
   });
 
   describe('createTestApp', () => {

@@ -100,7 +100,7 @@ Las versiones se fijan exactas en los `package.json` (sin `^`). Cuando un ticket
 |---|---|
 | Framework | NestJS (adaptador Express) |
 | ORM | Prisma, con el adaptador serverless de Neon o conexión pooled |
-| Auth | Better Auth (plugins: `username`, OAuth de Google) montado en `/api/auth/*` |
+| Auth | Better Auth (plugins: `username`, OAuth de Google) montado en `/api/auth/*` con `toNodeHandler` directamente sobre Express (`app.all('/api/auth/{*splat}')` en `configureApp`, antes del parser JSON de `/api/v1`), no con `@thallesp/nestjs-better-auth`: menos dependencias y el mismo arranque en `main.ts` y en los tests. La instancia la crea `createAuth({ prisma, emailSender, env })` (`apps/api/src/auth/auth.ts`) y se inyecta con el token `AUTH`, para que el `EmailSender` sea el *fake* en test (HOG-050). Ids UUIDv7 propios (`common/ids/uuidv7.ts`) |
 | Validación | zod (esquemas de `@hogaria/shared`) mediante un `ZodValidationPipe` |
 | Tiempo real | `@nestjs/websockets` + `@nestjs/platform-socket.io` |
 | Programación de tareas | `@nestjs/schedule` + temporizadores en memoria (ver §Recordatorios) |

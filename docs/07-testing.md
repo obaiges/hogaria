@@ -38,7 +38,7 @@
 | `createUser({ verified?, password?, isPlatformAdmin?, blockedAt?, … })` | Usuario único por llamada; con `password`, cuenta `credential` con el hash de `better-auth/crypto` |
 | `createGroupWithMembers(n, { name?, members? })` | Hogar con `n` miembros nuevos y colores de calle en el orden de `LANE_COLOR_ORDER` |
 | `createInvite(groupId, { status?: 'active' \| 'used' \| 'revoked' \| 'expired' })` | Devuelve `{ invite, token }`; en BBDD solo el SHA-256 (`hashInviteToken`) |
-| `loginAs(user)` | Agente supertest con sesión. Lanza "Not implemented" hasta HOG-050 |
+| `loginAs(user, server)` | Agente supertest con la cookie de sesión tras un login real (`POST /api/auth/sign-in/email`). Usa la contraseña con la que se creó el usuario o, si no tenía, le pone `LOGIN_AS_PASSWORD`. El usuario debe estar verificado (por defecto lo está) |
 | `getTestPrisma()`, `truncateAll()` (`test/utils/prisma.ts`) | Cliente Prisma de los tests y truncado manual |
 
 **Servicios externos.** Las interfaces viven en `src/` con su *token* de Nest y la API elige la implementación con `NODE_ENV` (`src/external-services.module.ts`); por eso los *fakes* están en `src/` y se reexportan en `test/fakes/`.
@@ -57,7 +57,8 @@
   - **API** en `:3100` con `apps/api/scripts/e2e-server.ts`: resuelve la BBDD de test como los tests de integración (`TEST_DATABASE_URL` → `apps/api/.env.test` → `:5433`, siempre `*_test`), aplica `prisma migrate deploy` (no borra nada), compila y arranca con `NODE_ENV=test` (fakes + test-support).
   - **Web** en `:4173`: `vite build` + `vite preview` con `VITE_API_URL=http://localhost:3100` (orígenes distintos, como en producción).
 - Endpoints de apoyo (`apps/api/src/test-support/`, el módulo solo existe con `NODE_ENV=test`; en desarrollo y producción dan 404): `GET /api/v1/test/emails?to=`, `POST /api/v1/test/reset` (trunca y vacía los emails), `POST /api/v1/test/users` (`{ name?, email?, username?, password?, isPlatformAdmin?, group?: { name? }, joinGroupId? }` → `{ userId, email, username, password, groupId, laneColor }`). Sin rate limit.
-- Helpers (`apps/web/e2e/helpers`): `resetDb()`, `createUser(opts)`, `lastEmailLink(to)`, `loginAs(page, user)` (lanza "Not implemented" hasta HOG-050) y `twoMembers(browser, { login? })` → `{ a: { page, context, user }, b: …, groupId, close }`, dos contextos independientes del mismo hogar con el dispositivo del proyecto. Hasta HOG-050, `twoMembers` solo funciona con `login: false`.
+- Helpers (`apps/web/e2e/helpers`): `resetDb()`, `createUser(opts)`, `lastEmailLink(to)`, `loginAs(page, user)` (login real contra la API desde el contexto de la página: la cookie `hogaria.session_token` queda en ese contexto) y `twoMembers(browser, { login = true })` → `{ a: { page, context, user }, b: …, groupId, close }`, dos contextos independientes del mismo hogar, con sesión y con el dispositivo del proyecto.
+- WebKit en Windows informa de todas las cookies como `SameSite=None` en `context.cookies()`: los atributos de la cookie se comprueban en los tests de integración de la API, no en e2e.
 
 ### Web (`apps/web`)
 

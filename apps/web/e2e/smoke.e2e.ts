@@ -1,8 +1,17 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
-import { createUser, loginAs, resetDb, twoMembers } from './helpers';
+import { createUser, E2E_API_URL, loginAs, resetDb, twoMembers } from './helpers';
 
-// Humo (HOG-011): se ejecuta en Pixel 7 y en iPhone 14.
+/** Sesión vista desde la página: fetch a la API con credenciales (CORS + cookie). */
+async function sessionUserId(page: Page): Promise<string | null> {
+  return page.evaluate(async (api) => {
+    const res = await fetch(`${api}/api/auth/get-session`, { credentials: 'include' });
+    const body = (await res.json()) as { user?: { id: string } } | null;
+    return body?.user?.id ?? null;
+  }, E2E_API_URL);
+}
+
+// Humo (HOG-011 / HOG-050): se ejecuta en Pixel 7 y en iPhone 14.
 test.describe('humo', () => {
   test.beforeEach(async () => {
     await resetDb();
@@ -21,26 +30,37 @@ test.describe('humo', () => {
     expect(user).toMatchObject({ name: 'Ana', laneColor: 'CORAL', groupId: expect.any(String) });
   });
 
-  test('twoMembers abre dos contextos independientes del mismo hogar', async ({ browser }) => {
-    const members = await twoMembers(browser, { login: false });
+  test('loginAs deja la sesión de Better Auth en el contexto del navegador', async ({ page }) => {
+    const user = await createUser();
+    await page.goto('/');
+    expect(await sessionUserId(page)).toBeNull();
+
+    await loginAs(page, user);
+    const cookies = await page.context().cookies();
+    const session = cookies.find((c) => c.name === 'hogaria.session_token');
+    // SameSite=Lax lo comprueba auth-basic.int.spec.ts en la respuesta de la API: WebKit en
+    // Windows informa de todas las cookies como SameSite=None en el almacén de Playwright.
+    expect(session).toMatchObject({ httpOnly: true });
+    expect(await sessionUserId(page)).toBe(user.userId);
+  });
+
+  test('twoMembers: dos contextos independientes del mismo hogar, cada uno con su sesión', async ({ browser }) => {
+    const members = await twoMembers(browser);
     try {
       expect(members.a.user.groupId).toBe(members.groupId);
       expect(members.b.user.groupId).toBe(members.groupId);
       expect(members.b.user.laneColor).toBe('SEA');
-      expect(members.a.context).not.toBe(members.b.context);
 
       await members.a.page.goto('/');
-      await members.a.page.evaluate(() => localStorage.setItem('e2e', 'a'));
       await members.b.page.goto('/');
+      expect(await sessionUserId(members.a.page)).toBe(members.a.user.userId);
+      expect(await sessionUserId(members.b.page)).toBe(members.b.user.userId);
+
+      await members.a.page.evaluate(() => localStorage.setItem('e2e', 'a'));
       expect(await members.b.page.evaluate(() => localStorage.getItem('e2e'))).toBeNull();
       expect(members.a.page.viewportSize()?.width).toBeLessThan(500);
     } finally {
       await members.close();
     }
-  });
-
-  test('loginAs avisa de que aún no está disponible (HOG-050)', async ({ page }) => {
-    const user = await createUser();
-    await expect(loginAs(page, user)).rejects.toThrow(/Not implemented/);
   });
 });

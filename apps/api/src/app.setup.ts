@@ -1,7 +1,10 @@
 import { ConfigService } from '@nestjs/config';
+import { toNodeHandler } from 'better-auth/node';
 import helmet from 'helmet';
 
+
 import { API_PREFIX } from './app.constants.js';
+import { AUTH, AUTH_BASE_PATH, type Auth } from './auth/auth.js';
 import { getAllowedOrigins } from './common/security/allowed-origins.js';
 import { bodyParserErrorHandler, jsonBodyParser } from './common/security/body-parser.js';
 import { setupApiDocs } from './openapi/api-docs.js';
@@ -40,6 +43,11 @@ export function configureApp(app: INestApplication, options: ConfigureAppOptions
   });
 
   if (options.apiDocs ?? config.get('NODE_ENV') === 'development') setupApiDocs(app);
+
+  // Better Auth en /api/auth/* ANTES de cualquier parser de cuerpo: lee el cuerpo él
+  // mismo. `all()` y no `use()`, porque `use()` recortaría el prefijo de req.url.
+  const auth = app.get<Auth>(AUTH);
+  (app.getHttpAdapter().getInstance() as Express).all(`${AUTH_BASE_PATH}/{*splat}`, toNodeHandler(auth));
 
   app.use(`/${API_PREFIX}`, jsonBodyParser, bodyParserErrorHandler);
   app.setGlobalPrefix(API_PREFIX);
