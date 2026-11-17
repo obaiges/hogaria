@@ -114,3 +114,7 @@ jobs:
   deploy:   solo push a main, needs [checks, e2e, lhci] → ver docs/06-despliegue.md
 ```
 El job `e2e` **no** corre en cada push a ramas de trabajo para no agotar los 2000 min/mes de GitHub Free (spec 17, RN-17-10); `checks` sí.
+
+**Estado actual (`.github/workflows/ci.yml`, HOG-012):** `checks` (install `--frozen-lockfile` → lint → typecheck → test con el servicio `postgres:17` en `:5433` → `pnpm audit --prod --audit-level=high` **no bloqueante** por ahora) y `e2e` (`needs: checks`; navegadores de Playwright en caché por versión; el `webServer` compila API y web; sube `playwright-report` y `test-results` si falla). `concurrency` cancela la ejecución anterior de la misma rama. Caché de pnpm (`setup-node`) y de `.turbo`. Pendientes de sus tickets: `gitleaks`, `size-limit`, shards de e2e, `lhci` (E17) y `deploy` (HOG-022). Dependabot (`.github/dependabot.yml`): `npm` y `github-actions` semanal, grupos `minor-and-patch`, máximo 5 PR; `docker` llega con HOG-021.
+
+**Turborepo y variables de entorno:** Turbo 2 filtra las variables de entorno de las tareas (modo estricto). `turbo.json` declara `passThroughEnv` para `test` (`TEST_DATABASE_URL`, `PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION`) y `test:e2e` (`CI`, `TEST_DATABASE_URL`, `PLAYWRIGHT_*`, `E2E_*`…). Si una tarea necesita otra variable, añádela ahí.

@@ -1,0 +1,26 @@
+# Dependabot (HOG-012, spec 17 RN-17-28): semanal, como mucho 5 PR abiertas por
+# ecosistema y las actualizaciones minor/patch agrupadas en una sola PR.
+# El ecosistema `docker` (/deploy) se añade con el Dockerfile de la API (HOG-021).
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Madrid
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      timezone: Europe/Madrid
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]

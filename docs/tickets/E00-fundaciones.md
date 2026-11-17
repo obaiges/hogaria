@@ -337,14 +337,14 @@ Preparar los e2e en `apps/web/e2e/` con los proyectos Mobile Chrome (Pixel 7) y 
 - **Spec:** `docs/07-testing.md#ci-github-actions`
 
 **Descripción**
-Crear `.github/workflows/ci.yml` con los trabajos `checks` y `e2e` en cada push y pull request, y la auditoría de dependencias.
+Crear `.github/workflows/ci.yml` con los trabajos `checks` (en cada push y pull request) y `e2e` (solo en pull requests hacia `main` y en push a `main`, spec 17 RN-17-10), y la auditoría de dependencias.
 
 **Criterios de aceptación**
-- [ ] Job `checks`: `pnpm install --frozen-lockfile` → `lint` → `typecheck` → `test` (con servicio `postgres:17` en el puerto 5433 y `hogaria_test`), con caché de pnpm y Turborepo.
-- [ ] Job `e2e` (`needs: checks`): instala navegadores de Playwright, construye web y API y ejecuta `pnpm test:e2e`; si falla, sube `playwright-report` y trazas como artefactos.
-- [ ] Paso `pnpm audit --audit-level=high` (no bloqueante al principio: `continue-on-error: true`, anotado).
-- [ ] Dependabot (`.github/dependabot.yml`) semanal para npm y GitHub Actions.
-- [ ] Ninguna clave real en el workflow: los tests usan los *fakes*.
+- [x] Job `checks`: `pnpm install --frozen-lockfile` → `lint` → `typecheck` → `test` (con servicio `postgres:17` en el puerto 5433 y `hogaria_test`), con caché de pnpm y Turborepo.
+- [x] Job `e2e` (`needs: checks`): instala navegadores de Playwright, construye web y API y ejecuta `pnpm test:e2e`; si falla, sube `playwright-report` y trazas como artefactos.
+- [x] Paso `pnpm audit --audit-level=high` (no bloqueante al principio: `continue-on-error: true`, anotado).
+- [x] Dependabot (`.github/dependabot.yml`) semanal para npm y GitHub Actions.
+- [x] Ninguna clave real en el workflow: los tests usan los *fakes*.
 
 **Notas técnicas**
 - El job `deploy` lo añade HOG-022.

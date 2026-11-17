@@ -16,12 +16,12 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ## 🟡 In Progress
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
+| HOG-012 | Configurar CI en GitHub Actions | E00 | P1 | 3 | HOG-001, HOG-010, HOG-011 |
 
 ## 🟦 To Do
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
-| HOG-012 | Configurar CI en GitHub Actions | E00 | P1 | 3 | HOG-001, HOG-010, HOG-011 |
 
 ## ✅ Done
 | ID | Título | Épica | Prio | Pts | Depende de |

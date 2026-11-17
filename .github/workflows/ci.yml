@@ -1,0 +1,148 @@
+# CI (HOG-012, docs/07-testing.md §CI, spec 17 RN-17-10/RN-17-28).
+# - checks: en cada push y pull request.
+# - e2e: solo en pull requests hacia main y en push a main (presupuesto de 2000 min/mes).
+# Sin secretos: los tests usan los fakes de email, push y Gemini (NODE_ENV=test).
+name: CI
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  TURBO_TELEMETRY_DISABLED: '1'
+  # Postgres del servicio (igual que `docker compose up -d db-test`).
+  TEST_DATABASE_URL: postgresql://hogaria:hogaria@localhost:5433/hogaria_test
+
+jobs:
+  checks:
+    name: Lint, typecheck y tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: hogaria
+          POSTGRES_PASSWORD: hogaria
+          POSTGRES_DB: hogaria_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U hogaria -d hogaria_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Caché de Turborepo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-checks-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-checks-${{ runner.os }}-
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
+      - run: pnpm typecheck
+
+      - name: Tests (unitarios + integración, con cobertura)
+        run: pnpm test
+
+      # No bloqueante al principio (HOG-012): se revisan los avisos y se endurece más adelante.
+      - name: Auditoría de dependencias (no bloqueante)
+        run: pnpm audit --prod --audit-level=high
+        continue-on-error: true
+
+  e2e:
+    name: E2E (Pixel 7 + iPhone 14)
+    needs: checks
+    if: >-
+      (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: hogaria
+          POSTGRES_PASSWORD: hogaria
+          POSTGRES_DB: hogaria_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U hogaria -d hogaria_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Caché de Turborepo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-e2e-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-e2e-${{ runner.os }}-
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Versión de Playwright
+        id: playwright
+        run: echo "version=$(pnpm --filter @hogaria/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+
+      - name: Caché de los navegadores de Playwright
+        id: browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
+
+      - name: Instalar navegadores (Chromium y WebKit)
+        if: steps.browsers.outputs.cache-hit != 'true'
+        run: pnpm --filter @hogaria/web exec playwright install --with-deps chromium webkit
+
+      - name: Dependencias del sistema de los navegadores
+        if: steps.browsers.outputs.cache-hit == 'true'
+        run: pnpm --filter @hogaria/web exec playwright install-deps chromium webkit
+
+      # El webServer de Playwright compila y arranca la API (scripts/e2e-server.ts:
+      # migrate deploy + nest build, NODE_ENV=test, :3100) y la web (vite build +
+      # preview, :4173); turbo compila antes @hogaria/shared (^build).
+      - name: Compilar y ejecutar los e2e
+        run: pnpm test:e2e
+        run: pnpm test:e2e
+
+      - name: Subir informe y trazas
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+          retention-days: 7
