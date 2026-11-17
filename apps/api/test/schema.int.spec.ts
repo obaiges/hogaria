@@ -1,4 +1,4 @@
-﻿import { readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as PrismaClient from '@prisma/client';

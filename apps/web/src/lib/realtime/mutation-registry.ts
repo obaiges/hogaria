@@ -1,4 +1,4 @@
-﻿export const mutationRegistry = new Set<string>();
+export const mutationRegistry = new Set<string>();
 const MAX_MUTATIONS = 200;
 const queue: string[] = [];
 

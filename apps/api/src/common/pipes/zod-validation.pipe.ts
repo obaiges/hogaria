@@ -1,4 +1,4 @@
-﻿import { type ArgumentMetadata, type PipeTransform } from '@nestjs/common';
+import { type ArgumentMetadata, type PipeTransform } from '@nestjs/common';
 import { ZodError, type ZodType } from 'zod';
 
 import { AppError } from '../errors/app-error.js';

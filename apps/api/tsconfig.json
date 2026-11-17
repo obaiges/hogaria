@@ -1,4 +1,4 @@
-﻿{
+{
     "extends":  "@hogaria/config/tsconfig.node.json",
     "compilerOptions":  {
                             "noEmit":  false,

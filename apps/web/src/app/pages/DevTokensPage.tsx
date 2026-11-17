@@ -1,4 +1,4 @@
-﻿import logoHorizontal from "../../assets/logo-horizontal.svg";
+import logoHorizontal from "../../assets/logo-horizontal.svg";
 
 const lanes = [
   "--lane-coral",

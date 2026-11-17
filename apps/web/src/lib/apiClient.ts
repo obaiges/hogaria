@@ -1,4 +1,4 @@
-﻿import { ERROR_MESSAGES_ES, isErrorCode, problemDetailsSchema, type ProblemDetails } from '@hogaria/shared';
+import { ERROR_MESSAGES_ES, isErrorCode, problemDetailsSchema, type ProblemDetails } from '@hogaria/shared';
 
 import { registerMutation } from './realtime/mutation-registry';
 

@@ -1,4 +1,4 @@
-﻿export type ThemePreference = "system" | "light" | "dark";
+export type ThemePreference = "system" | "light" | "dark";
 
 const STORAGE_KEY = "hogaria-theme";
 const THEME_COLORS: Record<"light" | "dark", string> = {

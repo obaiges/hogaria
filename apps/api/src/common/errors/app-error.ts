@@ -1,4 +1,4 @@
-﻿import { ERROR_MESSAGES_ES, ERROR_STATUS, problemTypeFor, type ErrorCode } from '@hogaria/shared';
+import { ERROR_MESSAGES_ES, ERROR_STATUS, problemTypeFor, type ErrorCode } from '@hogaria/shared';
 
 /** Error de aplicación con código canónico, convertido a RFC 9457 por el filtro global. */
 export class AppError extends Error {

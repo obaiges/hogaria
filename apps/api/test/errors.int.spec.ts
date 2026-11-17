@@ -1,4 +1,4 @@
-﻿import { Controller, Get, Module } from '@nestjs/common';
+import { Controller, Get, Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import request from 'supertest';
