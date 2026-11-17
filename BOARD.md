@@ -16,7 +16,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ## 🟡 In Progress
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-012 | Configurar CI en GitHub Actions | E00 | P1 | 3 | HOG-001, HOG-010, HOG-011 |
 
 ## 🟦 To Do
 | ID | Título | Épica | Prio | Pts | Depende de |
@@ -41,6 +40,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-013 | Crear el seed mínimo de desarrollo (`pnpm db:seed`) | E00 | P2 | 2 | HOG-004 |
 | HOG-016 | Generar la documentación OpenAPI desde los esquemas zod (solo desarrollo) | E00 | P2 | 2 | HOG-006 |
 | HOG-011 | Configurar Playwright con móviles, helpers de login y doble contexto | E00 | P0 | 3 | HOG-003, HOG-005, HOG-010 |
+| HOG-012 | Configurar CI en GitHub Actions | E00 | P1 | 3 | HOG-001, HOG-010, HOG-011 |
 
 ---
 
