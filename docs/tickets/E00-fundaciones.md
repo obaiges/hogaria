@@ -255,13 +255,13 @@ Crear los componentes base en `apps/web/src/components/ui/` a partir de shadcn/u
 Crear `Lane`, `LaneRope`, `DepthFigure`, `MemberDot`/`MemberAvatar` y la animación `ripple` en `apps/web/src/components/pool/`, que el resto de módulos reutilizarán.
 
 **Criterios de aceptación**
-- [ ] `Lane` con props `member`, `children`, `onPress?`, `highlight?: 'ripple'`, borde de 4 px y tinte del color de calle, `role="group"` y `aria-label="Calle de {nombre}"`.
-- [ ] `LaneRope` (`variant: 'default' | 'limit'`), decorativa con `aria-hidden`.
-- [ ] `DepthFigure` (`size: 's' | 'l'`, `variant?: 'limit'`, `value`, `label`) con cifras tabulares.
-- [ ] `MemberDot`/`MemberAvatar` (20, 28 y 36 px) con iniciales o foto, color por `LaneColor` y variante neutra (sin miembro: sistema, ex-miembro o "Usuario eliminado").
-- [ ] Utilidad de animación `ripple` (clase CSS `.ripple` + `--ripple-color`) según `DESIGN.md` §6: 700 ms con barrido; con `prefers-reduced-motion`, solo cambio de fondo durante 1 s. Hook `useRippleClass(active, laneColor)` que la aplica a cualquier fila.
-- [ ] `laneColorVar(color: LaneColor)` → `var(--lane-coral)`… en `components/pool/lane-colors.ts`.
-- [ ] `/dev/ui` muestra una reproducción de `docs/design/mock-inicio.html` con estos componentes, en 375 px y oscuro.
+- [x] `Lane` con props `member`, `children`, `onPress?`, `highlight?: 'ripple'`, borde de 4 px y tinte del color de calle, `role="group"` y `aria-label="Calle de {nombre}"`.
+- [x] `LaneRope` (`variant: 'default' | 'limit'`), decorativa con `aria-hidden`.
+- [x] `DepthFigure` (`size: 's' | 'l'`, `variant?: 'limit'`, `value`, `label`) con cifras tabulares.
+- [x] `MemberDot`/`MemberAvatar` (20, 28 y 36 px) con iniciales o foto, color por `LaneColor` y variante neutra (sin miembro: sistema, ex-miembro o "Usuario eliminado").
+- [x] Utilidad de animación `ripple` (clase CSS `.ripple` + `--ripple-color`) según `DESIGN.md` §6: 700 ms con barrido; con `prefers-reduced-motion`, solo cambio de fondo durante 1 s. Hook `useRippleClass(active, laneColor)` que la aplica a cualquier fila.
+- [x] `laneColorVar(color: LaneColor)` → `var(--lane-coral)`… en `components/pool/lane-colors.ts`.
+- [x] `/dev/ui` muestra una reproducción de `docs/design/mock-inicio.html` con estos componentes, en 375 px y oscuro.
 
 **Notas técnicas**
 - Cuándo se dispara la onda lo decide el tiempo real (HOG-152, `ripple-store`); aquí solo la presentación.

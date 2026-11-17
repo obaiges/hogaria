@@ -1,0 +1,93 @@
+/* Componentes firma de la piscina (DESIGN.md §6 y §7). */
+
+/* ─── Calle ─────────────────────────────────────────────────────────────── */
+.pool-lane {
+  --ripple-border: 4px;
+  border-left: 4px solid var(--lane-c);
+  background: color-mix(in oklab, var(--lane-c) 10%, var(--surface));
+}
+.pool-lane[data-neutral] {
+  border-left-color: var(--grout-strong);
+}
+
+/* ─── Corchera: bolas de 6 px cada 12 px ────────────────────────────────── */
+.pool-rope {
+  height: 6px;
+  background: radial-gradient(circle, var(--rope-bead) 3px, transparent 3.5px) 0 0 / 12px 6px repeat-x;
+}
+.pool-rope[data-variant="limit"] {
+  background:
+    radial-gradient(circle, var(--rope-red) 3px, transparent 3.5px) 0 0 / 24px 6px repeat-x,
+    radial-gradient(circle, var(--rope-white) 2.25px, var(--grout-strong) 2.75px, transparent 3.5px) 12px 0 / 24px 6px repeat-x;
+}
+
+/* ─── Avatar: texto claro sobre el color de calle; oscuro en modo oscuro ── */
+.pool-avatar {
+  color: #fff;
+}
+:root[data-theme="dark"] .pool-avatar {
+  color: var(--bg);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pool-avatar {
+    color: var(--bg);
+  }
+}
+.pool-avatar[data-neutral] {
+  color: var(--ink-muted);
+}
+
+/* ─── Onda (ripple) ─────────────────────────────────────────────────────────
+ * Barrido de --primary-soft de izquierda a derecha con el color de calle del autor
+ * en el borde izquierdo, 700 ms. La fila no se mueve. El barrido va por debajo del
+ * contenido (::after con z-index -1 dentro de un contexto de apilamiento propio).
+ * Las filas con borde izquierdo propio declaran --ripple-border para cubrirlo. */
+.ripple {
+  position: relative;
+  isolation: isolate;
+}
+.ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  left: calc(-1 * var(--ripple-border, 0px));
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--primary-soft) 0 70%, transparent 100%);
+  box-shadow: inset 4px 0 0 var(--ripple-color, var(--primary));
+  animation: pool-ripple-sweep 700ms var(--ease-water) both;
+}
+/* Con reduced-motion: solo cambio de fondo durante 1 s, sin barrido. */
+.ripple.ripple-reduced::after {
+  animation: pool-ripple-fade 1000ms linear both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ripple::after {
+    animation: pool-ripple-fade 1000ms linear both;
+  }
+}
+
+@keyframes pool-ripple-sweep {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+  }
+  75% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 0;
+  }
+}
+@keyframes pool-ripple-fade {
+  0%,
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

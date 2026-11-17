@@ -13,7 +13,10 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/Sheet";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/Tabs";
 import { Textarea } from "@/components/ui/Textarea";
-import { ToastViewport, useToast } from "@/components/ui/Toast";
+import { useToast } from "@/components/ui/Toast";
+import { getStoredTheme, setTheme, type ThemePreference } from "@/lib/theme";
+
+import { PoolMockSection } from "./dev/PoolMockSection";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -28,9 +31,28 @@ export function DevUiPage() {
   const [chip, setChip] = useState(true);
   const [checked, setChecked] = useState(false);
   const { toast } = useToast();
+  const [theme, setThemeState] = useState<ThemePreference>(getStoredTheme);
   return (
     <main className="mx-auto min-h-screen max-w-[375px] space-y-6 bg-[var(--bg)] p-4 text-[var(--ink)]">
-      <h1 className="text-[22px]" style={{ fontFamily: "var(--font-sign)" }}>UI / Piscina</h1>
+      <div className="flex items-center justify-between gap-2">
+        <h1 className="text-[22px]" style={{ fontFamily: "var(--font-sign)" }}>UI / Piscina</h1>
+        <Tabs
+          value={theme}
+          onValueChange={(v) => {
+            const pref = v as ThemePreference;
+            setTheme(pref);
+            setThemeState(pref);
+          }}
+        >
+          <TabsList aria-label="Tema">
+            <TabsTrigger value="light">Claro</TabsTrigger>
+            <TabsTrigger value="dark">Oscuro</TabsTrigger>
+            <TabsTrigger value="system">Sistema</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      <PoolMockSection />
 
       <Section title="Button">
         <div className="flex flex-wrap gap-2">
@@ -101,7 +123,6 @@ export function DevUiPage() {
         <EmptyState title="Aún no hay listas. Crea la primera" actionLabel="Crear" onAction={() => {}} />
         <ErrorState message="No se ha podido cargar" onRetry={() => {}} />
       </Section>
-      <ToastViewport />
     </main>
   );
 }
