@@ -1,9 +1,10 @@
-﻿import { StrictMode } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router/dom";
 
 import { QueryProvider } from "./app/providers/QueryProvider";
 import { router } from "./app/router";
+import { ToastViewport } from "./components/ui/Toast";
 import { initTheme } from "./lib/theme";
 import "./styles/index.css";
 
@@ -16,6 +17,7 @@ createRoot(rootEl).render(
   <StrictMode>
     <QueryProvider>
       <RouterProvider router={router} />
+      <ToastViewport />
     </QueryProvider>
   </StrictMode>,
 );

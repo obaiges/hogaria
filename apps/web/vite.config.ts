@@ -1,4 +1,4 @@
-﻿/// <reference types="vitest/config" />
+/// <reference types="vitest/config" />
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -44,6 +44,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
     },
+    dedupe: ['react', 'react-dom'],
   },
   server: {
     proxy: {

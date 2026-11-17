@@ -1,12 +1,18 @@
-﻿import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router";
 
 import { DevTokensPage } from "./pages/DevTokensPage";
+import { DevUiPage } from "./pages/DevUiPage";
 
 function Page({ title }: { title: string }) {
   return <h1>{title}</h1>;
 }
 
-const devRoutes = import.meta.env.DEV ? [{ path: "/dev/tokens", element: <DevTokensPage /> }] : [];
+const devRoutes = import.meta.env.DEV
+  ? [
+      { path: "/dev/tokens", element: <DevTokensPage /> },
+      { path: "/dev/ui", element: <DevUiPage /> },
+    ]
+  : [];
 
 export const router = createBrowserRouter([
   { path: "/entrar", element: <Page title="Entrar" /> },

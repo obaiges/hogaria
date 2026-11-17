@@ -16,14 +16,15 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ## 🟡 In Progress
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-008 | Adaptar los componentes UI base de shadcn al sistema "Piscina municipal" | E00 | P0 | 5 | HOG-007 |
 
 ## 🟦 To Do
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
+| HOG-009 | Crear los componentes firma de la piscina y la animación de onda | E00 | P0 | 5 | HOG-008 |
 | HOG-010 | Montar la infraestructura de tests unitarios y de integración | E00 | P0 | 5 | HOG-003, HOG-004 |
 | HOG-014 | Aplicar las protecciones base de la API (helmet, CORS, Origin y throttler) | E00 | P0 | 2 | HOG-003, HOG-006 |
+| HOG-015 | Configurar el service worker del *shell* y el aviso de nueva versión | E00 | P1 | 2 | HOG-005, HOG-008 |
 | HOG-013 | Crear el seed mínimo de desarrollo (`pnpm db:seed`) | E00 | P2 | 2 | HOG-004 |
 | HOG-016 | Generar la documentación OpenAPI desde los esquemas zod (solo desarrollo) | E00 | P2 | 2 | HOG-006 |
 
@@ -37,6 +38,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-005 | Crear el esqueleto de `apps/web` (Vite, React, Router, Query, Tailwind v4 y PWA) | E00 | P0 | 5 | HOG-001, HOG-002 |
 | HOG-006 | Implementar el manejo global de errores y el `apiClient` web con `X-Client-Mutation-Id` | E00 | P0 | 3 | HOG-002, HOG-003, HOG-005 |
 | HOG-007 | Aplicar los tokens de diseño, las fuentes Barlow autoalojadas y el tema claro/oscuro | E00 | P0 | 3 | HOG-005 |
+| HOG-008 | Adaptar los componentes UI base de shadcn al sistema "Piscina municipal" | E00 | P0 | 5 | HOG-007 |
 
 ---
 
@@ -45,10 +47,8 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ### Fase 0 · Fundaciones — 20 tickets, 66 pts
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-009 | Crear los componentes firma de la piscina y la animación de onda | E00 | P0 | 5 | HOG-008 |
 | HOG-011 | Configurar Playwright con móviles, helpers de login y doble contexto | E00 | P0 | 3 | HOG-003, HOG-005, HOG-010 |
 | HOG-012 | Configurar CI en GitHub Actions | E00 | P1 | 3 | HOG-001, HOG-010, HOG-011 |
-| HOG-015 | Configurar el service worker del *shell* y el aviso de nueva versión | E00 | P1 | 2 | HOG-005, HOG-008 |
 | HOG-020 | Desplegar el frontend en Cloudflare Pages con DNS en Netlify y `_headers`/`_redirects` | E00 | P1 | 2 | HOG-005, HOG-023 |
 | HOG-021 | Aprovisionar la VM de Oracle con Docker y Caddy y desplegar la API a mano | E00 | P1 | 5 | HOG-003, HOG-023 |
 | HOG-022 | Automatizar el despliegue continuo de la API (GHCR + SSH) | E00 | P2 | 3 | HOG-012, HOG-021 |

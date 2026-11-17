@@ -228,10 +228,10 @@ Llevar el sistema "Piscina municipal" a la web: tokens CSS de `docs/design/token
 Crear los componentes base en `apps/web/src/components/ui/` a partir de shadcn/ui (Radix), con las variantes, tamaños y estados de `DESIGN.md`, accesibles y listos para modo oscuro.
 
 **Criterios de aceptación**
-- [ ] Componentes: `Button` (`primary`, `secondary`, `ghost`, `danger`; estado `loading`; prop `requiresConnection` preparada, sin efecto hasta HOG-155), `Input`, `Textarea`, `Select`, `Checkbox`, `Chip`, `Sheet`, `Dialog`, `Tabs`/`SegmentedControl`, `Toast` (con acción "Deshacer" de 5 s), `Skeleton`, `EmptyState`, `ErrorState` (con `onRetry` opcional) y `FormField` (label visible + mensaje de error con `aria-describedby`).
-- [ ] Alturas, radios y tipografía según `DESIGN.md` §5 y §8; objetivos táctiles ≥ 44 px; foco visible con el token de anillo.
-- [ ] `Skeleton` sin pulso con `prefers-reduced-motion`.
-- [ ] Página `/dev/ui` (solo desarrollo) con todos los componentes y estados, en claro y oscuro.
+- [x] Componentes: `Button` (`primary`, `secondary`, `ghost`, `danger`; estado `loading`; prop `requiresConnection` preparada, sin efecto hasta HOG-155), `Input`, `Textarea`, `Select`, `Checkbox`, `Chip`, `Sheet`, `Dialog`, `Tabs`/`SegmentedControl`, `Toast` (con acción "Deshacer" de 5 s), `Skeleton`, `EmptyState`, `ErrorState` (con `onRetry` opcional) y `FormField` (label visible + mensaje de error con `aria-describedby`).
+- [x] Alturas, radios y tipografía según `DESIGN.md` §5 y §8; objetivos táctiles ≥ 44 px; foco visible con el token de anillo.
+- [x] `Skeleton` sin pulso con `prefers-reduced-motion`.
+- [x] Página `/dev/ui` (solo desarrollo) con todos los componentes y estados, en claro y oscuro.
 
 **Notas técnicas**
 - `AppHeader`, `BottomNav` y `Fab` son de HOG-750; `OfflineBanner` es de HOG-155.
