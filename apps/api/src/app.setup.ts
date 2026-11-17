@@ -1,19 +1,26 @@
 import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 
+import { API_PREFIX } from './app.constants.js';
 import { getAllowedOrigins } from './common/security/allowed-origins.js';
 import { bodyParserErrorHandler, jsonBodyParser } from './common/security/body-parser.js';
+import { setupApiDocs } from './openapi/api-docs.js';
 
 import type { INestApplication } from '@nestjs/common';
 import type { Express } from 'express';
 
-export const API_PREFIX = 'api/v1';
+export { API_PREFIX };
+
+export interface ConfigureAppOptions {
+  /** Swagger UI en `/api/docs`. Por defecto, solo con `NODE_ENV=development` (HOG-016). */
+  apiDocs?: boolean;
+}
 
 /**
  * Configuración común de la app Nest. La usan `main.ts` y `createTestApp()` para que
  * los tests de integración arranquen exactamente la misma API.
  */
-export function configureApp(app: INestApplication): INestApplication {
+export function configureApp(app: INestApplication, options: ConfigureAppOptions = {}): INestApplication {
   const config = app.get(ConfigService);
 
   // Detrás de Caddy (red privada de Docker): la IP real llega en X-Forwarded-For.
@@ -31,6 +38,8 @@ export function configureApp(app: INestApplication): INestApplication {
     exposedHeaders: ['Retry-After', 'X-Request-Id'],
     maxAge: 600,
   });
+
+  if (options.apiDocs ?? config.get('NODE_ENV') === 'development') setupApiDocs(app);
 
   app.use(`/${API_PREFIX}`, jsonBodyParser, bodyParserErrorHandler);
   app.setGlobalPrefix(API_PREFIX);

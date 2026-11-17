@@ -21,7 +21,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
-| HOG-016 | Generar la documentación OpenAPI desde los esquemas zod (solo desarrollo) | E00 | P2 | 2 | HOG-006 |
 | HOG-011 | Configurar Playwright con móviles, helpers de login y doble contexto | E00 | P0 | 3 | HOG-003, HOG-005, HOG-010 |
 
 ## ✅ Done
@@ -40,6 +39,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-014 | Aplicar las protecciones base de la API (helmet, CORS, Origin y throttler) | E00 | P0 | 2 | HOG-003, HOG-006 |
 | HOG-015 | Configurar el service worker del *shell* y el aviso de nueva versión | E00 | P1 | 2 | HOG-005, HOG-008 |
 | HOG-013 | Crear el seed mínimo de desarrollo (`pnpm db:seed`) | E00 | P2 | 2 | HOG-004 |
+| HOG-016 | Generar la documentación OpenAPI desde los esquemas zod (solo desarrollo) | E00 | P2 | 2 | HOG-006 |
 
 ---
 

@@ -449,9 +449,9 @@ Completar `sw.ts` para que solo precachee el *shell* (arranque rápido, sin modo
 Servir en `/api/docs` (solo con `NODE_ENV=development`) un OpenAPI generado a partir de los esquemas zod que usan los controladores.
 
 **Criterios de aceptación**
-- [ ] Decorador `@ApiContract({ body?, query?, params?, response })` que registra los esquemas zod de cada ruta.
-- [ ] `/api/docs` muestra Swagger UI con las rutas registradas; en producción y test responde 404.
-- [ ] Añadir un endpoint nuevo con el decorador lo hace aparecer sin más pasos.
+- [x] Decorador `@ApiContract({ body?, query?, params?, response })` que registra los esquemas zod de cada ruta.
+- [x] `/api/docs` muestra Swagger UI con las rutas registradas; en producción y test responde 404.
+- [x] Añadir un endpoint nuevo con el decorador lo hace aparecer sin más pasos.
 
 **Notas técnicas**
 - `zod-openapi` (o equivalente compatible con la versión de zod fijada).

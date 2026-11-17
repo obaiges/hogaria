@@ -18,6 +18,8 @@ export interface TestAppOptions {
   imports?: ModuleImport[];
   /** Proveedores sustituidos por un valor: `[{ provide: PrismaService, useValue: mock }]`. */
   overrides?: { provide: InjectionToken; useValue: unknown }[];
+  /** Montar Swagger UI en `/api/docs` (por defecto no: los tests usan NODE_ENV=test). */
+  apiDocs?: boolean;
   /** Ajustes extra del módulo de pruebas antes de compilar. */
   configure?: (builder: TestingModuleBuilder) => TestingModuleBuilder;
 }
@@ -46,7 +48,7 @@ export async function createTestApp(options: TestAppOptions = {}): Promise<TestA
   if (options.configure) builder = options.configure(builder);
 
   const moduleRef = await builder.compile();
-  const app = configureApp(moduleRef.createNestApplication({ bodyParser: false, logger: false }));
+  const app = configureApp(moduleRef.createNestApplication({ bodyParser: false, logger: false }), { apiDocs: options.apiDocs });
   await app.init();
 
   return {

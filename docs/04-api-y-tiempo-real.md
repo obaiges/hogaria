@@ -11,7 +11,7 @@
 - **Respuestas:** el recurso directamente, sin envoltorio. Las listas paginadas devuelven `{ items: T[], nextCursor: string | null }`, con paginación por cursor (`?cursor=&limit=`, límite por defecto 50 y máximo 100). El cursor es **opaco** para el cliente (base64url): por defecto codifica el `id` UUIDv7; si el listado se ordena por otra clave, codifica la tupla de orden (p. ej. `GET /groups/:g/expenses` ordena por `date desc, id desc` y el cursor codifica `(date, id)`).
 - **Cabecera `X-Client-Mutation-Id`** (UUID) en toda mutación desde la web. Se devuelve en el evento de tiempo real para que el autor lo ignore.
 - **Validación:** cada endpoint declara sus esquemas zod en `packages/shared/src/schemas/<modulo>.ts` (`createShoppingItemInput`, `shoppingItemDto`, …).
-- **Documentación:** se genera OpenAPI desde los esquemas zod (`zod-openapi` o equivalente) y se sirve en `/api/docs` **solo en desarrollo**.
+- **Documentación:** se genera OpenAPI 3.1 desde los esquemas zod y se sirve en `/api/docs` (Swagger UI; el JSON en `/api/docs/openapi.json`) **solo en desarrollo**; en test y producción responde 404. Cada ruta declara sus esquemas con `@ApiContract({ body?, query?, params?, response, summary? })` (`apps/api/src/openapi/`) y aparece sin más pasos. Se usa `z.toJSONSchema()` de zod 4 (JSON Schema 2020-12, el de OpenAPI 3.1), sin `zod-openapi`. El decorador solo documenta: la validación sigue en `ZodValidationPipe` (HOG-016).
 
 ## Formato de error (RFC 9457 `application/problem+json`)
 

@@ -13,6 +13,7 @@ import { AppThrottlerGuard, DEFAULT_RATE_LIMIT } from './common/security/rate-li
 import { validateEnv } from './config/env.js';
 import { ExternalServicesModule } from './external-services.module.js';
 import { HealthModule } from './health/health.module.js';
+import { OpenApiModule } from './openapi/openapi.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
 import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
@@ -43,6 +44,7 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     PrismaModule,
     ExternalServicesModule,
     HealthModule,
+    OpenApiModule,
   ],
   providers: [
     { provide: APP_FILTER, useClass: ProblemDetailsFilter },
