@@ -8,6 +8,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { requestContextMiddleware } from './common/context/request-context.js';
 import { ProblemDetailsFilter } from './common/filters/problem-details.filter.js';
 import { validateEnv } from './config/env.js';
+import { ExternalServicesModule } from './external-services.module.js';
 import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
@@ -34,6 +35,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
       },
     }),
     PrismaModule,
+    ExternalServicesModule,
     HealthModule,
   ],
   providers: [{ provide: APP_FILTER, useClass: ProblemDetailsFilter }],

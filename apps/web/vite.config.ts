@@ -59,5 +59,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.ts',
+    // MSW intercepta URLs absolutas (el fetch de Node no admite rutas relativas).
+    env: { VITE_API_URL: 'http://api.test' },
   },
 });

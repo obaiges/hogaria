@@ -1,0 +1,6 @@
+{
+  "data": { "ingredients": ["huevos", "leche", "tomate"] },
+  "model": "fake-gemini",
+  "inputTokens": 120,
+  "outputTokens": 30
+}

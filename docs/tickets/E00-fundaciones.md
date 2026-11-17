@@ -284,12 +284,12 @@ Crear `Lane`, `LaneRope`, `DepthFigure`, `MemberDot`/`MemberAvatar` y la animaci
 Configurar Vitest en los tres paquetes, la BBDD de test con reseteo y truncado, *factories* y los *fakes* inyectables de Gemini, Web Push y email (Resend).
 
 **Criterios de aceptación**
-- [ ] Vitest en `packages/shared`, `apps/api` (unit `*.spec.ts` + integración `test/**/*.int.spec.ts` con `supertest`) y `apps/web` (jsdom + Testing Library + MSW).
-- [ ] La integración usa `hogaria_test` (puerto 5433): `globalSetup` ejecuta `prisma migrate reset --force --skip-seed` una vez por ejecución y cada test trunca las tablas (`TRUNCATE … RESTART IDENTITY CASCADE` generado desde el esquema).
-- [ ] `apps/api/test/utils/create-test-app.ts` arranca la app Nest con proveedores sustituibles.
-- [ ] Factories en `apps/api/test/factories/`: `createUser({ verified?, password?, isPlatformAdmin?, blockedAt? })`, `createGroupWithMembers(n)`, `createInvite(groupId, { status? })`, `loginAs(user)` → agente supertest con cookie (operativo desde HOG-050; hasta entonces lanza "Not implemented").
-- [ ] Interfaces + *fakes*: `EmailSender` (`FakeEmailSender` guarda los emails en memoria con `to`, `subject`, `text`, `html`, `links`), `PushSender` (`FakeWebPushSender` registra envíos), `GeminiClient` (`FakeGeminiClient` lee `test/fixtures/ai/*.json`). Se registran con *tokens* de Nest para cambiarlos por configuración (`NODE_ENV=test`).
-- [ ] Umbral de cobertura del 80 % de líneas en `packages/shared/src/**` y `apps/api/src/**/*.service.ts`; `pnpm test` falla si baja.
+- [x] Vitest en `packages/shared`, `apps/api` (unit `*.spec.ts` + integración `test/**/*.int.spec.ts` con `supertest`) y `apps/web` (jsdom + Testing Library + MSW).
+- [x] La integración usa `hogaria_test` (puerto 5433): `globalSetup` ejecuta `prisma migrate reset --force --skip-seed` una vez por ejecución y cada test trunca las tablas (`TRUNCATE … RESTART IDENTITY CASCADE` generado desde el esquema).
+- [x] `apps/api/test/utils/create-test-app.ts` arranca la app Nest con proveedores sustituibles.
+- [x] Factories en `apps/api/test/factories/`: `createUser({ verified?, password?, isPlatformAdmin?, blockedAt? })`, `createGroupWithMembers(n)`, `createInvite(groupId, { status? })`, `loginAs(user)` → agente supertest con cookie (operativo desde HOG-050; hasta entonces lanza "Not implemented").
+- [x] Interfaces + *fakes*: `EmailSender` (`FakeEmailSender` guarda los emails en memoria con `to`, `subject`, `text`, `html`, `links`), `PushSender` (`FakeWebPushSender` registra envíos), `GeminiClient` (`FakeGeminiClient` lee `test/fixtures/ai/*.json`). Se registran con *tokens* de Nest para cambiarlos por configuración (`NODE_ENV=test`).
+- [x] Umbral de cobertura del 80 % de líneas en `packages/shared/src/**` y `apps/api/src/**/*.service.ts`; `pnpm test` falla si baja.
 
 **Notas técnicas**
 - Usa el reloj falso de Vitest (`vi.useFakeTimers`) para caducidades; documenta en `docs/07-testing.md` cualquier helper nuevo.

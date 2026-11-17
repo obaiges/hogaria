@@ -65,6 +65,7 @@ Las versiones se fijan exactas en los `package.json` (sin `^`). Cuando un ticket
 | zod | 4.6.7 | HOG-002 |
 | date-fns / @date-fns/tz | 4.4.0 / 1.5.0 | HOG-002 |
 | Vitest | 5.1.0 | HOG-010 |
+| MSW | 3.0.3 | HOG-010. En v3 la opción es `onUnhandledFrame` (antes `onUnhandledRequest`) |
 | Playwright | 1.65.0 | HOG-011 |
 | tsup | 9.0.0 | HOG-002 |
 

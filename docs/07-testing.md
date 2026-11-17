@@ -14,10 +14,45 @@
 
 ## Base de datos de test
 
-- `docker-compose.yml` levanta `postgres:17` en el puerto 5433 para tests.
-- Antes de cada suite de integración: `prisma migrate reset --force --skip-seed` sobre `hogaria_test`.
+- `docker-compose.yml` levanta `postgres:17` en el puerto 5433 para tests (`docker compose up -d db-test`).
+- **Sin Docker** (Postgres nativo): crea la BBDD `hogaria_test` y pon `TEST_DATABASE_URL=postgresql://…/hogaria_test` en `apps/api/.env.test` (no versionado) o en el entorno. Orden de resolución: `TEST_DATABASE_URL` → `apps/api/.env.test` → `localhost:5433`. Nunca se usa el `DATABASE_URL` de `.env`.
+- **Protección:** los tests se niegan a ejecutarse contra una BBDD cuyo nombre no acabe en `_test` (`test/utils/test-db.ts`).
+- Una vez por ejecución (`globalSetup`, `test/global-setup.ts`): `prisma migrate reset --force` sobre `hogaria_test` (Prisma 7 ya no ejecuta el seed en el reset, así que `--skip-seed` sobra).
+  - Si lo lanza un agente de IA, Prisma lo bloquea y pide el consentimiento explícito del usuario en `PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION`. El agente debe preguntar antes; ejecutado por una persona o en CI no pide nada.
 - Cada test crea sus datos con *factories* (`apps/api/test/factories/*.ts`: `createUser()`, `createGroupWithMembers(n)`, …). Nada de depender de un seed global.
-- Aislamiento: truncado de tablas entre tests (`TRUNCATE … CASCADE`), más rápido que las transacciones con Nest.
+- Aislamiento: truncado de tablas entre tests (`TRUNCATE … RESTART IDENTITY CASCADE` de todas las tablas creadas por las migraciones, salvo `_prisma_migrations`), más rápido que las transacciones con Nest. Lo hace `test/setup-int.ts` en un `beforeEach`.
+- La suite de integración corre en serie (`pool: 'forks'`, `fileParallelism: false`).
+
+## Helpers de test
+
+### API (`apps/api`)
+
+| Script | Qué ejecuta |
+|---|---|
+| `pnpm test` | Proyectos `unit` (`src/**/*.spec.ts`) e `integration` (`test/**/*.int.spec.ts`) con cobertura |
+| `pnpm test:unit` / `pnpm test:int` | Solo uno de los dos proyectos |
+
+| Helper | Uso |
+|---|---|
+| `createTestApp({ overrides?, configure? })` (`test/utils/create-test-app.ts`) | Arranca la API real (`AppModule` + `configureApp`, igual que `main.ts`) con `NODE_ENV=test`. Devuelve `{ app, server, moduleRef, emails, push, gemini, close }`; `overrides: [{ provide, useValue }]` sustituye cualquier proveedor |
+| `createUser({ verified?, password?, isPlatformAdmin?, blockedAt?, … })` | Usuario único por llamada; con `password`, cuenta `credential` con el hash de `better-auth/crypto` |
+| `createGroupWithMembers(n, { name?, members? })` | Hogar con `n` miembros nuevos y colores de calle en el orden de `LANE_COLOR_ORDER` |
+| `createInvite(groupId, { status?: 'active' \| 'used' \| 'revoked' \| 'expired' })` | Devuelve `{ invite, token }`; en BBDD solo el SHA-256 (`hashInviteToken`) |
+| `loginAs(user)` | Agente supertest con sesión. Lanza "Not implemented" hasta HOG-050 |
+| `getTestPrisma()`, `truncateAll()` (`test/utils/prisma.ts`) | Cliente Prisma de los tests y truncado manual |
+
+**Servicios externos.** Las interfaces viven en `src/` con su *token* de Nest y la API elige la implementación con `NODE_ENV` (`src/external-services.module.ts`); por eso los *fakes* están en `src/` y se reexportan en `test/fakes/`.
+
+| Token | Interfaz | Fake (`NODE_ENV=test`) | Real |
+|---|---|---|---|
+| `EMAIL_SENDER` | `EmailSender.send({ to, subject, text, html })` | `FakeEmailSender`: `sent`, `to(email)`, `last(email?)`, `clear()`; cada email con sus `links` | HOG-054 (hasta entonces `LogEmailSender`, que no envía) |
+| `PUSH_SENDER` | `PushSender.send(subscription, payload)`, `sendToUser(userId, payload)` | `FakeWebPushSender` (alias `FakePushSender`): `sent`, `setSubscriptions()`, `failWith(endpoint, 'gone' \| 'error')` | HOG-604 (hasta entonces `DisabledPushSender`) |
+| `GEMINI_CLIENT` | `GeminiClient.generateStructured({ feature, prompt, schema, … })` | `FakeGeminiClient`: lee `test/fixtures/ai/<nombre>.json` (`{ data, model?, inputTokens?, outputTokens? }`), por defecto `<feature>.ok` (`FRIDGE_DETECT` → `fridge-detect.ok`); `useFixture()`, `failNext()`, `calls`; valida `data` con el `schema` | HOG-650 (hasta entonces `503 AI_UNAVAILABLE`) |
+
+### Web (`apps/web`)
+
+- `src/test/msw.ts`: servidor MSW compartido, arrancado en `src/test/setup.ts` con `onUnhandledFrame: 'error'` (una petición sin respuesta definida hace fallar el test). Cada test añade las suyas con `server.use(http.get(apiUrl('/x'), () => HttpResponse.json(…)))`; se limpian después de cada test.
+- En los tests `VITE_API_URL` vale `http://api.test` (el `fetch` de Node no acepta rutas relativas); `apiUrl(path)` construye la URL completa.
 
 ## Flujos críticos (e2e obligatorios)
 
