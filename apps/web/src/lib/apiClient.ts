@@ -43,6 +43,8 @@ interface RequestOptions<T> {
   body?: unknown;
   schema?: SchemaLike<T>;
   headers?: Record<string, string>;
+  /** Por defecto, un 401 lleva a `/entrar?volver=…`. `false`: solo lanza `ApiError(401)` (p. ej. comprobar la sesión en un loader). */
+  redirectOn401?: boolean;
 }
 
 function isMutation(method: HttpMethod) {
@@ -96,6 +98,7 @@ async function request<T>(method: HttpMethod, path: string, opts: RequestOptions
   }
 
   if (res.status === 401) {
+    if (opts.redirectOn401 === false) throw new ApiError(401, { code: 'UNAUTHENTICATED' });
     clearClientState();
     const volver = encodeURIComponent(window.location.pathname + window.location.search);
     window.location.assign(`/entrar?volver=${volver}`);

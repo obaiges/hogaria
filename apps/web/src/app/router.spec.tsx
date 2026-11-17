@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { router } from './router';
 
+import type { RouteObject } from 'react-router';
+
 const expectedRoutes = [
   '/entrar',
   '/registro',
@@ -35,7 +37,9 @@ const expectedRoutes = [
 
 describe('router (HOG-005)', () => {
   it('incluye todas las rutas fijadas', () => {
-    const paths = router.routes.map((r) => r.path);
+    // Las rutas están anidadas (layout público/privado, HOG-053): se aplanan.
+    const flatten = (rs: RouteObject[]): (string | undefined)[] => rs.flatMap((r) => [r.path, ...flatten(r.children ?? [])]);
+    const paths = flatten(router.routes as RouteObject[]);
     for (const path of expectedRoutes) {
       expect(paths).toContain(path);
     }

@@ -23,6 +23,8 @@ export default defineConfig({
         // Shell (ADR-015): JS, CSS, HTML, iconos, logos y las fuentes Barlow en woff2 de los
         // subconjuntos latinos (los navegadores que soportan service workers leen woff2).
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}', 'assets/barlow*-latin-*.woff2'],
+        // La lista de contraseñas comunes (~74 KB) solo se descarga al validar una contraseña.
+        globIgnores: ['**/common-passwords-*.js'],
       },
       manifest: {
         name: 'Hogaria',

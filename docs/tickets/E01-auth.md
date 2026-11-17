@@ -101,12 +101,12 @@ Impedir que se cree ningún usuario sin una invitación válida (email o Google)
 Implementar `/entrar`, `/registro` y `/recuperar` con `authClient`, validación zod compartida y los textos y estados de la spec, más la protección de las rutas privadas.
 
 **Criterios de aceptación**
-- [ ] `apps/web/src/lib/authClient.ts` con `createAuthClient({ baseURL: VITE_API_URL, plugins: [usernameClient()] })` y `fetchOptions.credentials = 'include'`.
-- [ ] `features/auth/pages/SignInPage.tsx`: un campo "Email o nombre de usuario" que llama a `signIn.email` si contiene `@` y a `signIn.username` (en minúsculas) si no; "Continuar con Google"; `?redirect` seguro; mensajes de `?error`; textos de error de la spec 01 §7.
-- [ ] `features/auth/pages/SignUpPage.tsx`: campos, ayudas, validación con `signUpInput` + "Las contraseñas no coinciden", cabecera con `hogaria:pendingInvite` si existe, estado "Revisa tu email" con reenvío limitado a 60 s.
-- [ ] `features/auth/pages/RecoverPasswordPage.tsx`: modo "pedir enlace" y modo `?token` con nueva contraseña; mensajes genéricos.
-- [ ] `features/auth/api.ts`: `useMe()` (`['me']`); loader `requireAuth` en el layout privado de `app/router.tsx` que redirige a `/entrar?volver=…` si `401`; las rutas públicas no lo usan; con sesión, `/entrar` y `/registro` redirigen a `/`.
-- [ ] Pantallas sin `AppHeader`/`BottomNav`, con el logo horizontal, accesibles (labels, `autocomplete`, foco al primer error) y correctas a 375 px en claro y oscuro.
+- [x] `apps/web/src/lib/authClient.ts` con `createAuthClient({ baseURL: VITE_API_URL, plugins: [usernameClient()] })` y `fetchOptions.credentials = 'include'`.
+- [x] `features/auth/pages/SignInPage.tsx`: un campo "Email o nombre de usuario" que llama a `signIn.email` si contiene `@` y a `signIn.username` (en minúsculas) si no; "Continuar con Google"; `?redirect` seguro; mensajes de `?error`; textos de error de la spec 01 §7.
+- [x] `features/auth/pages/SignUpPage.tsx`: campos, ayudas, validación con `signUpInput` + "Las contraseñas no coinciden", cabecera con `hogaria:pendingInvite` si existe, estado "Revisa tu email" con reenvío limitado a 60 s.
+- [x] `features/auth/pages/RecoverPasswordPage.tsx`: modo "pedir enlace" y modo `?token` con nueva contraseña; mensajes genéricos.
+- [x] `features/auth/api.ts`: `useMe()` (`['me']`); loader `requireAuth` en el layout privado de `app/router.tsx` que redirige a `/entrar?volver=…` si `401`; las rutas públicas no lo usan; con sesión, `/entrar` y `/registro` redirigen a `/`.
+- [x] Pantallas sin `AppHeader`/`BottomNav`, con el logo horizontal, accesibles (labels, `autocomplete`, foco al primer error) y correctas a 375 px en claro y oscuro.
 
 **Notas técnicas**
 - `checkPasswordPolicy` y la lista común se cargan con `import('@hogaria/shared/common-passwords')` cuando HOG-058 exista; hasta entonces, solo `passwordSchema`.

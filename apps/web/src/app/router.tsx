@@ -1,4 +1,12 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Outlet, redirect, useRouteError, type RouteObject } from "react-router";
+
+import { Button } from "@/components/ui/Button";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { redirectIfAuthenticatedLoader, requireAuthLoader } from "@/features/auth/api";
+import { RecoverPasswordPage } from "@/features/auth/pages/RecoverPasswordPage";
+import { SignInPage } from "@/features/auth/pages/SignInPage";
+import { SignUpPage } from "@/features/auth/pages/SignUpPage";
+import { NetworkError } from "@/lib/apiClient";
 
 import { DevTokensPage } from "./pages/DevTokensPage";
 import { DevUiPage } from "./pages/DevUiPage";
@@ -7,18 +15,48 @@ function Page({ title }: { title: string }) {
   return <h1>{title}</h1>;
 }
 
-const devRoutes = import.meta.env.DEV
+/** Mientras se resuelve la sesión al abrir la app (sin parpadeos de contenido). */
+function RouteFallback() {
+  return <main className="min-h-screen bg-[var(--bg)]" aria-busy="true" />;
+}
+
+/** Error al cargar una ruta (p. ej. la API no responde al comprobar la sesión). */
+function RouteError() {
+  const error = useRouteError();
+  const message = error instanceof NetworkError ? error.message : "Algo ha fallado. Inténtalo de nuevo";
+  return (
+    <main className="min-h-screen bg-[var(--bg)] px-4 pt-10">
+      <div className="mx-auto flex max-w-sm flex-col gap-4">
+        <ErrorState message={message} />
+        <Button variant="secondary" onClick={() => window.location.reload()}>
+          Reintentar
+        </Button>
+      </div>
+    </main>
+  );
+}
+
+const devRoutes: RouteObject[] = import.meta.env.DEV
   ? [
       { path: "/dev/tokens", element: <DevTokensPage /> },
       { path: "/dev/ui", element: <DevUiPage /> },
     ]
   : [];
 
-export const router = createBrowserRouter([
-  { path: "/entrar", element: <Page title="Entrar" /> },
-  { path: "/registro", element: <Page title="Registro" /> },
-  { path: "/recuperar", element: <Page title="Recuperar contraseña" /> },
+/** Rutas sin sesión. `/entrar` y `/registro` mandan a `/` si ya hay sesión (HOG-053). */
+const publicRoutes: RouteObject[] = [
+  { path: "/entrar", element: <SignInPage />, loader: redirectIfAuthenticatedLoader() },
+  { path: "/registro", element: <SignUpPage />, loader: redirectIfAuthenticatedLoader() },
+  { path: "/recuperar", element: <RecoverPasswordPage /> },
   { path: "/invite/:token", element: <Page title="Invitación" /> },
+  { path: "/legal/privacidad", element: <Page title="Privacidad" /> },
+  { path: "/legal/terminos", element: <Page title="Términos" /> },
+];
+
+/** Rutas con sesión: el layout privado redirige a `/entrar?volver=…` si no la hay. */
+const privateRoutes: RouteObject[] = [
+  // La redirección de entrada (último grupo, etc.) es de HOG-104.
+  { path: "/", loader: () => redirect("/grupos") },
   { path: "/grupos", element: <Page title="Grupos" /> },
   { path: "/g/:groupId", element: <Page title="Inicio" /> },
   { path: "/g/:groupId/compra", element: <Page title="Compra" /> },
@@ -41,7 +79,14 @@ export const router = createBrowserRouter([
   { path: "/g/:groupId/ajustes", element: <Page title="Ajustes del grupo" /> },
   { path: "/perfil", element: <Page title="Perfil" /> },
   { path: "/admin", element: <Page title="Administración" /> },
-  { path: "/legal/privacidad", element: <Page title="Privacidad" /> },
-  { path: "/legal/terminos", element: <Page title="Términos" /> },
-  ...devRoutes,
-]);
+];
+
+export const routes: RouteObject[] = [
+  {
+    hydrateFallbackElement: <RouteFallback />,
+    errorElement: <RouteError />,
+    children: [...publicRoutes, { id: "private", loader: requireAuthLoader(), element: <Outlet />, children: privateRoutes }, ...devRoutes],
+  },
+];
+
+export const router = createBrowserRouter(routes);

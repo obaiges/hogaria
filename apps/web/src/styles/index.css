@@ -21,3 +21,12 @@ body {
 input, textarea, select {
   font-size: 16px;
 }
+
+/* Logo claro u oscuro según el tema (data-theme o, en "Sistema", prefers-color-scheme). */
+.logo-dark { display: none; }
+:root[data-theme="dark"] .logo-light { display: none; }
+:root[data-theme="dark"] .logo-dark { display: inline; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-light { display: none; }
+  :root:not([data-theme="light"]) .logo-dark { display: inline; }
+}
