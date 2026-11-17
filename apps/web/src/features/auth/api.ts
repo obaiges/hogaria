@@ -16,7 +16,8 @@ export async function fetchMe(): Promise<MeDto | null> {
   }
 }
 
-export const meQuery = queryOptions({ queryKey: ["me"] as const, queryFn: fetchMe, staleTime: 60_000 });
+// Sin reintentos: si la API no responde, se informa al momento en vez de dejar la pantalla en blanco.
+export const meQuery = queryOptions({ queryKey: ["me"] as const, queryFn: fetchMe, staleTime: 60_000, retry: false });
 
 export function useMe() {
   return useQuery(meQuery);
@@ -49,10 +50,13 @@ export function requireAuthLoader(client: QueryClient = appQueryClient) {
   };
 }
 
-/** Loader de `/entrar` y `/registro`: con sesión → `/` (o `?volver=` válido). */
+/**
+ * Loader de `/entrar` y `/registro`: con sesión → `/` (o `?volver=` válido). Si no se puede
+ * comprobar (API caída), se muestra la pantalla igualmente: el propio formulario informará.
+ */
 export function redirectIfAuthenticatedLoader(client: QueryClient = appQueryClient) {
   return async ({ request }: { request: Request }) => {
-    const me = await client.fetchQuery(meQuery);
+    const me = await client.fetchQuery(meQuery).catch(() => null);
     if (me) throw redirect(afterSignInPath(new URL(request.url).search));
     return null;
   };

@@ -61,6 +61,18 @@ describe("loaders de sesión", () => {
     expect(res?.headers.get("Location")).toBe("/perfil");
   });
 
+  it("/entrar se muestra aunque la API no responda (502)", async () => {
+    server.use(http.get(apiUrl("/me"), () => new HttpResponse(null, { status: 502 })));
+    await expect(redirectIfAuthenticatedLoader(new QueryClient())({ request: request("/entrar") })).resolves.toBeNull();
+  });
+
+  it("requireAuth con la API caída falla al momento (sin reintentos) para mostrar el error", async () => {
+    let calls = 0;
+    server.use(http.get(apiUrl("/me"), () => { calls += 1; return new HttpResponse(null, { status: 502 }); }));
+    await expect(requireAuthLoader(new QueryClient())({ request: request("/grupos") })).rejects.toMatchObject({ status: 502 });
+    expect(calls).toBe(1);
+  });
+
   it("/entrar sin sesión se muestra", async () => {
     server.use(http.get(apiUrl("/me"), () => HttpResponse.json({ code: "UNAUTHENTICATED" }, { status: 401 })));
     await expect(redirectIfAuthenticatedLoader(new QueryClient())({ request: request("/entrar") })).resolves.toBeNull();

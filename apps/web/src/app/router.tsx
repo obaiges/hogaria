@@ -6,7 +6,7 @@ import { redirectIfAuthenticatedLoader, requireAuthLoader } from "@/features/aut
 import { RecoverPasswordPage } from "@/features/auth/pages/RecoverPasswordPage";
 import { SignInPage } from "@/features/auth/pages/SignInPage";
 import { SignUpPage } from "@/features/auth/pages/SignUpPage";
-import { NetworkError } from "@/lib/apiClient";
+import { ApiError, NetworkError } from "@/lib/apiClient";
 
 import { DevTokensPage } from "./pages/DevTokensPage";
 import { DevUiPage } from "./pages/DevUiPage";
@@ -23,7 +23,8 @@ function RouteFallback() {
 /** Error al cargar una ruta (p. ej. la API no responde al comprobar la sesión). */
 function RouteError() {
   const error = useRouteError();
-  const message = error instanceof NetworkError ? error.message : "Algo ha fallado. Inténtalo de nuevo";
+  const unreachable = error instanceof NetworkError || (error instanceof ApiError && error.status >= 502 && error.status <= 504);
+  const message = unreachable ? "No hay conexión con el servidor. Comprueba tu conexión e inténtalo de nuevo." : "Algo ha fallado. Inténtalo de nuevo";
   return (
     <main className="min-h-screen bg-[var(--bg)] px-4 pt-10">
       <div className="mx-auto flex max-w-sm flex-col gap-4">
