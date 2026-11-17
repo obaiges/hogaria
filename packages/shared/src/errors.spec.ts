@@ -25,6 +25,7 @@ describe('errores', () => {
       'UNAUTHENTICATED',
       'FORBIDDEN_NOT_OWNER',
       'ACCOUNT_BLOCKED',
+      'FORBIDDEN_ORIGIN',
       'NOT_FOUND',
       'CONFLICT',
       'STALE_VERSION',

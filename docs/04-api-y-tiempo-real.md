@@ -33,6 +33,7 @@
 | `UNAUTHENTICATED` | 401 | Sin sesión o sesión caducada |
 | `FORBIDDEN_NOT_OWNER` | 403 | Recurso con propiedad, no eres el dueño |
 | `ACCOUNT_BLOCKED` | 403 | Usuario bloqueado |
+| `FORBIDDEN_ORIGIN` | 403 | Mutación (`POST/PATCH/PUT/DELETE`) con cabecera `Origin` fuera de la lista permitida (protección CSRF, HOG-014) |
 | `NOT_FOUND` | 404 | No existe **o no tienes acceso** |
 | `CONFLICT` | 409 | Choque de unicidad (nombre duplicado, color ocupado…) |
 | `STALE_VERSION` | 409 | `ShoppingItem.version` desactualizada (ver resolución de conflictos) |

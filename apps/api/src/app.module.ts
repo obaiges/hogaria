@@ -1,16 +1,21 @@
 import { randomUUID } from 'node:crypto';
 
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 
 import { requestContextMiddleware } from './common/context/request-context.js';
 import { ProblemDetailsFilter } from './common/filters/problem-details.filter.js';
+import { OriginCheckMiddleware } from './common/security/origin-check.middleware.js';
+import { AppThrottlerGuard, DEFAULT_RATE_LIMIT } from './common/security/rate-limit.js';
 import { validateEnv } from './config/env.js';
 import { ExternalServicesModule } from './external-services.module.js';
 import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+
+import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -34,14 +39,19 @@ import { PrismaModule } from './prisma/prisma.module.js';
             : undefined,
       },
     }),
+    ThrottlerModule.forRoot([{ name: 'default', ...DEFAULT_RATE_LIMIT }]),
     PrismaModule,
     ExternalServicesModule,
     HealthModule,
   ],
-  providers: [{ provide: APP_FILTER, useClass: ProblemDetailsFilter }],
+  providers: [
+    { provide: APP_FILTER, useClass: ProblemDetailsFilter },
+    { provide: APP_GUARD, useClass: AppThrottlerGuard },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(requestContextMiddleware).forRoutes('*');
+    // Sintaxis de Express 5 / path-to-regexp 8 para "todas las rutas".
+    consumer.apply(requestContextMiddleware, OriginCheckMiddleware).forRoutes('{*path}');
   }
 }

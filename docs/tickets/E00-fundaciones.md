@@ -395,11 +395,11 @@ Crear `apps/api/prisma/seed.ts` con el **seed mínimo** para el desarrollo local
 Añadir las cabeceras de seguridad, el CORS estricto con credenciales, la comprobación de `Origin` en métodos no GET y el *rate limiting* general de 120 peticiones por minuto y usuario.
 
 **Criterios de aceptación**
-- [ ] `helmet` activo en la API.
-- [ ] CORS: solo `APP_URL` (y `http://localhost:5173` si `NODE_ENV=development`), `credentials: true`, cabecera `X-Client-Mutation-Id` permitida.
-- [ ] Middleware global: en `POST/PATCH/PUT/DELETE` bajo `/api/v1`, si la cabecera `Origin` existe y no está en la lista permitida → `403` problem+json con `code: "FORBIDDEN_ORIGIN"` (ver nota).
-- [ ] `@nestjs/throttler` global: 120 peticiones/min por usuario autenticado (o por IP si no hay sesión) → `429 RATE_LIMITED` con `Retry-After`; decorador para límites específicos por ruta.
-- [ ] Límite de tamaño del cuerpo JSON: 1 MB.
+- [x] `helmet` activo en la API.
+- [x] CORS: solo `APP_URL` (y `http://localhost:5173` si `NODE_ENV=development`), `credentials: true`, cabecera `X-Client-Mutation-Id` permitida.
+- [x] Middleware global: en `POST/PATCH/PUT/DELETE` bajo `/api/v1`, si la cabecera `Origin` existe y no está en la lista permitida → `403` problem+json con `code: "FORBIDDEN_ORIGIN"` (ver nota).
+- [x] `@nestjs/throttler` global: 120 peticiones/min por usuario autenticado (o por IP si no hay sesión) → `429 RATE_LIMITED` con `Retry-After`; decorador para límites específicos por ruta.
+- [x] Límite de tamaño del cuerpo JSON: 1 MB.
 
 **Notas técnicas**
 - Ningún código existente describe un origen no permitido: **añade** `FORBIDDEN_ORIGIN` (403, "Origen no permitido") a `packages/shared/src/errors.ts` y a la tabla de códigos de `docs/04-api-y-tiempo-real.md` en el mismo PR (cambio canónico previsto).

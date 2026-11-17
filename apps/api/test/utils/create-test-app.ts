@@ -9,9 +9,13 @@ import { PUSH_SENDER } from '../../src/push/push-sender.js';
 import type { FakeGeminiClient } from '../../src/ai/fake-gemini.client.js';
 import type { FakeEmailSender } from '../../src/email/fake-email-sender.js';
 import type { FakeWebPushSender } from '../../src/push/fake-push-sender.js';
-import type { INestApplication, InjectionToken } from '@nestjs/common';
+import type { DynamicModule, ForwardReference, INestApplication, InjectionToken, Type } from '@nestjs/common';
+
+type ModuleImport = Type | DynamicModule | ForwardReference;
 
 export interface TestAppOptions {
+  /** Módulos extra (p. ej. un controlador de prueba) que se importan junto a `AppModule`. */
+  imports?: ModuleImport[];
   /** Proveedores sustituidos por un valor: `[{ provide: PrismaService, useValue: mock }]`. */
   overrides?: { provide: InjectionToken; useValue: unknown }[];
   /** Ajustes extra del módulo de pruebas antes de compilar. */
@@ -35,7 +39,7 @@ export interface TestApp {
  * se puede sustituir con `overrides`.
  */
 export async function createTestApp(options: TestAppOptions = {}): Promise<TestApp> {
-  let builder = Test.createTestingModule({ imports: [AppModule] });
+  let builder = Test.createTestingModule({ imports: [AppModule, ...(options.imports ?? [])] });
   for (const o of options.overrides ?? []) {
     builder = builder.overrideProvider(o.provide).useValue(o.useValue);
   }
