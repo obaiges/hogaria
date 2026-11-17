@@ -135,7 +135,6 @@ jobs:
       # preview, :4173); turbo compila antes @hogaria/shared (^build).
       - name: Compilar y ejecutar los e2e
         run: pnpm test:e2e
-        run: pnpm test:e2e
 
       - name: Subir informe y trazas
         if: failure()
