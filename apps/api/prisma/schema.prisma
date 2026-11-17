@@ -114,7 +114,7 @@ model SecurityEvent {
 model Group {
   id          String    @id @default(uuid(7)) @db.Uuid
   name        String                      // "Casa Baiges"
-  emoji       String    @default("ðŸ ")
+  emoji       String    @default("🏠")
   timezone    String    @default("Europe/Madrid")
   createdById String?   @db.Uuid
   createdAt DateTime  @default(now()) @db.Timestamptz(3) @map("created_at")
