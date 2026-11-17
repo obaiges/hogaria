@@ -157,11 +157,11 @@ Implementar `ResendEmailSender` con las plantillas en español y completar los f
 Exigir sesión en toda la API salvo las rutas públicas, exponer el usuario actual a los controladores y al `RequestContext`, y crear `GET /me`.
 
 **Criterios de aceptación**
-- [ ] `common/guards/auth.guard.ts` registrado como `APP_GUARD`: obtiene la sesión con `auth.api.getSession({ headers })`; sin sesión → `401 UNAUTHENTICATED`; usuario con `blockedAt` → `403 ACCOUNT_BLOCKED`.
-- [ ] Decoradores `@Public()` (en `/health`, `/health/db`, `GET /invites/:token` y los de `test-support`) y `@CurrentUser()` → `{ id, name, email, isPlatformAdmin, sessionId }`.
-- [ ] El guard rellena `userId`, `userName` y `sessionId` en el `RequestContext` (HOG-006).
-- [ ] `GET /api/v1/me` devuelve `meDto` (`packages/shared/src/schemas/me.ts`) con `hasPassword` y `hasGoogle` calculados desde `Account`.
-- [ ] El throttler (HOG-014) usa `userId` como clave cuando hay sesión.
+- [x] `common/guards/auth.guard.ts` registrado como `APP_GUARD`: obtiene la sesión con `auth.api.getSession({ headers })`; sin sesión → `401 UNAUTHENTICATED`; usuario con `blockedAt` → `403 ACCOUNT_BLOCKED`.
+- [x] Decoradores `@Public()` (en `/health`, `/health/db`, `GET /invites/:token` y los de `test-support`) y `@CurrentUser()` → `{ id, name, email, isPlatformAdmin, sessionId }`.
+- [x] El guard rellena `userId`, `userName` y `sessionId` en el `RequestContext` (HOG-006).
+- [x] `GET /api/v1/me` devuelve `meDto` (`packages/shared/src/schemas/me.ts`) con `hasPassword` y `hasGoogle` calculados desde `Account`.
+- [x] El throttler (HOG-014) usa `userId` como clave cuando hay sesión.
 
 **Notas técnicas**
 - `fromNodeHeaders` de `better-auth/node` para pasar las cabeceras de Express.

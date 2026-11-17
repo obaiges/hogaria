@@ -83,6 +83,15 @@ export function createAuth({ prisma, emailSender, env }: AuthDeps) {
     trustedOrigins: appOrigin ? [appOrigin] : [],
     telemetry: { enabled: false },
 
+    // Campos propios de Hogaria que viajan con la sesión (el AuthGuard los usa sin otra
+    // consulta). `input: false`: nadie puede fijarlos desde el registro.
+    user: {
+      additionalFields: {
+        isPlatformAdmin: { type: 'boolean', required: false, defaultValue: false, input: false },
+        blockedAt: { type: 'date', required: false, input: false },
+      },
+    },
+
     emailAndPassword: {
       enabled: true,
       minPasswordLength: PASSWORD_MIN_LENGTH,

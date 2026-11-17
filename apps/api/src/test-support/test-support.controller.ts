@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
 
+import { Public } from '../common/auth/decorators.js';
 import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe.js';
 import { createTestUserInput, TestSupportService, type CreateTestUserInput } from './test-support.service.js';
 
@@ -8,6 +9,7 @@ import { createTestUserInput, TestSupportService, type CreateTestUserInput } fro
  * Endpoints de apoyo para los e2e (HOG-011). El módulo solo se carga con
  * NODE_ENV=test: en desarrollo y producción estas rutas no existen (404).
  */
+@Public()
 @SkipThrottle()
 @Controller('test')
 export class TestSupportController {

@@ -21,8 +21,10 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
-| HOG-055 | Implementar el `AuthGuard` global, `@CurrentUser`, `@Public` y `GET /me` | E01 | P0 | 3 | HOG-050, HOG-006 |
 | HOG-058 | Añadir rate limiting de auth, `SecurityEvent` y política de contraseñas | E01 | P0 | 5 | HOG-050, HOG-002 |
+| HOG-053 | Crear las pantallas web de entrar, registro y recuperar contraseña | E01 | P0 | 5 | HOG-050, HOG-055, HOG-008 |
+| HOG-101 | Implementar el `GroupMemberGuard` con caché de 60 s y 404 | E02 | P0 | 3 | HOG-055, HOG-004 |
+| HOG-150 | Crear el `RealtimeGateway` con autenticación en el handshake y salas de usuario y grupo | E03 | P0 | 5 | HOG-055, HOG-014 |
 
 ## ✅ Done
 | ID | Título | Épica | Prio | Pts | Depende de |
@@ -44,6 +46,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-011 | Configurar Playwright con móviles, helpers de login y doble contexto | E00 | P0 | 3 | HOG-003, HOG-005, HOG-010 |
 | HOG-012 | Configurar CI en GitHub Actions | E00 | P1 | 3 | HOG-001, HOG-010, HOG-011 |
 | HOG-050 | Configurar Better Auth con email/username + contraseña, UUIDv7 y cookies entre subdominios | E01 | P0 | 5 | HOG-004, HOG-006, HOG-010 |
+| HOG-055 | Implementar el `AuthGuard` global, `@CurrentUser`, `@Public` y `GET /me` | E01 | P0 | 3 | HOG-050, HOG-006 |
 
 ---
 
@@ -59,11 +62,8 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ### Fase 1 · Núcleo — 36 tickets, 120 pts
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-053 | Crear las pantallas web de entrar, registro y recuperar contraseña | E01 | P0 | 5 | HOG-050, HOG-055, HOG-008 |
 | HOG-054 | Enviar los emails de verificación y de recuperación de contraseña con Resend | E01 | P0 | 3 | HOG-050, HOG-053 |
 | HOG-057 | Crear la CLI `create-owner` para el primer usuario administrador | E01 | P0 | 2 | HOG-050, HOG-058 |
-| HOG-101 | Implementar el `GroupMemberGuard` con caché de 60 s y 404 | E02 | P0 | 3 | HOG-055, HOG-004 |
-| HOG-150 | Crear el `RealtimeGateway` con autenticación en el handshake y salas de usuario y grupo | E03 | P0 | 5 | HOG-055, HOG-014 |
 | HOG-151 | Crear el `RealtimePublisher` y el catálogo tipado de eventos en `shared` | E03 | P0 | 3 | HOG-150, HOG-002, HOG-006 |
 | HOG-152 | Crear el `RealtimeProvider` web: despacho a la caché de Query, deduplicación, onda y reconexión | E03 | P0 | 5 | HOG-151, HOG-005, HOG-006, HOG-009, HOG-053 |
 | HOG-153 | Crear el `ActivityService` con escritura en transacción, *summaries* en español, `MaintenanceCron` y purga de retención | E03 | P0 | 3 | HOG-004, HOG-006, HOG-010, HOG-151 |

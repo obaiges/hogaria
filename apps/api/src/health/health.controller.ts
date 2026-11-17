@@ -1,12 +1,14 @@
 import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
 import { z } from 'zod';
 
+import { Public } from '../common/auth/decorators.js';
 import { RateLimit } from '../common/security/rate-limit.js';
 import { ApiContract } from '../openapi/api-contract.decorator.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 const healthResponse = z.object({ status: z.literal('ok') });
 
+@Public()
 @Controller('health')
 export class HealthController {
   constructor(private readonly prisma: PrismaService) {}

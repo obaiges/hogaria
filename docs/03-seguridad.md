@@ -49,7 +49,7 @@ flowchart TD
 ## Autorización
 
 ### Capas
-1. **`AuthGuard` global:** toda ruta exige sesión salvo las marcadas con `@Public()` (health, la validación pública de invitaciones y `/api/auth/*`).
+1. **`AuthGuard` global:** toda ruta exige sesión salvo las marcadas con `@Public()` (health, la validación pública de invitaciones y `/api/auth/*`). Implementación (HOG-055, `apps/api/src/common/auth/`): `auth.api.getSession()` una vez por petición, sin caché; sin sesión → `401 UNAUTHENTICATED`; `blockedAt` → `403 ACCOUNT_BLOCKED` (`isPlatformAdmin` y `blockedAt` viajan en la sesión como `user.additionalFields` de Better Auth, con `input: false`). Rellena `@CurrentUser()` (`{ id, name, email, isPlatformAdmin, sessionId }`) y el `RequestContext`. Va registrado **antes** que el throttler para que este cuente por usuario. Los endpoints de test-support (solo con `NODE_ENV=test`) también son `@Public()`.
 2. **`GroupMemberGuard`:** todas las rutas `/api/v1/groups/:groupId/**` comprueban que exista un `GroupMember(groupId, user.id)`. Si no existe, devuelven **404** (no 403), para no revelar que el grupo existe. El resultado se cachea en memoria 60 s por (userId, groupId) y se invalida al salir o expulsar.
 3. **Propiedad:** para `CalendarEvent`, `Expense`, `Budget`, `WorkSchedule*`, `WorkShiftOverride`, `DietProfile` y `AiConversation`, el servicio comprueba `ownerId`/`userId === user.id` antes de modificar. Si falla, `403 FORBIDDEN_NOT_OWNER`.
 4. **Ámbito en las consultas:** toda consulta Prisma de datos de grupo incluye `where: { groupId }`. Se buscan por `id` **y** `groupId` a la vez (`findFirst({ where: { id, groupId } })`), nunca solo por `id`.

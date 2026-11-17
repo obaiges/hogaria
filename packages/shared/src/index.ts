@@ -4,4 +4,5 @@ export * from './errors.js';
 export * from './money.js';
 export * from './realtime.js';
 export * from './schemas/auth.js';
+export * from './schemas/me.js';
 export * from './schemas/pagination.js';

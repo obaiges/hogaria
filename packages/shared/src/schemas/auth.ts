@@ -22,7 +22,7 @@ export const emailSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .pipe(z.email('Escribe un email válido'));
+  .pipe(z.email('Escribe un email válido').max(254, 'El email es demasiado largo'));
 
 /**
  * RN-01-09: 3–30 caracteres, solo letras, números, `_` y `.`, sin empezar ni acabar
@@ -65,8 +65,8 @@ export type SignUpInput = z.infer<typeof signUpInput>;
  * `/sign-in/email` si `identifier` contiene `@` y a `/sign-in/username` si no.
  */
 export const signInInput = z.object({
-  identifier: z.string().trim().min(1, 'Escribe tu email o tu nombre de usuario'),
-  password: z.string().min(1, 'Escribe tu contraseña'),
+  identifier: z.string().trim().min(1, 'Escribe tu email o tu nombre de usuario').max(254),
+  password: z.string().min(1, 'Escribe tu contraseña').max(PASSWORD_MAX_LENGTH),
 });
 export type SignInInput = z.infer<typeof signInInput>;
 

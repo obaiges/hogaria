@@ -2,10 +2,13 @@ import { Body, Controller, Module, Post } from '@nestjs/common';
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
+import { Public } from '../src/common/auth/decorators.js';
 import { createTestApp, type TestApp } from './utils/create-test-app.js';
 
 const APP_ORIGIN = 'https://hogaria.test'; // APP_URL de test/setup.ts
 
+// Pública: aquí se prueban CORS, Origin y el cuerpo, no la sesión (HOG-055).
+@Public()
 @Controller('security-test')
 class EchoController {
   @Post()

@@ -7,6 +7,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 
 import { AuthModule } from './auth/auth.module.js';
+import { AuthGuard } from './common/auth/auth.guard.js';
 import { requestContextMiddleware } from './common/context/request-context.js';
 import { ProblemDetailsFilter } from './common/filters/problem-details.filter.js';
 import { OriginCheckMiddleware } from './common/security/origin-check.middleware.js';
@@ -14,6 +15,7 @@ import { AppThrottlerGuard, DEFAULT_RATE_LIMIT } from './common/security/rate-li
 import { validateEnv } from './config/env.js';
 import { ExternalServicesModule } from './external-services.module.js';
 import { HealthModule } from './health/health.module.js';
+import { MeModule } from './me/me.module.js';
 import { OpenApiModule } from './openapi/openapi.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { TestSupportModule } from './test-support/test-support.module.js';
@@ -47,12 +49,15 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     ExternalServicesModule,
     AuthModule,
     HealthModule,
+    MeModule,
     OpenApiModule,
     // Solo con NODE_ENV=test (e2e, HOG-011); vacío en desarrollo y producción.
     TestSupportModule.forEnv(),
   ],
   providers: [
     { provide: APP_FILTER, useClass: ProblemDetailsFilter },
+    // Orden: primero la sesión (rellena userId), después el throttler (cuenta por usuario).
+    { provide: APP_GUARD, useClass: AuthGuard },
     { provide: APP_GUARD, useClass: AppThrottlerGuard },
   ],
 })
