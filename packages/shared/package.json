@@ -12,6 +12,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./common-passwords": {
+      "types": "./dist/auth/common-passwords.d.ts",
+      "import": "./dist/auth/common-passwords.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [

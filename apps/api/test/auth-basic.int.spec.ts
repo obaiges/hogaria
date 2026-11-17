@@ -53,11 +53,13 @@ describe('Better Auth básico (HOG-050)', () => {
     expect(link.searchParams.get('callbackURL')).toBe(`${ORIGIN}/`);
   });
 
-  it('rechaza un username no válido y una contraseña corta', async () => {
+  it('rechaza un username no válido y una contraseña corta con 422 VALIDATION_ERROR (spec 01 §5.1)', async () => {
     const bad = await signUp({ name: 'X', email: 'x@demo.local', username: '.mal', password: PASSWORD });
-    expect(bad.status).toBe(400);
+    expect(bad.status).toBe(422);
+    expect(bad.body).toMatchObject({ code: 'VALIDATION_ERROR', message: expect.stringContaining('sin empezar ni acabar en punto') });
     const short = await signUp({ name: 'X', email: 'y@demo.local', username: 'valido', password: 'corta' });
-    expect(short.status).toBe(400);
+    expect(short.status).toBe(422);
+    expect(short.body.message).toBe('La contraseña debe tener al menos 10 caracteres');
     expect(await prisma.user.count()).toBe(0);
   });
 
@@ -127,6 +129,7 @@ describe('cookies entre subdominios (COOKIE_DOMAIN)', () => {
     const auth = createAuth({
       prisma,
       emailSender: new FakeEmailSender(),
+      securityEvents: { record: () => Promise.resolve() },
       env: { NODE_ENV: 'test', APP_URL: ORIGIN, COOKIE_DOMAIN: '.hogaria.test' },
     });
     const app = express();

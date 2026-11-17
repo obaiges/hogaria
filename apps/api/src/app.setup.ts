@@ -4,13 +4,14 @@ import helmet from 'helmet';
 
 
 import { API_PREFIX } from './app.constants.js';
+import { CLIENT_IP_HEADER } from './auth/auth-hooks.js';
 import { AUTH, AUTH_BASE_PATH, type Auth } from './auth/auth.js';
 import { getAllowedOrigins } from './common/security/allowed-origins.js';
 import { bodyParserErrorHandler, jsonBodyParser } from './common/security/body-parser.js';
 import { setupApiDocs } from './openapi/api-docs.js';
 
 import type { INestApplication } from '@nestjs/common';
-import type { Express } from 'express';
+import type { Express, NextFunction, Request, Response } from 'express';
 
 export { API_PREFIX };
 
@@ -47,7 +48,13 @@ export function configureApp(app: INestApplication, options: ConfigureAppOptions
   // Better Auth en /api/auth/* ANTES de cualquier parser de cuerpo: lee el cuerpo él
   // mismo. `all()` y no `use()`, porque `use()` recortaría el prefijo de req.url.
   const auth = app.get<Auth>(AUTH);
-  (app.getHttpAdapter().getInstance() as Express).all(`${AUTH_BASE_PATH}/{*splat}`, toNodeHandler(auth));
+  // IP real para los límites y las sesiones: siempre desde req.ip (trust proxy), nunca la
+  // cabecera que mande el cliente.
+  const setClientIp = (req: Request, _res: Response, next: NextFunction) => {
+    req.headers[CLIENT_IP_HEADER] = req.ip ?? 'unknown';
+    next();
+  };
+  (app.getHttpAdapter().getInstance() as Express).all(`${AUTH_BASE_PATH}/{*splat}`, setClientIp, toNodeHandler(auth));
 
   app.use(`/${API_PREFIX}`, jsonBodyParser, bodyParserErrorHandler);
   app.setGlobalPrefix(API_PREFIX);

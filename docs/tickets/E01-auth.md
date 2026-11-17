@@ -239,13 +239,13 @@ Permitir crear desde la consola el usuario dueño de la instancia (sin invitaci�
 Proteger `/api/auth/*` contra fuerza bruta y abuso, registrar los eventos de seguridad y aplicar en el servidor la política de contraseñas compartida.
 
 **Criterios de aceptación**
-- [ ] `packages/shared`: `checkPasswordPolicy(password, { email, username })` y la lista de 10 000 contraseñas comunes en `src/auth/common-passwords.ts`, exportada como subruta `@hogaria/shared/common-passwords` (no entra en el *bundle* principal de la web).
-- [ ] Hook `before` de Better Auth en `/sign-up/email`, `/reset-password` y `/change-password` que aplica la política y responde `422 VALIDATION_ERROR` con el mensaje de la spec.
-- [ ] `apps/api/src/auth/login-rate-limiter.ts` (en memoria): 5 fallos/min por IP+identificador y 20 fallos/h por identificador; éxito reinicia el contador de IP+identificador; al superarlo, `429 RATE_LIMITED` con `Retry-After`.
-- [ ] Límites de RN-01-27 para `/sign-up/email`, `/request-password-reset`, `/send-verification-email` y el resto de `/api/auth/*`.
-- [ ] `SecurityEventService.record(type, { userId?, identifier?, ip, userAgent })` y registro de `LOGIN_SUCCESS`, `LOGIN_FAILED`, `LOGOUT`, `PASSWORD_CHANGED` (RN-01-28) desde hooks `after`.
-- [ ] Bloqueo: `databaseHooks.session.create.before` rechaza a usuarios con `blockedAt` (`403 ACCOUNT_BLOCKED`).
-- [ ] La web (`SignInPage`) muestra "Demasiados intentos. Vuelve a intentarlo en {n} min." y "Tu cuenta está bloqueada. Habla con el administrador.".
+- [x] `packages/shared`: `checkPasswordPolicy(password, { email, username })` y la lista de 10 000 contraseñas comunes en `src/auth/common-passwords.ts`, exportada como subruta `@hogaria/shared/common-passwords` (no entra en el *bundle* principal de la web).
+- [x] Hook `before` de Better Auth en `/sign-up/email`, `/reset-password` y `/change-password` que aplica la política y responde `422 VALIDATION_ERROR` con el mensaje de la spec.
+- [x] `apps/api/src/auth/login-rate-limiter.ts` (en memoria): 5 fallos/min por IP+identificador y 20 fallos/h por identificador; éxito reinicia el contador de IP+identificador; al superarlo, `429 RATE_LIMITED` con `Retry-After`.
+- [x] Límites de RN-01-27 para `/sign-up/email`, `/request-password-reset`, `/send-verification-email` y el resto de `/api/auth/*`.
+- [x] `SecurityEventService.record(type, { userId?, identifier?, ip, userAgent })` y registro de `LOGIN_SUCCESS`, `LOGIN_FAILED`, `LOGOUT`, `PASSWORD_CHANGED` (RN-01-28) desde hooks `after`.
+- [x] Bloqueo: `databaseHooks.session.create.before` rechaza a usuarios con `blockedAt` (`403 ACCOUNT_BLOCKED`).
+- [x] La web (`SignInPage`) muestra "Demasiados intentos. Vuelve a intentarlo en {n} min." y "Tu cuenta está bloqueada. Habla con el administrador.". _(Hecho en `apps/web/src/features/auth/auth-errors.ts` con `signInErrorMessage`; la pantalla `SignInPage` es de HOG-053 y debe usarlo.)_
 
 **Notas técnicas**
 - IP real tras Caddy: `app.set('trust proxy', 1)` y `advanced.ipAddress.ipAddressHeaders: ['x-forwarded-for']`.

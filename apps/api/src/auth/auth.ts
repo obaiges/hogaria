@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { APIError } from 'better-auth/api';
 import { username } from 'better-auth/plugins';
 
 import {
@@ -11,8 +12,12 @@ import {
 } from '@hogaria/shared';
 
 import { uuidv7 } from '../common/ids/uuidv7.js';
+import { CLIENT_IP_HEADER, createAuthHooks } from './auth-hooks.js';
+import { AuthRequestLimiter } from './rate-limit/auth-request-limiter.js';
+import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
 
 import type { EmailSender } from '../email/email-sender.js';
+import type { SecurityEventRecorder } from '../security-events/security-event.service.js';
 import type { PrismaClient } from '@prisma/client';
 
 export const AUTH = Symbol('AUTH');
@@ -38,7 +43,11 @@ export interface AuthEnv {
 export interface AuthDeps {
   prisma: PrismaClient;
   emailSender: EmailSender;
+  securityEvents: SecurityEventRecorder;
   env: AuthEnv;
+  /** Por defecto, nuevos (en memoria). Los tests pueden pasar los suyos. */
+  loginLimiter?: LoginRateLimiter;
+  requestLimiter?: AuthRequestLimiter;
 }
 
 function origin(url: string | undefined): string | undefined {
@@ -68,9 +77,15 @@ export function withAppCallback(url: string, appUrl: string | undefined): string
  * Es una factoría (no un `auth` global) para que Nest le inyecte Prisma y el
  * `EmailSender` (en test, `FakeEmailSender`). Se registra con el token `AUTH`.
  */
-export function createAuth({ prisma, emailSender, env }: AuthDeps) {
+export function createAuth({ prisma, emailSender, securityEvents, env, loginLimiter, requestLimiter }: AuthDeps) {
   const appOrigin = origin(env.APP_URL);
   const cookieDomain = env.COOKIE_DOMAIN?.trim();
+  const hooks = createAuthHooks({
+    prisma,
+    securityEvents,
+    loginLimiter: loginLimiter ?? new LoginRateLimiter(),
+    requestLimiter: requestLimiter ?? new AuthRequestLimiter(),
+  });
 
   return betterAuth({
     appName: 'Hogaria',
@@ -82,6 +97,9 @@ export function createAuth({ prisma, emailSender, env }: AuthDeps) {
     database: prismaAdapter(prisma, { provider: 'postgresql' }),
     trustedOrigins: appOrigin ? [appOrigin] : [],
     telemetry: { enabled: false },
+    // Los límites de /api/auth/* son los nuestros (RN-01-26/27, auth-hooks.ts).
+    rateLimit: { enabled: false },
+    hooks,
 
     // Campos propios de Hogaria que viajan con la sesión (el AuthGuard los usa sin otra
     // consulta). `input: false`: nadie puede fijarlos desde el registro.
@@ -97,6 +115,13 @@ export function createAuth({ prisma, emailSender, env }: AuthDeps) {
       minPasswordLength: PASSWORD_MIN_LENGTH,
       maxPasswordLength: PASSWORD_MAX_LENGTH,
       requireEmailVerification: true,
+      onPasswordReset: async ({ user }, request) => {
+        await securityEvents.record('PASSWORD_CHANGED', {
+          userId: user.id,
+          ip: request?.headers.get(CLIENT_IP_HEADER) ?? null,
+          userAgent: request?.headers.get('user-agent') ?? null,
+        });
+      },
     },
     emailVerification: {
       sendOnSignUp: true,
@@ -123,6 +148,20 @@ export function createAuth({ prisma, emailSender, env }: AuthDeps) {
       }),
     ],
 
+    databaseHooks: {
+      session: {
+        create: {
+          // RN-01-25: un usuario bloqueado no puede crear sesión.
+          before: async (session) => {
+            const user = await prisma.user.findUnique({ where: { id: session.userId }, select: { blockedAt: true } });
+            if (user?.blockedAt) {
+              throw new APIError('FORBIDDEN', { code: 'ACCOUNT_BLOCKED', message: 'Tu cuenta está bloqueada. Habla con el administrador.' });
+            }
+          },
+        },
+      },
+    },
+
     session: {
       expiresIn: SESSION_EXPIRES_IN_S,
       updateAge: SESSION_UPDATE_AGE_S,
@@ -136,6 +175,8 @@ export function createAuth({ prisma, emailSender, env }: AuthDeps) {
       defaultCookieAttributes: { httpOnly: true, sameSite: 'lax' },
       crossSubDomainCookies: cookieDomain ? { enabled: true, domain: cookieDomain } : { enabled: false },
       database: { generateId: () => uuidv7() },
+      // IP real del cliente (configureApp la pone desde req.ip, con trust proxy).
+      ipAddress: { ipAddressHeaders: [CLIENT_IP_HEADER] },
     },
   });
 }
