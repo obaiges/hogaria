@@ -49,6 +49,16 @@
 | `PUSH_SENDER` | `PushSender.send(subscription, payload)`, `sendToUser(userId, payload)` | `FakeWebPushSender` (alias `FakePushSender`): `sent`, `setSubscriptions()`, `failWith(endpoint, 'gone' \| 'error')` | HOG-604 (hasta entonces `DisabledPushSender`) |
 | `GEMINI_CLIENT` | `GeminiClient.generateStructured({ feature, prompt, schema, … })` | `FakeGeminiClient`: lee `test/fixtures/ai/<nombre>.json` (`{ data, model?, inputTokens?, outputTokens? }`), por defecto `<feature>.ok` (`FRIDGE_DETECT` → `fridge-detect.ok`); `useFixture()`, `failNext()`, `calls`; valida `data` con el `schema` | HOG-650 (hasta entonces `503 AI_UNAVAILABLE`) |
 
+### E2E (`apps/web/e2e`, Playwright)
+
+- `pnpm test:e2e` (o `pnpm --filter @hogaria/web test:e2e`). Proyectos `Pixel 7` y `iPhone 14` (dispositivos de Playwright, sin tamaños a mano); trazas `on-first-retry`; un worker porque la BBDD de test es compartida.
+- Navegadores: `pnpm --filter @hogaria/web exec playwright install chromium webkit` (una vez por máquina).
+- `webServer` levanta dos servidores en puertos propios (no chocan con `pnpm dev`):
+  - **API** en `:3100` con `apps/api/scripts/e2e-server.ts`: resuelve la BBDD de test como los tests de integración (`TEST_DATABASE_URL` → `apps/api/.env.test` → `:5433`, siempre `*_test`), aplica `prisma migrate deploy` (no borra nada), compila y arranca con `NODE_ENV=test` (fakes + test-support).
+  - **Web** en `:4173`: `vite build` + `vite preview` con `VITE_API_URL=http://localhost:3100` (orígenes distintos, como en producción).
+- Endpoints de apoyo (`apps/api/src/test-support/`, el módulo solo existe con `NODE_ENV=test`; en desarrollo y producción dan 404): `GET /api/v1/test/emails?to=`, `POST /api/v1/test/reset` (trunca y vacía los emails), `POST /api/v1/test/users` (`{ name?, email?, username?, password?, isPlatformAdmin?, group?: { name? }, joinGroupId? }` → `{ userId, email, username, password, groupId, laneColor }`). Sin rate limit.
+- Helpers (`apps/web/e2e/helpers`): `resetDb()`, `createUser(opts)`, `lastEmailLink(to)`, `loginAs(page, user)` (lanza "Not implemented" hasta HOG-050) y `twoMembers(browser, { login? })` → `{ a: { page, context, user }, b: …, groupId, close }`, dos contextos independientes del mismo hogar con el dispositivo del proyecto. Hasta HOG-050, `twoMembers` solo funciona con `login: false`.
+
 ### Web (`apps/web`)
 
 - `src/test/msw.ts`: servidor MSW compartido, arrancado en `src/test/setup.ts` con `onUnhandledFrame: 'error'` (una petición sin respuesta definida hace fallar el test). Cada test añade las suyas con `server.use(http.get(apiUrl('/x'), () => HttpResponse.json(…)))`; se limpian después de cada test.

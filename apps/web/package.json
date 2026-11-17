@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint --max-warnings=0 .",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@fontsource/barlow": "5.2.7",
@@ -33,6 +34,7 @@
   },
   "devDependencies": {
     "@hogaria/config": "workspace:*",
+    "@playwright/test": "1.65.0",
     "@tailwindcss/vite": "4.3.5",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.0",
