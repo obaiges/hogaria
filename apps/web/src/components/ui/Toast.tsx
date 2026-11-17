@@ -5,11 +5,16 @@ export interface ToastItem {
   message: string;
   actionLabel?: string;
   onAction?: () => void;
+  /** No se cierra solo (p. ej. "Hay una versión nueva"); por defecto dura 5 s. */
+  persistent?: boolean;
 }
+
+export const TOAST_DURATION_MS = 5000;
 
 interface ToastState {
   toasts: ToastItem[];
-  add: (toast: Omit<ToastItem, "id">) => void;
+  /** Devuelve el id del toast, para poder cerrarlo con `remove`. */
+  add: (toast: Omit<ToastItem, "id">) => string;
   remove: (id: string) => void;
 }
 
@@ -18,7 +23,10 @@ export const useToastStore = create<ToastState>((set) => ({
   add: (toast) => {
     const id = crypto.randomUUID();
     set((s) => ({ toasts: [...s.toasts, { ...toast, id }] }));
-    setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), 5000);
+    if (!toast.persistent) {
+      setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), TOAST_DURATION_MS);
+    }
+    return id;
   },
   remove: (id) => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })),
 }));

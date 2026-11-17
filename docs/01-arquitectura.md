@@ -92,7 +92,7 @@ Las versiones se fijan exactas en los `package.json` (sin `^`). Cuando un ticket
 | Markdown | `react-markdown` (render seguro del texto del asistente, sin HTML crudo) |
 | Auth | `better-auth/react` client |
 | Tiempo real | socket.io-client |
-| PWA | vite-plugin-pwa en modo `injectManifest` (service worker propio para el push) |
+| PWA | vite-plugin-pwa en modo `injectManifest` (service worker propio para el push). `sw.ts` solo precachea el *shell* (JS, CSS, HTML, iconos, logos y Barlow en woff2 latino), sirve `index.html` en las navegaciones de la SPA (salvo `/api` y `/realtime`) y no tiene caché en tiempo de ejecución (ADR-015). `registerType: 'prompt'`: `UpdatePrompt` muestra un toast persistente "Hay una versión nueva de Hogaria" → "Actualizar" (HOG-015) |
 | Tipografías | `@fontsource/barlow` y `@fontsource/barlow-condensed`, autoalojadas |
 
 ### Backend — `apps/api`

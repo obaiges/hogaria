@@ -19,6 +19,11 @@ export default defineConfig({
       filename: 'sw.ts',
       registerType: 'prompt',
       injectRegister: false,
+      injectManifest: {
+        // Shell (ADR-015): JS, CSS, HTML, iconos, logos y las fuentes Barlow en woff2 de los
+        // subconjuntos latinos (los navegadores que soportan service workers leen woff2).
+        globPatterns: ['**/*.{js,css,html,png,svg,webmanifest}', 'assets/barlow*-latin-*.woff2'],
+      },
       manifest: {
         name: 'Hogaria',
         short_name: 'Hogaria',

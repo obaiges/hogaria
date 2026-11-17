@@ -423,10 +423,10 @@ Añadir las cabeceras de seguridad, el CORS estricto con credenciales, la compro
 Completar `sw.ts` para que solo precachee el *shell* (arranque rápido, sin modo offline) y avisar al usuario cuando haya una versión nueva.
 
 **Criterios de aceptación**
-- [ ] `sw.ts` usa `precacheAndRoute(self.__WB_MANIFEST)` y **no** cachea respuestas de `/api` ni de `/realtime`.
-- [ ] Navegaciones a rutas de la SPA sirven `index.html` del precache.
-- [ ] Registro con `virtual:pwa-register` (`registerType: 'prompt'`): cuando hay versión nueva, toast persistente "Hay una versión nueva de Hogaria" con acción "Actualizar" (llama a `updateSW(true)`).
-- [ ] `sw.js` se sirve con `Cache-Control: no-cache` (regla en `_headers`, HOG-020).
+- [x] `sw.ts` usa `precacheAndRoute(self.__WB_MANIFEST)` y **no** cachea respuestas de `/api` ni de `/realtime`.
+- [x] Navegaciones a rutas de la SPA sirven `index.html` del precache.
+- [x] Registro con `virtual:pwa-register` (`registerType: 'prompt'`): cuando hay versión nueva, toast persistente "Hay una versión nueva de Hogaria" con acción "Actualizar" (llama a `updateSW(true)`).
+- [x] `sw.js` se sirve con `Cache-Control: no-cache` (regla en `_headers`, HOG-020).
 
 **Notas técnicas**
 - Los manejadores `push` y `notificationclick` los añade HOG-600 en el mismo `sw.ts`.

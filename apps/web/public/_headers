@@ -1,0 +1,6 @@
+# Cabeceras de Cloudflare Pages. El resto de reglas (seguridad, caché de assets, CSP)
+# las añade HOG-020.
+
+# El service worker se revalida siempre para que las versiones nuevas lleguen (HOG-015).
+/sw.js
+  Cache-Control: no-cache
