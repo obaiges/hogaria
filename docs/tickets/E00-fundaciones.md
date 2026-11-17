@@ -368,11 +368,11 @@ Crear `.github/workflows/ci.yml` con los trabajos `checks` y `e2e` en cada push 
 Crear `apps/api/prisma/seed.ts` con el **seed mínimo** para el desarrollo local: el usuario dueño de la instancia y un hogar con 2 miembros y su semilla, para probar la app sin pasar por invitaciones. Los datos de demo de todos los módulos los añade HOG-865 ampliando este mismo script.
 
 **Criterios de aceptación**
-- [ ] Crea el usuario dueño `ana@demo.local` (`ana`, `isPlatformAdmin = true`) y un segundo usuario `oscar@demo.local` (`oscar`), ambos con contraseña `hogaria-demo-1234`, `emailVerified = true` y cuenta `credential`.
-- [ ] Crea el hogar "Casa Demo" 🏠 con ambos miembros (CORAL y SEA), la lista "Compra" y las 9 categorías de gasto.
-- [ ] Es idempotente (si existen, no duplica) y se niega a ejecutarse con `NODE_ENV=production`.
-- [ ] No crea datos de módulos (compra, tareas, recetas…): eso es HOG-865.
-- [ ] El script queda estructurado en funciones (`seedUsers()`, `seedGroup()`) para que HOG-865 añada `seedModules()` sin reescribirlo.
+- [x] Crea el usuario dueño `ana@demo.local` (`ana`, `isPlatformAdmin = true`) y un segundo usuario `oscar@demo.local` (`oscar`), ambos con contraseña `hogaria-demo-1234`, `emailVerified = true` y cuenta `credential`.
+- [x] Crea el hogar "Casa Demo" 🏠 con ambos miembros (CORAL y SEA), la lista "Compra" y las 9 categorías de gasto.
+- [x] Es idempotente (si existen, no duplica) y se niega a ejecutarse con `NODE_ENV=production`.
+- [x] No crea datos de módulos (compra, tareas, recetas…): eso es HOG-865.
+- [x] El script queda estructurado en funciones (`seedUsers()`, `seedGroup()`) para que HOG-865 añada `seedModules()` sin reescribirlo.
 
 **Notas técnicas**
 - Hash con `hashPassword` de `better-auth/crypto`. Nada de secretos reales.

@@ -110,6 +110,8 @@ LOG_LEVEL=info
 
 La API **no arranca** si falta una variable obligatoria; en particular, si `GEMINI_MODEL` está vacío (spec 13, RN-13-01).
 
+**Seed de desarrollo** (`pnpm db:seed`, HOG-013): crea `ana@demo.local` y `oscar@demo.local` con la contraseña `hogaria-demo-1234` y el hogar "Casa Demo". Se niega con `NODE_ENV=production` y contra cualquier BBDD que no sea local (`localhost`, `db`…), por ejemplo Neon, salvo que se ejecute con `SEED_ALLOW_REMOTE=true`. **Nunca** lo uses en producción.
+
 ### Web (`apps/web/.env.example`)
 ```bash
 VITE_API_URL=http://localhost:3000
