@@ -2,9 +2,12 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import pg from 'pg';
 
+import { truncateAllTables } from '../../src/test-support/truncate.js';
+
+export { listTables } from '../../src/test-support/truncate.js';
+
 let pool: pg.Pool | undefined;
 let client: PrismaClient | undefined;
-let tables: string[] | undefined;
 
 /** Cliente Prisma de los tests (factories y comprobaciones), contra `hogaria_test`. */
 export function getTestPrisma(): PrismaClient {
@@ -17,27 +20,9 @@ export function getTestPrisma(): PrismaClient {
   return client;
 }
 
-/**
- * Tablas del esquema `public` creadas por las migraciones (es decir, por el esquema
- * Prisma), salvo la tabla de control de Prisma. Se calcula una vez por proceso.
- */
-export async function listTables(prisma: PrismaClient = getTestPrisma()): Promise<string[]> {
-  if (!tables) {
-    const rows = await prisma.$queryRaw<{ tablename: string }[]>`
-      SELECT tablename FROM pg_tables
-      WHERE schemaname = 'public' AND tablename <> '_prisma_migrations'
-      ORDER BY tablename`;
-    tables = rows.map((r) => r.tablename);
-  }
-  return tables;
-}
-
 /** `TRUNCATE … RESTART IDENTITY CASCADE` de todas las tablas: cada test empieza con la BBDD vacía. */
 export async function truncateAll(prisma: PrismaClient = getTestPrisma()): Promise<void> {
-  const names = await listTables(prisma);
-  if (names.length === 0) return;
-  const list = names.map((t) => `"public"."${t.replace(/"/g, '""')}"`).join(', ');
-  await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${list} RESTART IDENTITY CASCADE`);
+  await truncateAllTables(prisma);
 }
 
 export async function disconnectTestPrisma(): Promise<void> {

@@ -313,10 +313,10 @@ Configurar Vitest en los tres paquetes, la BBDD de test con reseteo y truncado, 
 Preparar los e2e en `apps/web/e2e/` con los proyectos Mobile Chrome (Pixel 7) y Mobile Safari (iPhone 14), arranque automático de web y API contra la BBDD de test, endpoints de soporte solo para test y helpers reutilizables.
 
 **Criterios de aceptación**
-- [ ] `playwright.config.ts` con proyectos `Pixel 7` y `iPhone 14`, `webServer` que levanta API (`NODE_ENV=test`, BBDD `hogaria_test`) y web, trazas `on-first-retry`.
-- [ ] `apps/api/src/test-support/` (módulo cargado **solo** si `NODE_ENV=test`): `GET /api/v1/test/emails?to=` (emails del `FakeEmailSender`), `POST /api/v1/test/reset` (trunca tablas), `POST /api/v1/test/users` (crea usuario verificado con contraseña y, opcionalmente, un grupo; devuelve ids). Test de integración que comprueba que no existen con `NODE_ENV=production`.
-- [ ] Helpers en `apps/web/e2e/helpers/`: `resetDb()`, `createUser()`, `loginAs(page, user)` (vía UI o cookie de la API), `lastEmailLink(to)`, `twoMembers(browser)` → `{ a: { page, user }, b: { page, user }, groupId }` con dos contextos independientes.
-- [ ] `pnpm test:e2e` ejecuta un test de humo que abre `/` en ambos proyectos.
+- [x] `playwright.config.ts` con proyectos `Pixel 7` y `iPhone 14`, `webServer` que levanta API (`NODE_ENV=test`, BBDD `hogaria_test`) y web, trazas `on-first-retry`.
+- [x] `apps/api/src/test-support/` (módulo cargado **solo** si `NODE_ENV=test`): `GET /api/v1/test/emails?to=` (emails del `FakeEmailSender`), `POST /api/v1/test/reset` (trunca tablas), `POST /api/v1/test/users` (crea usuario verificado con contraseña y, opcionalmente, un grupo; devuelve ids). Test de integración que comprueba que no existen con `NODE_ENV=production`.
+- [x] Helpers en `apps/web/e2e/helpers/`: `resetDb()`, `createUser()`, `loginAs(page, user)` (vía UI o cookie de la API), `lastEmailLink(to)`, `twoMembers(browser)` → `{ a: { page, user }, b: { page, user }, groupId }` con dos contextos independientes.
+- [x] `pnpm test:e2e` ejecuta un test de humo que abre `/` en ambos proyectos.
 
 **Notas técnicas**
 - `POST /test/users` usa el mismo hash que Better Auth (`hashPassword` de `better-auth/crypto`) para que el login real funcione.
@@ -337,14 +337,14 @@ Preparar los e2e en `apps/web/e2e/` con los proyectos Mobile Chrome (Pixel 7) y 
 - **Spec:** `docs/07-testing.md#ci-github-actions`
 
 **Descripción**
-Crear `.github/workflows/ci.yml` con los trabajos `checks` y `e2e` en cada push y pull request, y la auditoría de dependencias.
+Crear `.github/workflows/ci.yml` con los trabajos `checks` (en cada push y pull request) y `e2e` (solo en pull requests hacia `main` y en push a `main`, spec 17 RN-17-10), y la auditoría de dependencias.
 
 **Criterios de aceptación**
-- [ ] Job `checks`: `pnpm install --frozen-lockfile` → `lint` → `typecheck` → `test` (con servicio `postgres:17` en el puerto 5433 y `hogaria_test`), con caché de pnpm y Turborepo.
-- [ ] Job `e2e` (`needs: checks`): instala navegadores de Playwright, construye web y API y ejecuta `pnpm test:e2e`; si falla, sube `playwright-report` y trazas como artefactos.
-- [ ] Paso `pnpm audit --audit-level=high` (no bloqueante al principio: `continue-on-error: true`, anotado).
-- [ ] Dependabot (`.github/dependabot.yml`) semanal para npm y GitHub Actions.
-- [ ] Ninguna clave real en el workflow: los tests usan los *fakes*.
+- [x] Job `checks`: `pnpm install --frozen-lockfile` → `lint` → `typecheck` → `test` (con servicio `postgres:17` en el puerto 5433 y `hogaria_test`), con caché de pnpm y Turborepo.
+- [x] Job `e2e` (`needs: checks`): instala navegadores de Playwright, construye web y API y ejecuta `pnpm test:e2e`; si falla, sube `playwright-report` y trazas como artefactos.
+- [x] Paso `pnpm audit --audit-level=high` (no bloqueante al principio: `continue-on-error: true`, anotado).
+- [x] Dependabot (`.github/dependabot.yml`) semanal para npm y GitHub Actions.
+- [x] Ninguna clave real en el workflow: los tests usan los *fakes*.
 
 **Notas técnicas**
 - El job `deploy` lo añade HOG-022.

@@ -15,6 +15,7 @@ import { ExternalServicesModule } from './external-services.module.js';
 import { HealthModule } from './health/health.module.js';
 import { OpenApiModule } from './openapi/openapi.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { TestSupportModule } from './test-support/test-support.module.js';
 
 import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
 
@@ -45,6 +46,8 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     ExternalServicesModule,
     HealthModule,
     OpenApiModule,
+    // Solo con NODE_ENV=test (e2e, HOG-011); vacío en desarrollo y producción.
+    TestSupportModule.forEnv(),
   ],
   providers: [
     { provide: APP_FILTER, useClass: ProblemDetailsFilter },

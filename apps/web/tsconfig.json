@@ -9,5 +9,5 @@
     "types": ["vite/client", "vitest/globals"],
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src", "vite.config.ts", "vitest.config.ts", "e2e"]
+  "include": ["src", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", "e2e"]
 }

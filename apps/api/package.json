@@ -18,7 +18,8 @@
     "db:seed": "node prisma/seed.ts",
     "postinstall": "prisma generate",
     "test:unit": "vitest run --project unit",
-    "test:int": "vitest run --project integration"
+    "test:int": "vitest run --project integration",
+    "e2e:server": "node scripts/e2e-server.ts"
   },
   "dependencies": {
     "@hogaria/shared": "workspace:*",
