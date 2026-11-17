@@ -50,7 +50,7 @@ jobs:
           cache: pnpm
 
       - name: Caché de Turborepo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .turbo
           key: turbo-checks-${{ runner.os }}-${{ github.sha }}
@@ -103,7 +103,7 @@ jobs:
           cache: pnpm
 
       - name: Caché de Turborepo
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .turbo
           key: turbo-e2e-${{ runner.os }}-${{ github.sha }}
@@ -117,7 +117,7 @@ jobs:
 
       - name: Caché de los navegadores de Playwright
         id: browsers
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}
