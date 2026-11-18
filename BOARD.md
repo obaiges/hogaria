@@ -23,9 +23,9 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
 | HOG-057 | Crear la CLI `create-owner` para el primer usuario administrador | E01 | P0 | 2 | HOG-050, HOG-058 |
 | HOG-054 | Enviar los emails de verificación y de recuperación de contraseña con Resend | E01 | P0 | 3 | HOG-050, HOG-053 |
-| HOG-152 | Crear el `RealtimeProvider` web: despacho a la caché de Query, deduplicación, onda y reconexión | E03 | P0 | 5 | HOG-151, HOG-005, HOG-006, HOG-009, HOG-053 |
 | HOG-153 | Crear el `ActivityService` con escritura en transacción, *summaries* en español, `MaintenanceCron` y purga de retención | E03 | P0 | 3 | HOG-004, HOG-006, HOG-010, HOG-151 |
 | HOG-056 | Gestionar sesiones: listar, cerrar una, cerrar las demás y cerrar sesión, con `session.revoked` | E01 | P1 | 5 | HOG-053, HOG-055, HOG-150, HOG-151 |
+| HOG-155 | Mostrar el banner de sin conexión y bloquear la edición | E03 | P0 | 3 | HOG-152, HOG-008, HOG-009 |
 
 ## ✅ Done
 | ID | Título | Épica | Prio | Pts | Depende de |
@@ -53,6 +53,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-101 | Implementar el `GroupMemberGuard` con caché de 60 s y 404 | E02 | P0 | 3 | HOG-055, HOG-004 |
 | HOG-150 | Crear el `RealtimeGateway` con autenticación en el handshake y salas de usuario y grupo | E03 | P0 | 5 | HOG-055, HOG-014 |
 
+| HOG-152 | Crear el `RealtimeProvider` web: despacho a la caché de Query, deduplicación, onda y reconexión | E03 | P0 | 5 | HOG-151, HOG-005, HOG-006, HOG-009, HOG-053 |
 | HOG-151 | Crear el `RealtimePublisher` y el catálogo tipado de eventos en `shared` | E03 | P0 | 3 | HOG-150, HOG-002, HOG-006 |
 ---
 
@@ -77,7 +78,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-108 | Crear la API de miembros: listar y cambiar el color de calle propio | E02 | P0 | 2 | HOG-100 |
 | HOG-105 | Crear los ajustes del grupo: datos del hogar, miembros, color de calle e invitaciones | E02 | P0 | 5 | HOG-102, HOG-107, HOG-108, HOG-009 |
 | HOG-106 | Implementar salir del grupo, expulsar a un miembro y borrar el grupo al salir el último | E02 | P0 | 5 | HOG-105, HOG-150, HOG-152 |
-| HOG-155 | Mostrar el banner de sin conexión y bloquear la edición | E03 | P0 | 3 | HOG-152, HOG-008, HOG-009 |
 | HOG-750 | Crear el AppShell con barra inferior, rutas y selector de hogar | E15 | P0 | 5 | HOG-005, HOG-007, HOG-008, HOG-009, HOG-104 |
 | HOG-751 | Crear la hoja "Más" | E15 | P0 | 2 | HOG-750 |
 | HOG-752 | Integrar el banner de sin conexión (HOG-155) en el AppShell | E15 | P0 | 1 | HOG-155, HOG-750 |
@@ -537,7 +537,7 @@ flowchart LR
 %% progreso (generado por scripts/board-progress.mjs)
   classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
   classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
-  class HOG050,HOG055,HOG053,HOG058,HOG101,HOG150,HOG151 done
+  class HOG050,HOG055,HOG053,HOG058,HOG101,HOG150,HOG151,HOG152 done
 ```
 
 ### Fase 2 · Compra + Tareas + Push

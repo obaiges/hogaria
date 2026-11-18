@@ -72,13 +72,13 @@ Crear el único punto de emisión de eventos, que construye el sobre con el acto
 Conectar la web al socket con un único proveedor que reparte cada evento al manejador de su feature, ignora los eventos de las mutaciones propias, marca la onda en los cambios de otros y se pone al día al reconectar.
 
 **Criterios de aceptación**
-- [ ] `apps/web/src/lib/socket.ts` (creación y destrucción del socket) y `app/providers/RealtimeProvider.tsx` montado en el layout autenticado; se desconecta al cerrar sesión.
-- [ ] `lib/realtime/mutation-registry.ts` (últimos 200, rellenado por `apiClient` antes de enviar).
-- [ ] `lib/realtime/dispatcher.ts` y `lib/realtime/handlers.ts` (`registerHandlers({ [event]: (envelope, ctx) => void })`, con `ctx = { queryClient, meId, markRipple }`); `NON_DEDUPED_EVENTS = ['activity.created', 'ai.quota.updated']`.
-- [ ] `lib/realtime/ripple-store.ts` (Zustand): `markRipple(entityKey, laneColor)` durante 1 000 ms y `useRipple(entityKey)`; solo si `actorId` es otro usuario; el color se resuelve con `['group', groupId, 'members']`.
-- [ ] Reconexión: en cada `connect` que no sea el primero, invalida `['group', activeGroupId]` y `['me', 'groups']` con refetch y el resto de `['group']` con `refetchType: 'none'`.
-- [ ] `connect_error` con `UNAUTHENTICATED`/`ACCOUNT_BLOCKED` → detiene la reconexión, limpia la caché y navega a `/entrar`.
-- [ ] Guía breve en el JSDoc de `handlers.ts`: cómo añade una feature sus manejadores (`features/<x>/realtime.ts`) y la regla de *updater* que no crea queries (RN-03-18).
+- [x] `apps/web/src/lib/socket.ts` (creación y destrucción del socket) y `app/providers/RealtimeProvider.tsx` montado en el layout autenticado; se desconecta al cerrar sesión.
+- [x] `lib/realtime/mutation-registry.ts` (últimos 200, rellenado por `apiClient` antes de enviar).
+- [x] `lib/realtime/dispatcher.ts` y `lib/realtime/handlers.ts` (`registerHandlers({ [event]: (envelope, ctx) => void })`, con `ctx = { queryClient, meId, markRipple }`); `NON_DEDUPED_EVENTS = ['activity.created', 'ai.quota.updated']`.
+- [x] `lib/realtime/ripple-store.ts` (Zustand): `markRipple(entityKey, laneColor)` durante 1 000 ms y `useRipple(entityKey)`; solo si `actorId` es otro usuario; el color se resuelve con `['group', groupId, 'members']`.
+- [x] Reconexión: en cada `connect` que no sea el primero, invalida `['group', activeGroupId]` y `['me', 'groups']` con refetch y el resto de `['group']` con `refetchType: 'none'`.
+- [x] `connect_error` con `UNAUTHENTICATED`/`ACCOUNT_BLOCKED` → detiene la reconexión, limpia la caché y navega a `/entrar`.
+- [x] Guía breve en el JSDoc de `handlers.ts`: cómo añade una feature sus manejadores (`features/<x>/realtime.ts`) y la regla de *updater* que no crea queries (RN-03-18).
 
 **Notas técnicas**
 - El estado de conexión y el banner son de HOG-155; aquí solo se exponen los eventos `connect`/`disconnect` al `connection-store` (stub).

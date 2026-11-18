@@ -10,6 +10,7 @@ import { ApiError, NetworkError } from "@/lib/apiClient";
 
 import { DevTokensPage } from "./pages/DevTokensPage";
 import { DevUiPage } from "./pages/DevUiPage";
+import { RealtimeProvider } from "./providers/RealtimeProvider";
 
 function Page({ title }: { title: string }) {
   return <h1>{title}</h1>;
@@ -86,7 +87,21 @@ export const routes: RouteObject[] = [
   {
     hydrateFallbackElement: <RouteFallback />,
     errorElement: <RouteError />,
-    children: [...publicRoutes, { id: "private", loader: requireAuthLoader(), element: <Outlet />, children: privateRoutes }, ...devRoutes],
+    children: [
+      ...publicRoutes,
+      {
+        id: "private",
+        loader: requireAuthLoader(),
+        // Socket en tiempo real solo con sesión (HOG-152).
+        element: (
+          <RealtimeProvider>
+            <Outlet />
+          </RealtimeProvider>
+        ),
+        children: privateRoutes,
+      },
+      ...devRoutes,
+    ],
   },
 ];
 

@@ -1,8 +1,14 @@
+/**
+ * Registro de las mutaciones propias (spec 03, RN-03-16). El `apiClient` añade cada
+ * `X-Client-Mutation-Id` **antes** de enviar la petición; el dispatcher ignora los
+ * eventos que traen uno de estos ids, porque la pestaña ya aplicó el cambio.
+ * Guarda los últimos `MAX_MUTATIONS` (cola circular + `Set`).
+ */
+export const MAX_MUTATIONS = 200;
+
 export const mutationRegistry = new Set<string>();
-const MAX_MUTATIONS = 200;
 const queue: string[] = [];
 
-/** Registra un clientMutationId antes de enviar la mutación (stub hasta HOG-152). */
 export function registerMutation(id: string): void {
   if (mutationRegistry.has(id)) return;
   mutationRegistry.add(id);
