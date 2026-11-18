@@ -2,6 +2,7 @@
  * Tiempo real (docs/04-api-y-tiempo-real.md §Tiempo real).
  * Todos los eventos viajan por el canal único `"evt"` con un `RealtimeEnvelope`.
  */
+import { z } from 'zod';
 
 export const REALTIME_CHANNEL = 'evt';
 export const REALTIME_PATH = '/realtime';
@@ -71,17 +72,30 @@ export function isRealtimeEventName(value: unknown): value is RealtimeEventName 
 }
 
 /**
- * Tipos de `data` por evento. Cada épica lo amplía por *declaration merging* cuando define
- * sus DTO (HOG-151 y siguientes):
- *
- * ```ts
- * declare module '@hogaria/shared' {
- *   interface RealtimeEventDataMap { 'task.created': TaskDto }
- * }
- * ```
+ * Tipo de `data` de cada evento publicable (spec 03, RN-03-12/13). Cada ticket que
+ * publica un evento añade aquí su entrada **y** su esquema en `REALTIME_EVENT_SCHEMAS`
+ * (p. ej. HOG-100 `'group.updated': GroupDto`). El `RealtimePublisher` solo acepta
+ * eventos con entrada: publicar uno sin ella no compila.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- se amplía por declaration merging
-export interface RealtimeEventDataMap {}
+export interface RealtimeEventDataMap {
+  /** Sala `user:<id>`, `groupId: null`: el cliente cierra la sesión local. */
+  'session.revoked': Record<string, never>;
+}
+
+/** Eventos que ya se pueden publicar (tienen `data` y esquema). */
+export type PublishableRealtimeEvent = keyof RealtimeEventDataMap;
+
+/**
+ * Esquemas zod de `data` por evento. El publisher los usa fuera de producción para
+ * detectar DTOs incompletos en los tests (RN-03-12).
+ */
+export const REALTIME_EVENT_SCHEMAS: { [E in PublishableRealtimeEvent]: z.ZodType<RealtimeEventDataMap[E]> } = {
+  'session.revoked': z.strictObject({}) as z.ZodType<Record<string, never>>,
+};
+
+/** Error de compilación si el mapa tiene un evento que no está en `REALTIME_EVENTS`. */
+type AssertMapKeysAreEvents<T extends RealtimeEventName> = T;
+export type _RealtimeMapKeysCheck = AssertMapKeysAreEvents<PublishableRealtimeEvent>;
 
 /** `data` de un evento: el tipo registrado en `RealtimeEventDataMap` o `unknown`. */
 export type RealtimeEventData<E extends RealtimeEventName> = E extends keyof RealtimeEventDataMap

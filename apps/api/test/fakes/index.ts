@@ -3,3 +3,4 @@
 export { DEFAULT_AI_FIXTURES_DIR, defaultFixtureName, FakeGeminiClient, type AiFixture, type GeminiCall } from '../../src/ai/fake-gemini.client.js';
 export { extractLinks, FakeEmailSender, type SentEmail } from '../../src/email/fake-email-sender.js';
 export { FakePushSender, FakeWebPushSender, type RecordedPush } from '../../src/push/fake-push-sender.js';
+export { FakeRealtimePublisher, useFakeRealtimePublisher, type PublishedEvent } from './fake-realtime-publisher.js';

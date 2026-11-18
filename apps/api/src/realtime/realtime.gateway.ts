@@ -8,12 +8,15 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { groupRoom, userRoom, type RealtimeSocketData } from './rooms.js';
 import { createSocketAuthMiddleware } from './socket-auth.middleware.js';
 
+import type { RealtimeEnvelope } from '@hogaria/shared';
 import type { Server, Socket } from 'socket.io';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- el cliente no emite nada (RN-03-04)
 type ClientToServerEvents = {};
-// Los eventos (`evt` con el sobre RealtimeEnvelope) los tipa el RealtimePublisher (HOG-151).
-type ServerToClientEvents = Record<string, (...args: unknown[]) => void>;
+// Un único canal `evt` con el sobre; solo lo emite el RealtimePublisher (RN-03-09).
+interface ServerToClientEvents {
+  evt: (envelope: RealtimeEnvelope) => void;
+}
 
 export type RealtimeServer = Server<ClientToServerEvents, ServerToClientEvents, Record<string, never>, RealtimeSocketData>;
 type RealtimeSocket = Socket<ClientToServerEvents, ServerToClientEvents, Record<string, never>, RealtimeSocketData>;

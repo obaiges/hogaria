@@ -44,12 +44,12 @@ Montar Socket.IO en `/realtime`, autenticar cada conexión con la cookie de Bett
 Crear el único punto de emisión de eventos, que construye el sobre con el actor y el `clientMutationId` del contexto de la petición, y el catálogo tipado que ata cada evento a su `data`.
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/realtime/realtime.publisher.ts` con `publish(groupId, event, data, opts?)`, `publishToUser(userId, event, data)` (`groupId: null`) y `publishToUserGroups(userId, event, data)` (un sobre por grupo).
-- [ ] `actorId`/`clientMutationId` desde `RequestContext`; `opts.actorId: null` para eventos de sistema; fuera de petición, ambos `null`.
-- [ ] Los fallos de emisión se registran con `warn` y no se propagan.
-- [ ] `packages/shared/src/realtime.ts`: `RealtimeEventDataMap` y `REALTIME_EVENT_SCHEMAS` con `session.revoked: {}`; los eventos de grupos, invitaciones y actividad los añaden HOG-100/102/108/154 y el resto cada épica. Publicar un evento sin entrada en el mapa no compila.
-- [ ] Con `NODE_ENV !== 'production'`, `publish` valida `data` con `REALTIME_EVENT_SCHEMAS[event]` y lanza si no cumple.
-- [ ] `FakeRealtimePublisher` en `apps/api/test/fakes/` que guarda los sobres publicados, para los tests de integración de todos los módulos.
+- [x] `apps/api/src/realtime/realtime.publisher.ts` con `publish(groupId, event, data, opts?)`, `publishToUser(userId, event, data)` (`groupId: null`) y `publishToUserGroups(userId, event, data)` (un sobre por grupo).
+- [x] `actorId`/`clientMutationId` desde `RequestContext`; `opts.actorId: null` para eventos de sistema; fuera de petición, ambos `null`.
+- [x] Los fallos de emisión se registran con `warn` y no se propagan.
+- [x] `packages/shared/src/realtime.ts`: `RealtimeEventDataMap` y `REALTIME_EVENT_SCHEMAS` con `session.revoked: {}`; los eventos de grupos, invitaciones y actividad los añaden HOG-100/102/108/154 y el resto cada épica. Publicar un evento sin entrada en el mapa no compila.
+- [x] Con `NODE_ENV !== 'production'`, `publish` valida `data` con `REALTIME_EVENT_SCHEMAS[event]` y lanza si no cumple.
+- [x] `FakeRealtimePublisher` en `apps/api/test/fakes/` que guarda los sobres publicados, para los tests de integración de todos los módulos.
 
 **Notas técnicas**
 - Documenta en el JSDoc de `publish` que solo se llama **después** del commit.

@@ -1,6 +1,7 @@
 import { io as connect, type Socket as ClientSocket } from 'socket.io-client';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 
+
 import { RealtimeRooms } from '../../src/realtime/realtime-rooms.service.js';
 import { RealtimeGateway } from '../../src/realtime/realtime.gateway.js';
 import { groupRoom, userRoom } from '../../src/realtime/rooms.js';
@@ -8,6 +9,7 @@ import { createGroupWithMembers, createUser, sessionCookieFor } from '../factori
 import { createTestApp, type TestApp } from '../utils/create-test-app.js';
 import { getTestPrisma } from '../utils/prisma.js';
 
+import type { RealtimeEnvelope } from '@hogaria/shared';
 import type { User } from '@prisma/client';
 
 const prisma = getTestPrisma();
@@ -135,14 +137,15 @@ describe('RealtimeGateway (HOG-150)', () => {
     const cookie = await sessionCookieFor(user, t.server);
     const s1 = await connectAs(cookie);
     const s2 = await connectAs(cookie);
-    const emit = () => gateway.server.to(groupRoom(group.id)).emit('evt', { ping: group.id });
+    const envelope: RealtimeEnvelope = { event: 'group.updated', groupId: group.id, actorId: null, clientMutationId: null, at: new Date().toISOString(), data: {} };
+    const emit = () => gateway.server.to(groupRoom(group.id)).emit('evt', envelope);
 
     expect(await received(s1, emit)).toEqual([]);
 
     rooms.joinGroup(user.id, group.id);
     const [got1, got2] = await Promise.all([received(s1, emit), received(s2, () => undefined)]);
-    expect(got1).toEqual([{ ping: group.id }]);
-    expect(got2).toEqual([{ ping: group.id }]);
+    expect(got1).toEqual([envelope]);
+    expect(got2).toEqual([envelope]);
 
     rooms.leaveGroup(user.id, group.id);
     expect(await received(s1, emit)).toEqual([]);
