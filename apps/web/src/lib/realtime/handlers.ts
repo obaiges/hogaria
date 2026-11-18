@@ -1,3 +1,5 @@
+import { authHandlers } from '@/features/auth/realtime';
+
 import type { RealtimeEventName, TypedRealtimeEnvelope } from '@hogaria/shared';
 import type { QueryClient } from '@tanstack/react-query';
 
@@ -41,6 +43,11 @@ export interface RealtimeHandlerContext {
   meId: string | null;
   /** Marca la onda en `"<entityType>:<id>"` con el color de calle del autor (RN-03-19). */
   markRipple: (entityKey: string) => void;
+  /**
+   * La sesión de este dispositivo ya no existe (p. ej. `session.revoked`): desconecta el
+   * socket, limpia la caché y vuelve a `/entrar` con el aviso (spec 01 §5).
+   */
+  endSession: () => void;
 }
 
 export type RealtimeHandler<E extends RealtimeEventName> = (envelope: TypedRealtimeEnvelope<E>, ctx: RealtimeHandlerContext) => void;
@@ -48,7 +55,7 @@ export type RealtimeHandler<E extends RealtimeEventName> = (envelope: TypedRealt
 export type RealtimeHandlers = { [E in RealtimeEventName]?: RealtimeHandler<E> };
 
 /** Manejadores de cada feature. Cada épica añade aquí los suyos (`features/<x>/realtime.ts`). */
-const FEATURE_HANDLERS: RealtimeHandlers[] = [];
+const FEATURE_HANDLERS: RealtimeHandlers[] = [authHandlers];
 
 const registry = new Map<RealtimeEventName, RealtimeHandler<RealtimeEventName>>();
 

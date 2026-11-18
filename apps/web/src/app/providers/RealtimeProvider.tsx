@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { useMatch, useNavigate } from 'react-router';
 
-import { useMe } from '@/features/auth/api';
+import { SESSION_ENDED_PARAM, useMe } from '@/features/auth/api';
 import { bindRealtime, type RealtimeAuthErrorCode } from '@/lib/realtime/connection';
 import { registerFeatureHandlers } from '@/lib/realtime/handlers';
 import { clearMutations } from '@/lib/realtime/mutation-registry';
@@ -47,6 +47,11 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
           const volver = encodeURIComponent(window.location.pathname + window.location.search);
           void navigateRef.current(`/entrar?volver=${volver}`, { replace: true });
         }
+      },
+      onSessionEnded: () => {
+        clearMutations();
+        clearRipples();
+        void navigateRef.current(`/entrar?${SESSION_ENDED_PARAM}`, { replace: true });
       },
     });
     socket.connect();

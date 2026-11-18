@@ -19,6 +19,7 @@ import { verifyEmail } from './emails/verify-email.js';
 import { createInviteDatabaseHooks, SignupInviteConsumerRef } from './invite-hooks.js';
 import { AuthRequestLimiter } from './rate-limit/auth-request-limiter.js';
 import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
+import { createSessionHooks, SessionRevocationRef } from './session-hooks.js';
 
 import type { EmailMessage, EmailSender } from '../email/email-sender.js';
 import type { SecurityEventRecorder } from '../security-events/security-event.service.js';
@@ -58,6 +59,8 @@ export interface AuthDeps {
   requestLimiter?: AuthRequestLimiter;
   /** Enlace a `InvitesService.consumeForNewUser` (lo registra el módulo de grupos). */
   inviteConsumer?: SignupInviteConsumerRef;
+  /** Enlace al aviso en tiempo real de sesiones revocadas (lo registra el módulo realtime). */
+  sessionRevocations?: SessionRevocationRef;
 }
 
 function origin(url: string | undefined): string | undefined {
@@ -79,15 +82,6 @@ export function withAppCallback(url: string, appUrl: string | undefined): string
 }
 
 /**
- * Better Auth en `/api/auth/*` (spec 01, RN-01-07 a RN-01-12, RN-01-20, RN-01-21):
- * email + contraseña con verificación obligatoria, plugin `username`, ids UUIDv7,
- * sesión de 365 días deslizante sin caché de cookie y cookies `hogaria.*` compartidas
- * entre subdominios cuando hay `COOKIE_DOMAIN`.
- *
- * Es una factoría (no un `auth` global) para que Nest le inyecte Prisma y el
- * `EmailSender` (en test, `FakeEmailSender`). Se registra con el token `AUTH`.
- */
-/**
  * Un fallo del proveedor de email se registra y no se propaga: la respuesta al usuario
  * sigue siendo la genérica y no revela si la cuenta existe (HOG-054).
  */
@@ -102,7 +96,16 @@ function createSafeSend(emailSender: EmailSender) {
   };
 }
 
-export function createAuth({ prisma, emailSender, securityEvents, env, loginLimiter, requestLimiter, inviteConsumer }: AuthDeps) {
+/**
+ * Better Auth en `/api/auth/*` (spec 01, RN-01-07 a RN-01-12, RN-01-20, RN-01-21):
+ * email + contraseña con verificación obligatoria, plugin `username`, ids UUIDv7,
+ * sesión de 365 días deslizante sin caché de cookie y cookies `hogaria.*` compartidas
+ * entre subdominios cuando hay `COOKIE_DOMAIN`.
+ *
+ * Es una factoría (no un `auth` global) para que Nest le inyecte Prisma y el
+ * `EmailSender` (en test, `FakeEmailSender`). Se registra con el token `AUTH`.
+ */
+export function createAuth({ prisma, emailSender, securityEvents, env, loginLimiter, requestLimiter, inviteConsumer, sessionRevocations }: AuthDeps) {
   const appOrigin = origin(env.APP_URL);
   const sendEmail = createSafeSend(emailSender);
   const cookieDomain = env.COOKIE_DOMAIN?.trim();
@@ -120,6 +123,7 @@ export function createAuth({ prisma, emailSender, securityEvents, env, loginLimi
     loginLimiter: loginLimiter ?? new LoginRateLimiter(),
     requestLimiter: requestLimiter ?? new AuthRequestLimiter(),
     assertSignUpInvite,
+    sessionHooks: createSessionHooks({ prisma, securityEvents, revocations: sessionRevocations ?? new SessionRevocationRef() }),
   });
 
   return betterAuth({

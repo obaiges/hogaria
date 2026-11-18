@@ -185,11 +185,11 @@ Exigir sesión en toda la API salvo las rutas públicas, exponer el usuario actu
 Permitir ver los dispositivos con sesión abierta, cerrar uno o todos los demás y cerrar sesión, avisando en tiempo real a los dispositivos afectados.
 
 **Criterios de aceptación**
-- [ ] Hooks `after` de Better Auth en `/revoke-session`, `/revoke-other-sessions` y `/revoke-sessions` (`apps/api/src/auth/session-hooks.ts`): registran `SESSION_REVOKED`, publican `session.revoked` (`{}`) con `RealtimePublisher.publishToUser` y llaman a `RealtimeGateway.disconnectSessions` con las sesiones afectadas.
-- [ ] `/sign-out` registra `LOGOUT` y no publica evento.
-- [ ] `features/auth/components/SecuritySection.tsx` con la lista "Dispositivos" (`sessionDto` construido desde `authClient.listSessions()`, `deviceLabel` con `describeUserAgent` de shared, chip "Este dispositivo"), "Cerrar sesión" por fila con `Dialog`, "Cerrar sesión en todos los demás" y "Cerrar sesión" del dispositivo actual; estados de carga, error y sin conexión.
-- [ ] Si `/perfil` no existe aún (E16), se crea una página mínima `/perfil` con la sección "SEGURIDAD"; E16 la ampliará sin moverla.
-- [ ] Manejador de `session.revoked` en `features/auth/realtime.ts`: `getSession()`; si es `null` → limpia caché, desconecta el socket y navega a `/entrar` con el aviso "Se ha cerrado tu sesión en este dispositivo"; si no → invalida `['me', 'sessions']`.
+- [x] Hooks `after` de Better Auth en `/revoke-session`, `/revoke-other-sessions` y `/revoke-sessions` (`apps/api/src/auth/session-hooks.ts`): registran `SESSION_REVOKED`, publican `session.revoked` (`{}`) con `RealtimePublisher.publishToUser` y llaman a `RealtimeGateway.disconnectSessions` con las sesiones afectadas.
+- [x] `/sign-out` registra `LOGOUT` y no publica evento.
+- [x] `features/auth/components/SecuritySection.tsx` con la lista "Dispositivos" (`sessionDto` construido desde `authClient.listSessions()`, `deviceLabel` con `describeUserAgent` de shared, chip "Este dispositivo"), "Cerrar sesión" por fila con `Dialog`, "Cerrar sesión en todos los demás" y "Cerrar sesión" del dispositivo actual; estados de carga, error y sin conexión.
+- [x] Si `/perfil` no existe aún (E16), se crea una página mínima `/perfil` con la sección "SEGURIDAD"; E16 la ampliará sin moverla.
+- [x] Manejador de `session.revoked` en `features/auth/realtime.ts`: `getSession()`; si es `null` → limpia caché, desconecta el socket y navega a `/entrar` con el aviso "Se ha cerrado tu sesión en este dispositivo"; si no → invalida `['me', 'sessions']`.
 
 **Notas técnicas**
 - `describeUserAgent(ua)` en `packages/shared/src/auth/user-agent.ts`, sin librerías pesadas (navegador + sistema por expresiones regulares simples).

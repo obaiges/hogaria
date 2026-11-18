@@ -1,10 +1,11 @@
 import { queryOptions, useQuery, type QueryClient } from "@tanstack/react-query";
 import { redirect } from "react-router";
 
-import { meDto, type MeDto } from "@hogaria/shared";
+import { describeUserAgent, meDto, type MeDto, type SessionDto } from "@hogaria/shared";
 
 import { queryClient as appQueryClient } from "@/app/queryClient";
 import { api, ApiError } from "@/lib/apiClient";
+import { authClient } from "@/lib/authClient";
 
 /** `GET /api/v1/me`, o `null` si no hay sesión (sin redirigir: lo deciden los loaders). */
 export async function fetchMe(): Promise<MeDto | null> {
@@ -60,4 +61,50 @@ export function redirectIfAuthenticatedLoader(client: QueryClient = appQueryClie
     if (me) throw redirect(afterSignInPath(new URL(request.url).search));
     return null;
   };
+}
+
+/** `/entrar?sesion=cerrada`: aviso tras `session.revoked` (spec 01 §5). */
+export const SESSION_ENDED_PARAM = "sesion=cerrada";
+export const SESSION_ENDED_MESSAGE = "Se ha cerrado tu sesión en este dispositivo";
+
+/** Lo que devuelve Better Auth por sesión en `list-sessions` (fechas como `Date` o ISO). */
+export interface RawSession {
+  id: string;
+  token: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  expiresAt: Date | string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+}
+
+const toIso = (value: Date | string) => new Date(value).toISOString();
+
+/** `sessionDto` (spec 01 §5) ordenado por `updatedAt` desc. */
+export function toSessionDtos(sessions: RawSession[], currentSessionId: string | null): SessionDto[] {
+  return sessions
+    .map((s) => ({
+      id: s.id,
+      token: s.token,
+      createdAt: toIso(s.createdAt),
+      updatedAt: toIso(s.updatedAt),
+      expiresAt: toIso(s.expiresAt),
+      ipAddress: s.ipAddress ?? null,
+      userAgent: s.userAgent ?? null,
+      deviceLabel: describeUserAgent(s.userAgent),
+      isCurrent: s.id === currentSessionId,
+    }))
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
+
+async function fetchSessions(): Promise<SessionDto[]> {
+  const [list, current] = await Promise.all([authClient.listSessions(), authClient.getSession()]);
+  if (list.error) throw new Error(list.error.message ?? "No se han podido cargar tus dispositivos");
+  return toSessionDtos((list.data ?? []) as RawSession[], current.data?.session.id ?? null);
+}
+
+export const sessionsQueryKey = ["me", "sessions"] as const;
+
+export function useSessions() {
+  return useQuery({ queryKey: sessionsQueryKey, queryFn: fetchSessions, retry: false });
 }

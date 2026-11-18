@@ -21,6 +21,8 @@ export interface BindRealtimeDeps {
   getActiveGroupId: () => string | null;
   /** Ya se han parado las reconexiones y limpiado la caché: solo queda navegar. */
   onAuthError: (code: RealtimeAuthErrorCode) => void;
+  /** `session.revoked` y la sesión ya no existe: ya se ha desconectado y limpiado la caché; solo queda navegar. */
+  onSessionEnded?: () => void;
 }
 
 function authErrorCode(err: unknown): RealtimeAuthErrorCode | null {
@@ -48,7 +50,12 @@ export function refreshAfterReconnect(queryClient: QueryClient, activeGroupId: s
  * errores de autenticación del handshake. No conecta el socket.
  */
 export function bindRealtime(socket: RealtimeSocketLike, deps: BindRealtimeDeps): void {
-  const dispatch = createDispatcher({ queryClient: deps.queryClient, getMeId: deps.getMeId });
+  const endSession = () => {
+    socket.disconnect();
+    deps.queryClient.clear();
+    deps.onSessionEnded?.();
+  };
+  const dispatch = createDispatcher({ queryClient: deps.queryClient, getMeId: deps.getMeId, endSession });
   let connectedBefore = false;
 
   socket.on(REALTIME_CHANNEL, dispatch as (...args: never[]) => void);

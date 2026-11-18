@@ -18,6 +18,8 @@ interface MemberLike {
 export interface DispatcherDeps {
   queryClient: QueryClient;
   getMeId: () => string | null;
+  /** Cierre local de la sesión (ver `RealtimeHandlerContext.endSession`). */
+  endSession?: () => void;
 }
 
 function isEnvelope(value: unknown): value is RealtimeEnvelope {
@@ -40,7 +42,7 @@ function actorLaneColor(queryClient: QueryClient, groupId: string | null, actorI
  * mutaciones propias (salvo `NON_DEDUPED_EVENTS`), busca el manejador del evento y le
  * pasa `{ queryClient, meId, markRipple }`. Eventos sin manejador o mal formados se ignoran.
  */
-export function createDispatcher({ queryClient, getMeId }: DispatcherDeps): (payload: unknown) => void {
+export function createDispatcher({ queryClient, getMeId, endSession = () => {} }: DispatcherDeps): (payload: unknown) => void {
   return (payload) => {
     if (!isEnvelope(payload)) return;
     const envelope = payload;
@@ -56,6 +58,7 @@ export function createDispatcher({ queryClient, getMeId }: DispatcherDeps): (pay
     const ctx: RealtimeHandlerContext = {
       queryClient,
       meId,
+      endSession,
       // Onda solo para cambios de otro miembro (no del sistema ni de mí en otro dispositivo) y nunca en borrados (RN-03-19).
       markRipple: (entityKey) => {
         const { actorId } = envelope;

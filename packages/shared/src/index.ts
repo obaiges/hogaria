@@ -1,4 +1,5 @@
 export * from './activity.js';
+export * from './auth/user-agent.js';
 export * from './constants/index.js';
 export * from './dates.js';
 export * from './errors.js';

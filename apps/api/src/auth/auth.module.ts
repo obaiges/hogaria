@@ -8,6 +8,7 @@ import { AUTH, createAuth } from './auth.js';
 import { SignupInviteConsumerRef } from './invite-hooks.js';
 import { AuthRequestLimiter } from './rate-limit/auth-request-limiter.js';
 import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
+import { SessionRevocationRef } from './session-hooks.js';
 
 /**
  * Instancia de Better Auth (token `AUTH`); `configureApp` la monta en `/api/auth/*`.
@@ -20,9 +21,19 @@ import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
     { provide: LoginRateLimiter, useFactory: () => new LoginRateLimiter() },
     { provide: AuthRequestLimiter, useFactory: () => new AuthRequestLimiter() },
     { provide: SignupInviteConsumerRef, useFactory: () => new SignupInviteConsumerRef() },
+    { provide: SessionRevocationRef, useFactory: () => new SessionRevocationRef() },
     {
       provide: AUTH,
-      inject: [PrismaService, EMAIL_SENDER, SecurityEventService, LoginRateLimiter, AuthRequestLimiter, ConfigService, SignupInviteConsumerRef],
+      inject: [
+        PrismaService,
+        EMAIL_SENDER,
+        SecurityEventService,
+        LoginRateLimiter,
+        AuthRequestLimiter,
+        ConfigService,
+        SignupInviteConsumerRef,
+        SessionRevocationRef,
+      ],
       useFactory: (
         prisma: PrismaService,
         emailSender: EmailSender,
@@ -31,6 +42,7 @@ import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
         requestLimiter: AuthRequestLimiter,
         config: ConfigService,
         inviteConsumer: SignupInviteConsumerRef,
+        sessionRevocations: SessionRevocationRef,
       ) =>
         createAuth({
           prisma,
@@ -39,6 +51,7 @@ import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
           loginLimiter,
           requestLimiter,
           inviteConsumer,
+          sessionRevocations,
           env: {
             NODE_ENV: config.get('NODE_ENV'),
             APP_URL: config.get('APP_URL'),
@@ -50,6 +63,6 @@ import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
         }),
     },
   ],
-  exports: [AUTH, SecurityEventService, LoginRateLimiter, AuthRequestLimiter, SignupInviteConsumerRef],
+  exports: [AUTH, SecurityEventService, LoginRateLimiter, AuthRequestLimiter, SignupInviteConsumerRef, SessionRevocationRef],
 })
 export class AuthModule {}

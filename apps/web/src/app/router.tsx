@@ -3,6 +3,7 @@ import { createBrowserRouter, Outlet, redirect, useRouteError, type RouteObject 
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { redirectIfAuthenticatedLoader, requireAuthLoader } from "@/features/auth/api";
+import { ProfilePage } from "@/features/auth/pages/ProfilePage";
 import { RecoverPasswordPage } from "@/features/auth/pages/RecoverPasswordPage";
 import { SignInPage } from "@/features/auth/pages/SignInPage";
 import { SignUpPage } from "@/features/auth/pages/SignUpPage";
@@ -79,7 +80,7 @@ const privateRoutes: RouteObject[] = [
   { path: "/g/:groupId/asistente", element: <Page title="Asistente" /> },
   { path: "/g/:groupId/actividad", element: <Page title="Actividad" /> },
   { path: "/g/:groupId/ajustes", element: <Page title="Ajustes del grupo" /> },
-  { path: "/perfil", element: <Page title="Perfil" /> },
+  { path: "/perfil", element: <ProfilePage /> },
   { path: "/admin", element: <Page title="Administración" /> },
 ];
 

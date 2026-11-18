@@ -8,6 +8,7 @@ import { normalizeIdentifier } from './rate-limit/sliding-window.js';
 import type { SecurityEventRecorder } from '../security-events/security-event.service.js';
 import type { AuthRequestLimiter } from './rate-limit/auth-request-limiter.js';
 import type { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
+import type { createSessionHooks } from './session-hooks.js';
 import type { PrismaClient } from '@prisma/client';
 
 /**
@@ -25,7 +26,11 @@ export interface AuthHookDeps {
   requestLimiter: AuthRequestLimiter;
   /** Exige invitación en `/sign-up/email` (spec 01, RN-01-03; ver invite-hooks.ts). */
   assertSignUpInvite?: (ctx: unknown, email: string | null) => Promise<void>;
+  /** Revocación de sesiones: `SESSION_REVOKED`, `session.revoked` y sockets (RN-01-22, session-hooks.ts). */
+  sessionHooks?: SessionHooks;
 }
+
+type SessionHooks = ReturnType<typeof createSessionHooks>;
 
 type HookCtx = Parameters<Parameters<typeof createAuthMiddleware>[0]>[0];
 
@@ -77,7 +82,7 @@ function identifierOf(path: string, body: Record<string, unknown>): string {
  * Las llamadas internas (`auth.api.getSession()` del AuthGuard) no traen `request` y se
  * ignoran: no cuentan para los límites.
  */
-export function createAuthHooks({ prisma, securityEvents, loginLimiter, requestLimiter, assertSignUpInvite }: AuthHookDeps) {
+export function createAuthHooks({ prisma, securityEvents, loginLimiter, requestLimiter, assertSignUpInvite, sessionHooks }: AuthHookDeps) {
   const before = createAuthMiddleware(async (ctx) => {
     if (!ctx.request) return;
     const { ip, userAgent } = clientInfo(ctx);
@@ -116,6 +121,7 @@ export function createAuthHooks({ prisma, securityEvents, loginLimiter, requestL
         break;
       }
     }
+    await sessionHooks?.before(ctx);
   });
 
   const after = createAuthMiddleware(async (ctx) => {
@@ -123,6 +129,7 @@ export function createAuthHooks({ prisma, securityEvents, loginLimiter, requestL
     const { ip, userAgent } = clientInfo(ctx);
     const returned = ctx.context.returned;
     const failed = returned instanceof APIError;
+    await sessionHooks?.after(ctx, failed, { ip, userAgent });
 
     if (SIGN_IN_PATHS.has(ctx.path)) {
       const identifier = identifierOf(ctx.path, bodyOf(ctx));

@@ -9,7 +9,7 @@ import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { appUrl, authClient } from "@/lib/authClient";
 
-import { afterSignInPath, meQuery } from "../api";
+import { afterSignInPath, meQuery, SESSION_ENDED_MESSAGE } from "../api";
 import { parseRetryAfter, SIGN_IN_MESSAGES, signInErrorMessage } from "../auth-errors";
 import { AuthLayout, FormError, FormNotice } from "../components/AuthLayout";
 import { PasswordInput } from "../components/PasswordInput";
@@ -90,7 +90,13 @@ export function SignInPage() {
   return (
     <AuthLayout
       title="Entrar"
-      intro={params.get("cuenta") === "borrada" ? <FormNotice>Tu cuenta se ha borrado. ¡Gracias por usar Hogaria!</FormNotice> : null}
+      intro={
+        params.get("cuenta") === "borrada" ? (
+          <FormNotice>Tu cuenta se ha borrado. ¡Gracias por usar Hogaria!</FormNotice>
+        ) : params.get("sesion") === "cerrada" ? (
+          <FormNotice>{SESSION_ENDED_MESSAGE}</FormNotice>
+        ) : null
+      }
       footer={
         <>
           <p>¿No tienes cuenta? Hogaria funciona solo por invitación: pide a alguien de tu hogar que te envíe un enlace.</p>

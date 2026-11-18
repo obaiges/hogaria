@@ -139,6 +139,7 @@ Todas siguen `DESIGN.md`: formularios de una columna, `Input` de 16 px con label
 - Enlaces: "¿Has olvidado tu contraseña?" → `/recuperar`. Pie: "¿No tienes cuenta? Hogaria funciona solo por invitación: pide a alguien de tu hogar que te envíe un enlace."
 - Parámetro `?volver=` (lo pone `RequireAuth`, spec 15 RN-15-09): solo se respeta si empieza por `/`, no empieza por `//` y no contiene `://`. Tras entrar → `volver` o la redirección de entrada (spec 02, RN-02-30).
 - Parámetro `?cuenta=borrada` (tras borrar la cuenta, spec 16): aviso "Tu cuenta se ha borrado. ¡Gracias por usar Hogaria!".
+- Parámetro `?sesion=cerrada` (tras `session.revoked` con la sesión de este dispositivo revocada, §5): aviso "Se ha cerrado tu sesión en este dispositivo".
 - Pie con enlaces a `/legal/privacidad` y `/legal/terminos` (spec 16, RN-16-27).
 - Parámetro `?error=` (vuelta de Google): `INVITE_REQUIRED` → "Necesitas una invitación para crear una cuenta." · `ACCOUNT_BLOCKED` → "Tu cuenta está bloqueada. Habla con el administrador." · otro → "No se ha podido entrar con Google. Inténtalo de nuevo."
 - Errores: credenciales → "Email, usuario o contraseña incorrectos" · `EMAIL_NOT_VERIFIED` → "Tu email aún no está verificado. Te hemos reenviado el enlace." · `RATE_LIMITED` → "Demasiados intentos. Vuelve a intentarlo en {n} min." (redondeo hacia arriba de `Retry-After`) · `ACCOUNT_BLOCKED` → mensaje de arriba.

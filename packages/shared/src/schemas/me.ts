@@ -23,3 +23,22 @@ export const meDto = z.object({
 });
 
 export type MeDto = z.infer<typeof meDto>;
+
+/**
+ * Dispositivo con sesión abierta (Perfil → Seguridad, spec 01 §5). Lo construye la web a
+ * partir de `authClient.listSessions()`; `deviceLabel` sale de `describeUserAgent`.
+ */
+export const sessionDto = z.object({
+  id: z.string(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+  expiresAt: z.iso.datetime(),
+  ipAddress: z.string().nullable(),
+  userAgent: z.string().nullable(),
+  deviceLabel: z.string(),
+  isCurrent: z.boolean(),
+  /** Token de la sesión: lo pide `POST /api/auth/revoke-session`. */
+  token: z.string(),
+});
+
+export type SessionDto = z.infer<typeof sessionDto>;
