@@ -1,5 +1,6 @@
 import { Outlet, useMatch } from "react-router";
 
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { useMe } from "@/features/auth/api";
 import { useMyGroups } from "@/features/groups/api";
 import { readLastGroupId } from "@/features/groups/landing";
@@ -36,7 +37,11 @@ export function AppShell() {
       >
         Saltar al contenido
       </a>
-      {me.data ? <AppHeader me={me.data} groups={myGroups} current={current} /> : <div className="h-14 bg-[var(--shell)]" />}
+      {/* Cabecera y, bajo ella, el único banner de sin conexión del shell (RN-15-17, HOG-752). */}
+      <div className="sticky top-0 z-30">
+        {me.data ? <AppHeader me={me.data} groups={myGroups} current={current} /> : <div className="h-14 bg-[var(--shell)]" />}
+        <OfflineBanner />
+      </div>
       <main
         id="contenido"
         tabIndex={-1}

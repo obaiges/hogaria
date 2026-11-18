@@ -16,7 +16,7 @@ export interface AppHeaderProps {
 /** Cabecera de agua (spec 15 §7.1, DESIGN.md `AppHeader`): selector de hogar y avatar → `/perfil`. */
 export function AppHeader({ me, groups, current }: AppHeaderProps) {
   return (
-    <header className="sticky top-0 z-30 bg-[var(--shell)] pt-[env(safe-area-inset-top)] text-[var(--on-shell)]">
+    <header className="bg-[var(--shell)] pt-[env(safe-area-inset-top)] text-[var(--on-shell)]">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-3 px-4">
         {current ? (
           <GroupSwitcher groups={groups} current={current} />

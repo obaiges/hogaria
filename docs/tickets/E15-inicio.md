@@ -73,9 +73,9 @@ Hoja inferior que abre la pestaña "Más" con las entradas del registro agrupada
 Montar en el `AppShell` el `OfflineBanner` que ya construye HOG-155 y comprobar que los controles del shell usan `useCanEdit()`. **No** se reimplementa la detección de conexión: toda la lógica (`connection-store`, `OFFLINE_GRACE_MS = 5000`, `useConnectionStatus()`, `useCanEdit()`, `networkMode: 'always'`) vive en HOG-155.
 
 **Criterios de aceptación**
-- [ ] `OfflineBanner` (de HOG-155) se renderiza una sola vez en el `AppShell`, bajo la cabecera y por encima del contenido, sin tapar la barra inferior; si HOG-155 lo montó en el layout raíz, se mueve aquí (no hay dos banners).
-- [ ] El selector de hogar y los botones de acción del shell (FAB, "Nuevo hogar") usan la prop `requiresConnection` de HOG-155.
-- [ ] No existe ningún `useIsOffline()`, `ConnectionBanner` ni `lib/connection.ts` paralelos; no se abre un segundo socket.
+- [x] `OfflineBanner` (de HOG-155) se renderiza una sola vez en el `AppShell`, bajo la cabecera y por encima del contenido, sin tapar la barra inferior; si HOG-155 lo montó en el layout raíz, se mueve aquí (no hay dos banners).
+- [x] El selector de hogar y los botones de acción del shell (FAB, "Nuevo hogar") usan la prop `requiresConnection` de HOG-155.
+- [x] No existe ningún `useIsOffline()`, `ConnectionBanner` ni `lib/connection.ts` paralelos; no se abre un segundo socket.
 
 **Notas técnicas**
 - Solo toca `apps/web/src/app/layout/AppShell.tsx`.

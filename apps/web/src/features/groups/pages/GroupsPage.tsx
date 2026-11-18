@@ -7,6 +7,7 @@ import { MemberAvatar, MemberDot } from "@/components/pool/MemberAvatar";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { OfflineBanner } from "@/components/ui/OfflineBanner";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useMe } from "@/features/auth/api";
 import { useCanEdit } from "@/lib/realtime/connection-store";
@@ -35,19 +36,23 @@ export function GroupsPage() {
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--ink)]">
-      <header className="flex h-14 items-center justify-between border-b border-[var(--grout)] bg-[var(--surface)] px-4">
-        <span>
-          <img src={logo} alt="Hogaria" className="logo-light h-7 w-auto" />
-          <img src={logoDark} alt="Hogaria" className="logo-dark h-7 w-auto" />
-        </span>
-        <Link
-          to="/perfil"
-          aria-label="Perfil"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
-        >
-          <MemberAvatar member={me ? { name: me.name, image: me.image, laneColor: null } : null} fallbackLabel="Perfil" decorative />
-        </Link>
-      </header>
+      {/* Fuera del shell (RN-15-01): "Tus hogares" monta su propio banner bajo la cabecera (spec 02 §7). */}
+      <div className="sticky top-0 z-30">
+        <header className="flex h-14 items-center justify-between border-b border-[var(--grout)] bg-[var(--surface)] px-4">
+          <span>
+            <img src={logo} alt="Hogaria" className="logo-light h-7 w-auto" />
+            <img src={logoDark} alt="Hogaria" className="logo-dark h-7 w-auto" />
+          </span>
+          <Link
+            to="/perfil"
+            aria-label="Perfil"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+          >
+            <MemberAvatar member={me ? { name: me.name, image: me.image, laneColor: null } : null} fallbackLabel="Perfil" decorative />
+          </Link>
+        </header>
+        <OfflineBanner />
+      </div>
 
       <main className="mx-auto flex max-w-xl flex-col gap-4 px-4 pb-10 pt-6">
         <h1 className="font-sign text-[28px] font-semibold uppercase tracking-[0.04em]">{GROUPS_TEXT.title}</h1>

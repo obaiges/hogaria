@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router";
 
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/Sheet";
+import { OFFLINE_TITLE, useCanEdit } from "@/lib/realtime/connection-store";
 import { cn } from "@/lib/utils";
 
 import { switchGroupPath } from "../navigation-utils";
@@ -28,12 +29,16 @@ export function GroupSwitcher({ groups, current }: GroupSwitcherProps) {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const several = groups.length >= 2;
+  // Igual que `requiresConnection` de Button (HOG-155): sin conexión, el selector se deshabilita (HOG-752).
+  const canEdit = useCanEdit();
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        className="-ml-2 flex min-h-[44px] min-w-0 items-center gap-2 rounded-[var(--radius-sm)] px-2 text-[var(--on-shell)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+        className="-ml-2 flex min-h-[44px] min-w-0 items-center gap-2 rounded-[var(--radius-sm)] px-2 text-[var(--on-shell)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] disabled:opacity-60"
         aria-label={SWITCHER_TEXT.label(current.name)}
+        disabled={!canEdit}
+        title={canEdit ? undefined : OFFLINE_TITLE}
       >
         <span className="text-[20px] leading-none" aria-hidden>
           {current.emoji}
