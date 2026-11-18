@@ -30,3 +30,12 @@ input, textarea, select {
   :root:not([data-theme="light"]) .logo-light { display: none; }
   :root:not([data-theme="light"]) .logo-dark { display: inline; }
 }
+
+/* Rejilla de azulejo (DESIGN.md §5): juntas de 24 px al 50 % de --grout. Solo en estados vacíos y cabeceras de héroe. */
+.tile-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--grout) 50%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--grout) 50%, transparent) 1px, transparent 1px);
+  background-size: 24px 24px;
+  padding: 24px;
+}

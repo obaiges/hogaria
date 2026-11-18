@@ -126,10 +126,10 @@ Implementar la página pública de invitación con sus estados (válida con y si
 Implementar la pantalla "Tus hogares" con la creación de hogar en un `Sheet`, y la ruta `/` que lleva a cada usuario a su hogar.
 
 **Criterios de aceptación**
-- [ ] `features/groups/api.ts`: `useMyGroups()` (`['me', 'groups']`) y `useCreateGroup()` (añade el nuevo `myGroupDto` a la caché).
-- [ ] `features/groups/pages/GroupsPage.tsx` con lista, "Crear hogar", estados de carga, vacío ("Aún no perteneces a ningún hogar."), error y sin conexión.
-- [ ] `Sheet` "Crear hogar" con nombre, rejilla de 12 emojis + "Otro emoji", validación con `createGroupInput`; éxito → `/g/:groupId` y toast "Hogar creado".
-- [ ] Ruta `/` (`app/routes/RootRedirect.tsx`) aplica RN-02-30 (`hogaria:lastGroupId` → un solo grupo → `/grupos`).
+- [x] `features/groups/api.ts`: `useMyGroups()` (`['me', 'groups']`) y `useCreateGroup()` (añade el nuevo `myGroupDto` a la caché).
+- [x] `features/groups/pages/GroupsPage.tsx` con lista, "Crear hogar", estados de carga, vacío ("Aún no perteneces a ningún hogar."), error y sin conexión.
+- [x] `Sheet` "Crear hogar" con nombre, rejilla de 12 emojis + "Otro emoji", validación con `createGroupInput`; éxito → `/g/:groupId` y toast "Hogar creado".
+- [x] Ruta `/` (`app/routes/RootRedirect.tsx`) aplica RN-02-30 (`hogaria:lastGroupId` → un solo grupo → `/grupos`).
 
 **Tests**
 - Unit: `resolveLandingRoute(groups, lastGroupId)` (los tres casos y `lastGroupId` obsoleto); `GroupsPage` vacío y con datos.

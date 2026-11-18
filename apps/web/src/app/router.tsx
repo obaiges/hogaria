@@ -1,4 +1,4 @@
-import { createBrowserRouter, Outlet, redirect, useRouteError, type RouteObject } from "react-router";
+import { createBrowserRouter, Outlet, useRouteError, type RouteObject } from "react-router";
 
 import { Button } from "@/components/ui/Button";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -7,11 +7,13 @@ import { ProfilePage } from "@/features/auth/pages/ProfilePage";
 import { RecoverPasswordPage } from "@/features/auth/pages/RecoverPasswordPage";
 import { SignInPage } from "@/features/auth/pages/SignInPage";
 import { SignUpPage } from "@/features/auth/pages/SignUpPage";
+import { GroupsPage } from "@/features/groups/pages/GroupsPage";
 import { ApiError, NetworkError } from "@/lib/apiClient";
 
 import { DevTokensPage } from "./pages/DevTokensPage";
 import { DevUiPage } from "./pages/DevUiPage";
 import { RealtimeProvider } from "./providers/RealtimeProvider";
+import { RootRedirect } from "./routes/RootRedirect";
 
 function Page({ title }: { title: string }) {
   return <h1>{title}</h1>;
@@ -58,9 +60,9 @@ const publicRoutes: RouteObject[] = [
 
 /** Rutas con sesión: el layout privado redirige a `/entrar?volver=…` si no la hay. */
 const privateRoutes: RouteObject[] = [
-  // La redirección de entrada (último grupo, etc.) es de HOG-104.
-  { path: "/", loader: () => redirect("/grupos") },
-  { path: "/grupos", element: <Page title="Grupos" /> },
+  // Redirección de entrada (RN-02-30).
+  { path: "/", element: <RootRedirect /> },
+  { path: "/grupos", element: <GroupsPage /> },
   { path: "/g/:groupId", element: <Page title="Inicio" /> },
   { path: "/g/:groupId/compra", element: <Page title="Compra" /> },
   { path: "/g/:groupId/compra/indispensables", element: <Page title="Indispensables" /> },
