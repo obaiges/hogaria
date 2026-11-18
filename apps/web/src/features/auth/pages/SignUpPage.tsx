@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 import { signUpInput } from "@hogaria/shared";
 
@@ -37,10 +37,13 @@ const FIELD_ORDER: Field[] = ["name", "email", "username", "password", "repeat"]
 
 export function SignUpPage() {
   const [invite] = useState(readPendingInvite);
+  const navigate = useNavigate();
   const [values, setValues] = useState<Record<Field, string>>({ name: "", email: "", username: "", password: "", repeat: "" });
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [emailTaken, setEmailTaken] = useState(false);
+  /** `INVITE_REQUIRED` con una invitación pendiente: la cookie de 1 h caducó (spec 01 §10). */
+  const [inviteExpired, setInviteExpired] = useState(false);
   const [loading, setLoading] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
 
@@ -68,6 +71,7 @@ export function SignUpPage() {
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
     setFormError(null);
+    setInviteExpired(false);
     setEmailTaken(false);
 
     const { repeat, ...input } = values;
@@ -108,6 +112,7 @@ export function SignUpPage() {
     }
     switch (error.code) {
       case "INVITE_REQUIRED":
+        setInviteExpired(invite !== null);
         setFormError("Necesitas una invitación para registrarte. Pide a alguien de tu hogar que te envíe un enlace.");
         break;
       case "USER_ALREADY_EXISTS":
@@ -163,6 +168,14 @@ export function SignUpPage() {
                 </>
               ) : null}
             </FormError>
+          ) : null}
+          {formError && inviteExpired && invite ? (
+            <div className="mt-3 flex flex-col gap-2">
+              <FormNotice>Tu invitación ha caducado en este navegador. Vuelve a abrir el enlace.</FormNotice>
+              <Button type="button" variant="secondary" onClick={() => void navigate(`/invite/${encodeURIComponent(invite.token)}`)}>
+                Abrir la invitación
+              </Button>
+            </div>
           ) : null}
         </div>
         <FormField label="Nombre" hint="Así te verán en el hogar" error={fieldErrors.name}>

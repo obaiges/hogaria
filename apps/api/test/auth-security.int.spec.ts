@@ -7,7 +7,7 @@ import { PASSWORD_POLICY_MESSAGES } from '@hogaria/shared/common-passwords';
 
 import { AuthRequestLimiter } from '../src/auth/rate-limit/auth-request-limiter.js';
 import { LoginRateLimiter } from '../src/auth/rate-limit/login-rate-limiter.js';
-import { createUser, loginAs } from './factories/index.js';
+import { createUser, inviteCookie, loginAs } from './factories/index.js';
 import { createTestApp, type TestApp } from './utils/create-test-app.js';
 import { getTestPrisma } from './utils/prisma.js';
 
@@ -169,7 +169,9 @@ describe('seguridad de /api/auth (HOG-058)', () => {
   describe('otros límites de /api/auth (RN-01-27)', () => {
     it('registro: 5 por hora por IP; el 6.º → 429', async () => {
       for (let i = 0; i < 5; i++) {
-        await post('/sign-up/email', { name: 'U', email: `u${i}@demo.local`, username: `usuario${i}`, password: 'contraseña-larga-1' }).expect(200);
+        await post('/sign-up/email', { name: 'U', email: `u${i}@demo.local`, username: `usuario${i}`, password: 'contraseña-larga-1' })
+          .set('Cookie', await inviteCookie())
+          .expect(200);
       }
       const res = await post('/sign-up/email', { name: 'U', email: 'u9@demo.local', username: 'usuario9', password: 'contraseña-larga-1' });
       expect(res.status).toBe(429);

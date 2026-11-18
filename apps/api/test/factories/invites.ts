@@ -43,3 +43,15 @@ export async function createInvite(
   });
   return { invite, token };
 }
+
+/**
+ * Cabecera `Cookie` con una invitación activa nueva (`hogaria_invite`), como la que pone
+ * `GET /invites/:token`. Para registrar usuarios en los tests (RN-01-01). Si no se pasa
+ * `groupId`, crea un hogar de un miembro.
+ */
+export async function inviteCookie(groupId?: string): Promise<string> {
+  const { createGroupWithMembers } = await import('./groups.js');
+  const target = groupId ?? (await createGroupWithMembers(1)).group.id;
+  const { token } = await createInvite(target);
+  return `hogaria_invite=${token}`;
+}

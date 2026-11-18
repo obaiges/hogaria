@@ -13,6 +13,7 @@ import {
 
 import { uuidv7 } from '../common/ids/uuidv7.js';
 import { CLIENT_IP_HEADER, createAuthHooks } from './auth-hooks.js';
+import { createInviteDatabaseHooks, SignupInviteConsumerRef } from './invite-hooks.js';
 import { AuthRequestLimiter } from './rate-limit/auth-request-limiter.js';
 import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
 
@@ -38,6 +39,8 @@ export interface AuthEnv {
   /** `.hogaria.obaiges.com` en producción; vacío en local (cookie del host). */
   COOKIE_DOMAIN?: string;
   BETTER_AUTH_SECRET?: string;
+  /** `'false'` desactiva la exigencia de invitación (RN-01-01); cualquier otro valor, activa. */
+  SIGNUP_REQUIRES_INVITE?: string;
 }
 
 export interface AuthDeps {
@@ -48,6 +51,8 @@ export interface AuthDeps {
   /** Por defecto, nuevos (en memoria). Los tests pueden pasar los suyos. */
   loginLimiter?: LoginRateLimiter;
   requestLimiter?: AuthRequestLimiter;
+  /** Enlace a `InvitesService.consumeForNewUser` (lo registra el módulo de grupos). */
+  inviteConsumer?: SignupInviteConsumerRef;
 }
 
 function origin(url: string | undefined): string | undefined {
@@ -77,14 +82,23 @@ export function withAppCallback(url: string, appUrl: string | undefined): string
  * Es una factoría (no un `auth` global) para que Nest le inyecte Prisma y el
  * `EmailSender` (en test, `FakeEmailSender`). Se registra con el token `AUTH`.
  */
-export function createAuth({ prisma, emailSender, securityEvents, env, loginLimiter, requestLimiter }: AuthDeps) {
+export function createAuth({ prisma, emailSender, securityEvents, env, loginLimiter, requestLimiter, inviteConsumer }: AuthDeps) {
   const appOrigin = origin(env.APP_URL);
   const cookieDomain = env.COOKIE_DOMAIN?.trim();
+  const { assertSignUpInvite, ...inviteHooks } = createInviteDatabaseHooks({
+    prisma,
+    securityEvents,
+    consumer: inviteConsumer ?? new SignupInviteConsumerRef(),
+    requireInvite: env.SIGNUP_REQUIRES_INVITE?.trim().toLowerCase() !== 'false',
+    cookieDomain: cookieDomain || undefined,
+    secureCookies: env.NODE_ENV === 'production',
+  });
   const hooks = createAuthHooks({
     prisma,
     securityEvents,
     loginLimiter: loginLimiter ?? new LoginRateLimiter(),
     requestLimiter: requestLimiter ?? new AuthRequestLimiter(),
+    assertSignUpInvite,
   });
 
   return betterAuth({
@@ -100,6 +114,8 @@ export function createAuth({ prisma, emailSender, securityEvents, env, loginLimi
     // Los límites de /api/auth/* son los nuestros (RN-01-26/27, auth-hooks.ts).
     rateLimit: { enabled: false },
     hooks,
+    // Errores de los callbacks de OAuth (p. ej. Google sin invitación) → `/entrar?error=<código>` (RN-01-06).
+    ...(appOrigin ? { onAPIError: { errorURL: `${appOrigin}/entrar` } } : {}),
 
     // Campos propios de Hogaria que viajan con la sesión (el AuthGuard los usa sin otra
     // consulta). `input: false`: nadie puede fijarlos desde el registro.
@@ -149,6 +165,8 @@ export function createAuth({ prisma, emailSender, securityEvents, env, loginLimi
     ],
 
     databaseHooks: {
+      // RN-01-01 a RN-01-06: ningún usuario sin invitación válida (invite-hooks.ts).
+      user: inviteHooks,
       session: {
         create: {
           // RN-01-25: un usuario bloqueado no puede crear sesión.

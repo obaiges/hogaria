@@ -29,7 +29,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-107 | Crear el contexto de grupo activo en la web (`GroupLayout`) y la pantalla "No encontrado" | E02 | P0 | 3 | HOG-100, HOG-101, HOG-053, HOG-008 |
 | HOG-108 | Crear la API de miembros: listar y cambiar el color de calle propio | E02 | P0 | 2 | HOG-100 |
 | HOG-754 | Crear la API del Inicio con secciones registrables | E15 | P0 | 3 | HOG-100, HOG-101, HOG-153 |
-| HOG-052 | Exigir invitación al registrarse (hooks de Better Auth y cookie `hogaria_invite`) | E01 | P0 | 3 | HOG-050, HOG-053, HOG-102 |
 
 ## ✅ Done
 | ID | Título | Épica | Prio | Pts | Depende de |
@@ -57,6 +56,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-101 | Implementar el `GroupMemberGuard` con caché de 60 s y 404 | E02 | P0 | 3 | HOG-055, HOG-004 |
 | HOG-150 | Crear el `RealtimeGateway` con autenticación en el handshake y salas de usuario y grupo | E03 | P0 | 5 | HOG-055, HOG-014 |
 
+| HOG-052 | Exigir invitación al registrarse (hooks de Better Auth y cookie `hogaria_invite`) | E01 | P0 | 3 | HOG-050, HOG-053, HOG-102 |
 | HOG-102 | Crear la API de invitaciones: crear, listar, revocar, consultar pública y aceptar | E02 | P0 | 5 | HOG-100, HOG-150, HOG-151, HOG-153 |
 | HOG-100 | Crear la API de grupos: crear con semilla, ver, editar y `/me/groups` | E02 | P0 | 5 | HOG-101, HOG-151, HOG-153 |
 | HOG-153 | Crear el `ActivityService` con escritura en transacción, *summaries* en español, `MaintenanceCron` y purga de retención | E03 | P0 | 3 | HOG-004, HOG-006, HOG-010, HOG-151 |
@@ -537,7 +537,7 @@ flowchart LR
 %% progreso (generado por scripts/board-progress.mjs)
   classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
   classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
-  class HOG050,HOG055,HOG053,HOG058,HOG101,HOG100,HOG102,HOG150,HOG151,HOG152,HOG153 done
+  class HOG050,HOG055,HOG053,HOG058,HOG052,HOG101,HOG100,HOG102,HOG150,HOG151,HOG152,HOG153 done
 ```
 
 ### Fase 2 · Compra + Tareas + Push

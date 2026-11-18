@@ -68,4 +68,14 @@ describe("SignUpPage", () => {
     await fillForm();
     expect(await screen.findByRole("alert")).toHaveTextContent("Necesitas una invitación para registrarte.");
   });
+
+  it("invitación requerida con una invitación pendiente → aviso de caducada y botón a /invite/:token", async () => {
+    sessionStorage.setItem(PENDING_INVITE_KEY, JSON.stringify({ token: "tok-123", groupName: "Casa", groupEmoji: "🐶" }));
+    server.use(http.post(authUrl("/sign-up/email"), () => HttpResponse.json({ code: "INVITE_REQUIRED", message: "x" }, { status: 403 })));
+    renderRoute(<SignUpPage />, "/registro", "/registro");
+    await fillForm();
+    expect(await screen.findByText("Tu invitación ha caducado en este navegador. Vuelve a abrir el enlace.")).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Abrir la invitación" }));
+    expect(await screen.findByTestId("where")).toHaveTextContent("/invite/tok-123");
+  });
 });

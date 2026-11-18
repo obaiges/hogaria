@@ -23,6 +23,8 @@ export interface AuthHookDeps {
   securityEvents: SecurityEventRecorder;
   loginLimiter: LoginRateLimiter;
   requestLimiter: AuthRequestLimiter;
+  /** Exige invitación en `/sign-up/email` (spec 01, RN-01-03; ver invite-hooks.ts). */
+  assertSignUpInvite?: (ctx: unknown, email: string | null) => Promise<void>;
 }
 
 type HookCtx = Parameters<Parameters<typeof createAuthMiddleware>[0]>[0];
@@ -75,7 +77,7 @@ function identifierOf(path: string, body: Record<string, unknown>): string {
  * Las llamadas internas (`auth.api.getSession()` del AuthGuard) no traen `request` y se
  * ignoran: no cuentan para los límites.
  */
-export function createAuthHooks({ prisma, securityEvents, loginLimiter, requestLimiter }: AuthHookDeps) {
+export function createAuthHooks({ prisma, securityEvents, loginLimiter, requestLimiter, assertSignUpInvite }: AuthHookDeps) {
   const before = createAuthMiddleware(async (ctx) => {
     if (!ctx.request) return;
     const { ip, userAgent } = clientInfo(ctx);
@@ -93,6 +95,7 @@ export function createAuthHooks({ prisma, securityEvents, loginLimiter, requestL
       case '/sign-up/email':
         assertSignUpInput(body);
         assertPolicy(body.password, { email: body.email as string, username: body.username as string });
+        await assertSignUpInvite?.(ctx, typeof body.email === 'string' ? body.email.trim().toLowerCase() : null);
         break;
       case '/reset-password': {
         const token = (body.token as string | undefined) ?? (ctx.query as { token?: string } | undefined)?.token;

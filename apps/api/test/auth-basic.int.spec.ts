@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createAuth } from '../src/auth/auth.js';
 import { UUID_V7_PATTERN } from '../src/common/ids/uuidv7.js';
 import { FakeEmailSender } from '../src/email/fake-email-sender.js';
-import { createUser, loginAs } from './factories/index.js';
+import { createUser, inviteCookie, loginAs } from './factories/index.js';
 import { createTestApp, type TestApp } from './utils/create-test-app.js';
 import { getTestPrisma } from './utils/prisma.js';
 
@@ -34,7 +34,7 @@ describe('Better Auth básico (HOG-050)', () => {
 
   it('el registro crea un User con id UUIDv7 sin verificar, su cuenta credential y envía la verificación', async () => {
     t.emails.clear();
-    const res = await signUp({ name: 'Ana', email: 'Ana@Demo.Local', username: 'Ana_G', password: PASSWORD });
+    const res = await signUp({ name: 'Ana', email: 'Ana@Demo.Local', username: 'Ana_G', password: PASSWORD }).set('Cookie', await inviteCookie());
     expect(res.status).toBe(200);
     expect(sessionCookie(res)).toBeUndefined(); // requireEmailVerification: sin sesión hasta verificar
 
@@ -64,7 +64,7 @@ describe('Better Auth básico (HOG-050)', () => {
   });
 
   it('sin verificar no entra y se reenvía el enlace; al abrirlo verifica, crea la sesión y vuelve a la web', async () => {
-    await signUp({ name: 'Leo', email: 'leo@demo.local', username: 'leo', password: PASSWORD }).expect(200);
+    await signUp({ name: 'Leo', email: 'leo@demo.local', username: 'leo', password: PASSWORD }).set('Cookie', await inviteCookie()).expect(200);
     t.emails.clear();
 
     const denied = await request(t.server).post('/api/auth/sign-in/email').set('Origin', ORIGIN).send({ email: 'leo@demo.local', password: PASSWORD });

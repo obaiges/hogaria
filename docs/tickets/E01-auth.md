@@ -73,12 +73,12 @@ Activar `socialProviders.google` en Better Auth con los scopes mínimos y la vin
 Impedir que se cree ningún usuario sin una invitación válida (email o Google) y, cuando la hay, unir al nuevo usuario al grupo consumiendo la invitación.
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/auth/invite-hooks.ts`: `databaseHooks.user.create.before` lee `hogaria_invite` de la cookie de la petición, valida la invitación (`ACTIVE`) y, si no es válida, lanza `APIError('FORBIDDEN', { code: 'INVITE_REQUIRED', message: 'Necesitas una invitación para registrarte' })` y registra `SecurityEvent SIGNUP_REJECTED_NO_INVITE`.
-- [ ] `databaseHooks.user.create.after` llama a `InvitesService.consumeForNewUser(token, user.id)`, registra `SIGNUP_WITH_INVITE` y borra la cookie (`Max-Age=0`, mismo `Domain` y `Path`).
-- [ ] Si el consumo falla en el `after` (carrera), el usuario se mantiene sin grupo y se registra un `warn` (RN-01-05).
-- [ ] Con `SIGNUP_REQUIRES_INVITE=false` los hooks no exigen invitación (pero si hay cookie válida, la consumen).
-- [ ] Aplica igual a `/sign-up/email` y al alta por Google (`/callback/google`); los usuarios de Google existentes entran sin invitación.
-- [ ] El texto de `/registro` muestra los mensajes de `INVITE_REQUIRED` y de invitación caducada (spec 01 §7 y §10).
+- [x] `apps/api/src/auth/invite-hooks.ts`: `databaseHooks.user.create.before` lee `hogaria_invite` de la cookie de la petición, valida la invitación (`ACTIVE`) y, si no es válida, lanza `APIError('FORBIDDEN', { code: 'INVITE_REQUIRED', message: 'Necesitas una invitación para registrarte' })` y registra `SecurityEvent SIGNUP_REJECTED_NO_INVITE`.
+- [x] `databaseHooks.user.create.after` llama a `InvitesService.consumeForNewUser(token, user.id)`, registra `SIGNUP_WITH_INVITE` y borra la cookie (`Max-Age=0`, mismo `Domain` y `Path`).
+- [x] Si el consumo falla en el `after` (carrera), el usuario se mantiene sin grupo y se registra un `warn` (RN-01-05).
+- [x] Con `SIGNUP_REQUIRES_INVITE=false` los hooks no exigen invitación (pero si hay cookie válida, la consumen).
+- [x] Aplica igual a `/sign-up/email` y al alta por Google (`/callback/google`); los usuarios de Google existentes entran sin invitación.
+- [x] El texto de `/registro` muestra los mensajes de `INVITE_REQUIRED` y de invitación caducada (spec 01 §7 y §10).
 
 **Notas técnicas**
 - La cookie la pone `GET /invites/:token` (HOG-102) con `Path=/api/auth`.

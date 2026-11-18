@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, type OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { fromNodeHeaders } from 'better-auth/node';
 
@@ -16,6 +16,7 @@ import {
 
 import { ActivityService } from '../../activity/activity.service.js';
 import { AUTH, type Auth } from '../../auth/auth.js';
+import { SignupInviteConsumerRef } from '../../auth/invite-hooks.js';
 import { MembershipCache } from '../../common/cache/membership-cache.js';
 import { AppError } from '../../common/errors/app-error.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -49,7 +50,7 @@ type ConsumeResult =
  * del token; el token en claro solo sale en la respuesta de `create`.
  */
 @Injectable()
-export class InvitesService {
+export class InvitesService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly activity: ActivityService,
@@ -58,7 +59,13 @@ export class InvitesService {
     private readonly membership: MembershipCache,
     private readonly config: ConfigService,
     @Inject(AUTH) private readonly auth: Auth,
+    private readonly signupConsumer: SignupInviteConsumerRef,
   ) {}
+
+  /** El registro de Better Auth (hook `user.create.after`) consume con este servicio. */
+  onModuleInit(): void {
+    this.signupConsumer.set(this);
+  }
 
   /** `POST /groups/:groupId/invites` (RN-02-10 a RN-02-12). */
   async create(groupId: string, user: { id: string; name: string }): Promise<CreatedGroupInviteDto> {
