@@ -1,13 +1,20 @@
-import { Link, useLocation } from "react-router";
+import { useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router";
 
 import { cn } from "@/lib/utils";
 
 import { activeTabId, TAB_ENTRIES, type NavEntry } from "../navigation";
+import { MoreSheet } from "./MoreSheet";
 
 export interface BottomNavProps {
   groupId: string;
-  /** Abre la hoja "Más" (HOG-751). Sin ella, el botón queda deshabilitado. */
-  onOpenMore?: () => void;
+}
+
+/** Estado de historial de la hoja "Más": el botón atrás del sistema la cierra (spec 15 §7.1). */
+export const MORE_SHEET_STATE = "more";
+
+function isMoreOpen(state: unknown): boolean {
+  return typeof state === "object" && state !== null && (state as { sheet?: unknown }).sheet === MORE_SHEET_STATE;
 }
 
 const itemClass =
@@ -29,9 +36,16 @@ function TabContent({ entry, active }: { entry: NavEntry; active: boolean }) {
 }
 
 /** Barra inferior de 5 pestañas (spec 15 §7.1, RN-15-02 y RN-15-03). */
-export function BottomNav({ groupId, onOpenMore }: BottomNavProps) {
-  const { pathname } = useLocation();
-  const active = activeTabId(pathname);
+export function BottomNav({ groupId }: BottomNavProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const moreRef = useRef<HTMLButtonElement>(null);
+  const active = activeTabId(location.pathname);
+  const moreOpen = isMoreOpen(location.state);
+
+  // Abrir añade una entrada de historial en la misma URL; cerrar (Esc, X, fondo) la quita.
+  const openMore = () => void navigate(location, { state: { sheet: MORE_SHEET_STATE } });
+  const closeMore = () => void navigate(-1);
 
   return (
     <nav
@@ -56,11 +70,12 @@ export function BottomNav({ groupId, onOpenMore }: BottomNavProps) {
               ) : (
                 <button
                   type="button"
-                  onClick={onOpenMore}
-                  disabled={!onOpenMore}
+                  ref={moreRef}
+                  onClick={openMore}
                   aria-haspopup="dialog"
+                  aria-expanded={moreOpen}
                   aria-current={isActive ? "page" : undefined}
-                  className={cn(itemClass, color, "disabled:cursor-default")}
+                  className={cn(itemClass, color)}
                 >
                   <TabContent entry={entry} active={isActive} />
                 </button>
@@ -69,6 +84,7 @@ export function BottomNav({ groupId, onOpenMore }: BottomNavProps) {
           );
         })}
       </ul>
+      <MoreSheet groupId={groupId} open={moreOpen} onClose={closeMore} returnFocusTo={moreRef} />
     </nav>
   );
 }

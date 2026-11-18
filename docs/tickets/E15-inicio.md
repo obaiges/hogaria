@@ -48,10 +48,10 @@ Esqueleto de navegación de la PWA: árbol de rutas con `lazy`, guards `RequireA
 Hoja inferior que abre la pestaña "Más" con las entradas del registro agrupadas, ocultando las deshabilitadas y mostrando "Administración" solo a administradores.
 
 **Criterios de aceptación**
-- [ ] Secciones y orden exactos de RN-15-04; solo entradas `enabled`.
-- [ ] "Administración" solo si `me.isPlatformAdmin`.
-- [ ] El botón atrás del sistema cierra la hoja (entrada de historial con `state.sheet = 'more'`); Esc también.
-- [ ] Foco atrapado en la hoja y devuelto a la pestaña "Más" al cerrar.
+- [x] Secciones y orden exactos de RN-15-04; solo entradas `enabled`.
+- [x] "Administración" solo si `me.isPlatformAdmin`.
+- [x] El botón atrás del sistema cierra la hoja (entrada de historial con `state.sheet = 'more'`); Esc también.
+- [x] Foco atrapado en la hoja y devuelto a la pestaña "Más" al cerrar.
 
 **Notas técnicas**
 - `apps/web/src/app/layout/MoreSheet.tsx` sobre el `Sheet` de `components/ui`.
