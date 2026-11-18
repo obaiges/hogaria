@@ -1,6 +1,7 @@
 import { cva, type VariantProps } from "class-variance-authority";
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 
+import { OFFLINE_TITLE, useCanEdit } from "@/lib/realtime/connection-store";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
@@ -22,20 +23,24 @@ export interface ButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   loading?: boolean;
-  /** Preparada, sin efecto hasta HOG-155 */
+  /** Muta datos: se deshabilita sin conexión (RN-03-23), con `aria-disabled` y `title` "Sin conexión". */
   requiresConnection?: boolean;
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { className, variant, loading, requiresConnection: _requiresConnection, disabled, children, type = "button", ...props },
+  { className, variant, loading, requiresConnection, disabled, children, type = "button", title, ...props },
   ref,
 ) {
+  const canEdit = useCanEdit();
+  const blocked = Boolean(requiresConnection) && !canEdit;
   return (
     <button
       ref={ref}
       type={type}
       className={cn(buttonVariants({ variant }), className)}
-      disabled={disabled || loading}
+      disabled={disabled || loading || blocked}
+      aria-disabled={blocked || undefined}
+      title={blocked ? OFFLINE_TITLE : title}
       aria-busy={loading || undefined}
       {...props}
     >

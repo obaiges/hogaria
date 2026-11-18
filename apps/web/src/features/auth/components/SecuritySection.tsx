@@ -10,7 +10,7 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { useToast } from "@/components/ui/Toast";
 import { authClient } from "@/lib/authClient";
-import { useOnlineStatus } from "@/lib/useOnlineStatus";
+import { useCanEdit } from "@/lib/realtime/connection-store";
 
 import { sessionsQueryKey, useSessions } from "../api";
 
@@ -37,7 +37,7 @@ export function SecuritySection() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const online = useOnlineStatus();
+  const online = useCanEdit();
   const sessions = useSessions();
 
   const [target, setTarget] = useState<SessionDto | null>(null);

@@ -1,5 +1,8 @@
 import { ERROR_MESSAGES_ES, isErrorCode, problemDetailsSchema, type ProblemDetails } from '@hogaria/shared';
 
+import { useToastStore } from '@/components/ui/Toast';
+
+import { getConnectionStatus, OFFLINE_MESSAGE } from './realtime/connection-store';
 import { registerMutation } from './realtime/mutation-registry';
 
 export interface ProblemFieldError {
@@ -33,6 +36,14 @@ export class NetworkError extends Error {
   constructor() {
     super('No hay conexión con el servidor');
     this.name = 'NetworkError';
+  }
+}
+
+/** Mutación rechazada sin enviarla porque no hay conexión (RN-03-23). */
+export class OfflineError extends Error {
+  constructor() {
+    super(OFFLINE_MESSAGE);
+    this.name = 'OfflineError';
   }
 }
 
@@ -76,6 +87,11 @@ async function request<T>(method: HttpMethod, path: string, opts: RequestOptions
   const url = path.startsWith('http') ? path : `${API_BASE}${path.startsWith('/') ? path : `/${path}`}`;
   const headers: Record<string, string> = { ...(opts.headers ?? {}) };
 
+  if (isMutation(method) && getConnectionStatus() === 'offline') {
+    // Nunca se encola ni se envía: se avisa y se rechaza (ADR-015).
+    useToastStore.getState().add({ message: OFFLINE_MESSAGE });
+    throw new OfflineError();
+  }
   if (isMutation(method)) {
     const id = crypto.randomUUID();
     registerMutation(id);

@@ -1,6 +1,6 @@
 import { REALTIME_CHANNEL } from '@hogaria/shared';
 
-import { socketConnected, socketDisconnected } from './connection-store';
+import { socketConnected, socketConnecting, socketDisconnected } from './connection-store';
 import { createDispatcher } from './dispatcher';
 
 import type { QueryClient } from '@tanstack/react-query';
@@ -57,6 +57,7 @@ export function bindRealtime(socket: RealtimeSocketLike, deps: BindRealtimeDeps)
   };
   const dispatch = createDispatcher({ queryClient: deps.queryClient, getMeId: deps.getMeId, endSession });
   let connectedBefore = false;
+  socketConnecting();
 
   socket.on(REALTIME_CHANNEL, dispatch as (...args: never[]) => void);
 

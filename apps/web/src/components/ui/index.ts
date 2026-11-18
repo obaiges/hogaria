@@ -12,3 +12,4 @@ export { Skeleton } from "./Skeleton";
 export { EmptyState } from "./EmptyState";
 export { ErrorState } from "./ErrorState";
 export { FormField } from "./FormField";
+export { OfflineBanner } from "./OfflineBanner";

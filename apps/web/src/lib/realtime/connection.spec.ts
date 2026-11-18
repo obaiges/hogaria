@@ -2,7 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { bindRealtime, type BindRealtimeDeps, type RealtimeSocketLike } from './connection';
-import { useConnectionStore } from './connection-store';
+import { resetConnectionStore, useConnectionStore } from './connection-store';
 import { clearHandlers, registerHandlers } from './handlers';
 
 type Listener = (...args: unknown[]) => void;
@@ -32,7 +32,7 @@ describe('bindRealtime (RN-03-20 y RN-03-21)', () => {
     queryClient = new QueryClient();
     deps = { queryClient, getMeId: () => 'me', getActiveGroupId: () => 'g-active', onAuthError: vi.fn() };
     clearHandlers();
-    useConnectionStore.setState({ socketConnected: false, disconnectedAt: null });
+    resetConnectionStore();
   });
 
   it('el primer connect no invalida; cada reconexión invalida una vez', () => {
@@ -74,10 +74,11 @@ describe('bindRealtime (RN-03-20 y RN-03-21)', () => {
 
   it('refleja connect/disconnect en el connection-store', () => {
     bindRealtime(socket as unknown as RealtimeSocketLike, deps);
+    expect(useConnectionStore.getState()).toMatchObject({ socket: 'connecting', status: 'online' });
     socket.serverEmit('connect');
-    expect(useConnectionStore.getState().socketConnected).toBe(true);
+    expect(useConnectionStore.getState()).toMatchObject({ socket: 'connected', status: 'online' });
     socket.serverEmit('disconnect', 'transport close');
-    expect(useConnectionStore.getState()).toMatchObject({ socketConnected: false, disconnectedAt: expect.any(Number) });
+    expect(useConnectionStore.getState()).toMatchObject({ socket: 'disconnected', status: 'reconnecting' });
   });
 
   it.each(['UNAUTHENTICATED', 'ACCOUNT_BLOCKED'] as const)('connect_error %s: para la reconexión, limpia la caché y avisa', (code) => {

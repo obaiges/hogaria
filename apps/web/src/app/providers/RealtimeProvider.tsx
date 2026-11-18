@@ -4,6 +4,7 @@ import { useMatch, useNavigate } from 'react-router';
 
 import { SESSION_ENDED_PARAM, useMe } from '@/features/auth/api';
 import { bindRealtime, type RealtimeAuthErrorCode } from '@/lib/realtime/connection';
+import { socketStopped } from '@/lib/realtime/connection-store';
 import { registerFeatureHandlers } from '@/lib/realtime/handlers';
 import { clearMutations } from '@/lib/realtime/mutation-registry';
 import { clearRipples } from '@/lib/realtime/ripple-store';
@@ -55,7 +56,10 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
       },
     });
     socket.connect();
-    return () => destroySocket(socket);
+    return () => {
+      destroySocket(socket);
+      socketStopped();
+    };
   }, [queryClient]);
 
   return <>{children}</>;

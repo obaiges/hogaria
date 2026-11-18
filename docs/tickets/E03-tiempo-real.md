@@ -154,11 +154,11 @@ Exponer el feed de actividad paginado del grupo y mostrarlo agrupado por días e
 Calcular el estado de conexión combinando `navigator.onLine` y el socket, mostrar el aviso "Sin conexión. Los cambios no se guardarán" y deshabilitar toda edición mientras dure, sin encolar mutaciones.
 
 **Criterios de aceptación**
-- [ ] `lib/realtime/connection-store.ts` con `'online' | 'reconnecting' | 'offline'` y `OFFLINE_GRACE_MS = 5000`, escuchando `online`/`offline` del navegador y `connect`/`disconnect` del socket.
-- [ ] `useConnectionStatus()` y `useCanEdit()`; la prop `requiresConnection` de `Button`, `Checkbox` y envíos de formulario (y `Fab` cuando exista) deshabilita el control cuando `useCanEdit()` es `false`, con `aria-disabled` y `title` "Sin conexión".
-- [ ] `components/ui/OfflineBanner.tsx` (corchera roja `LaneRope variant="limit"`, `role="status"`, `aria-live="polite"`) exportado para que el `AppShell` lo monte (HOG-752); no aparece en `reconnecting`.
-- [ ] `apiClient` lanza `OfflineError` sin enviar ninguna mutación en `offline` y la interfaz muestra el toast "Sin conexión. Los cambios no se guardarán".
-- [ ] Las mutaciones de TanStack Query tienen `networkMode: 'always'` (no se encolan).
+- [x] `lib/realtime/connection-store.ts` con `'online' | 'reconnecting' | 'offline'` y `OFFLINE_GRACE_MS = 5000`, escuchando `online`/`offline` del navegador y `connect`/`disconnect` del socket.
+- [x] `useConnectionStatus()` y `useCanEdit()`; la prop `requiresConnection` de `Button`, `Checkbox` y envíos de formulario (y `Fab` cuando exista) deshabilita el control cuando `useCanEdit()` es `false`, con `aria-disabled` y `title` "Sin conexión".
+- [x] `components/ui/OfflineBanner.tsx` (corchera roja `LaneRope variant="limit"`, `role="status"`, `aria-live="polite"`) exportado para que el `AppShell` lo monte (HOG-752); no aparece en `reconnecting`.
+- [x] `apiClient` lanza `OfflineError` sin enviar ninguna mutación en `offline` y la interfaz muestra el toast "Sin conexión. Los cambios no se guardarán".
+- [x] Las mutaciones de TanStack Query tienen `networkMode: 'always'` (no se encolan).
 
 **Tests**
 - Unit: transiciones del `connection-store` con temporizadores falsos; `OfflineBanner` visible solo en `offline`; `Button requiresConnection` deshabilitado; `apiClient` rechaza mutaciones en `offline`.

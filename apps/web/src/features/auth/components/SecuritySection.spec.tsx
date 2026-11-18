@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { ToastViewport } from "@/components/ui/Toast";
+import { resetConnectionStore, setBrowserOnline } from "@/lib/realtime/connection-store";
 import { http, HttpResponse, server } from "@/test/msw";
 
 import { authUrl, renderRoute } from "../test-utils";
@@ -46,6 +47,7 @@ function renderSection() {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  resetConnectionStore();
 });
 
 describe("SecuritySection", () => {
@@ -129,7 +131,7 @@ describe("SecuritySection", () => {
   });
 
   it("sin conexión deshabilita las acciones", async () => {
-    vi.spyOn(navigator, "onLine", "get").mockReturnValue(false);
+    setBrowserOnline(false);
     mockSessions();
     renderSection();
     await screen.findByText("Chrome en Android");
