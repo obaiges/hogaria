@@ -9,7 +9,9 @@ import { useToast } from "@/components/ui/Toast";
 import { ApiError, OfflineError } from "@/lib/apiClient";
 
 import { useCreateInvite, useInvites, useRevokeInvite } from "../api";
+import { inviteRippleKey } from "../realtime";
 import { InviteLinkSheet } from "./InviteLinkSheet";
+import { RippleItem } from "./RippleItem";
 
 import type { CreatedGroupInviteDto, GroupInviteDto } from "@hogaria/shared";
 
@@ -109,14 +111,14 @@ export function InvitesSection({ groupId, groupName, myName, timezone }: Invites
             ) : (
               <ul className="divide-y divide-[var(--grout)]">
                 {pending.map((i) => (
-                  <li key={i.id} className="flex min-h-[48px] items-center justify-between gap-3 py-1">
+                  <RippleItem key={i.id} rippleKey={inviteRippleKey(i.id)} className="flex min-h-[48px] items-center justify-between gap-3 py-1">
                     <span className="text-[14px] text-[var(--ink)]">
                       Creada por {i.createdByName ?? "Usuario eliminado"} · {expiresIn(i.expiresAt)}
                     </span>
                     <Button variant="ghost" requiresConnection onClick={() => setToRevoke(i)}>
                       {INVITES_TEXT.revoke}
                     </Button>
-                  </li>
+                  </RippleItem>
                 ))}
               </ul>
             )}
@@ -130,9 +132,9 @@ export function InvitesSection({ groupId, groupName, myName, timezone }: Invites
               </summary>
               <ul className="divide-y divide-[var(--grout)]">
                 {previous.map((i) => (
-                  <li key={i.id} className="py-2 text-[14px] text-[var(--ink-muted)]">
+                  <RippleItem key={i.id} rippleKey={inviteRippleKey(i.id)} className="py-2 text-[14px] text-[var(--ink-muted)]">
                     {pastInviteLabel(i)}
-                  </li>
+                  </RippleItem>
                 ))}
               </ul>
             </details>

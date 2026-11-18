@@ -8,7 +8,9 @@ import { EditGroupSheet } from "../components/EditGroupSheet";
 import { InvitesSection } from "../components/InvitesSection";
 import { LaneColorPicker } from "../components/LaneColorPicker";
 import { MemberActions, REMOVE_TEXT } from "../components/RemoveMemberDialog";
+import { RippleItem } from "../components/RippleItem";
 import { useActiveGroup } from "../GroupProvider";
+import { memberRippleKey } from "../realtime";
 
 import type { GroupMemberDto } from "@hogaria/shared";
 
@@ -69,7 +71,7 @@ export function GroupSettingsPage() {
       <Section id="ajustes-miembros" title={SETTINGS_TEXT.members(members.length)}>
         <ul className="divide-y divide-[var(--grout)] rounded-[var(--radius-md)] border border-[var(--grout)] bg-[var(--surface)]">
           {members.map((member) => (
-            <li key={member.id} className="flex min-h-[56px] items-center gap-3 pl-3 pr-1">
+            <RippleItem key={member.id} rippleKey={memberRippleKey(member.id)} className="flex min-h-[56px] items-center gap-3 pl-3 pr-1">
               <MemberAvatar member={member} size={36} decorative />
               <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate text-[16px] text-[var(--ink)]">
@@ -89,7 +91,7 @@ export function GroupSettingsPage() {
                   <MoreVertical className="h-5 w-5" strokeWidth={1.75} aria-hidden />
                 </button>
               ) : null}
-            </li>
+            </RippleItem>
           ))}
         </ul>
         {actionsFor ? (

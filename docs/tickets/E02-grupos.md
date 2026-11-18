@@ -252,9 +252,9 @@ Exponer la lista de miembros del grupo y el cambio del color de calle del propio
 Registrar los manejadores de `group.updated`, `group.member.*` e `invite.*` para que los ajustes, el selector de hogar y la cabecera se actualicen sin recargar, con onda en las filas cambiadas por otros.
 
 **Criterios de aceptación**
-- [ ] `features/groups/realtime.ts` con los manejadores de la spec 02 §6, registrados en `lib/realtime/handlers.ts`.
-- [ ] Onda (`markRipple`) en la fila del miembro unido o actualizado y en la invitación creada o revocada por otro.
-- [ ] El manejador de `group.member.left` reutiliza la lógica de RN-02-32 de HOG-106.
+- [x] `features/groups/realtime.ts` con los manejadores de la spec 02 §6, registrados en `lib/realtime/handlers.ts`.
+- [x] Onda (`markRipple`) en la fila del miembro unido o actualizado y en la invitación creada o revocada por otro.
+- [x] El manejador de `group.member.left` reutiliza la lógica de RN-02-32 de HOG-106.
 
 **Tests**
 - Unit: cada manejador sobre un `QueryClient` de prueba (no crea la query si no existía; *upsert* por `id`; `memberCount` correcto).
