@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { AuthGuard } from './common/auth/auth.guard.js';
 import { requestContextMiddleware } from './common/context/request-context.js';
 import { ProblemDetailsFilter } from './common/filters/problem-details.filter.js';
+import { GroupAccessModule } from './common/guards/group-access.module.js';
 import { OriginCheckMiddleware } from './common/security/origin-check.middleware.js';
 import { AppThrottlerGuard, DEFAULT_RATE_LIMIT } from './common/security/rate-limit.js';
 import { validateEnv } from './config/env.js';
@@ -46,6 +47,7 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     }),
     ThrottlerModule.forRoot([{ name: 'default', ...DEFAULT_RATE_LIMIT }]),
     PrismaModule,
+    GroupAccessModule,
     ExternalServicesModule,
     AuthModule,
     HealthModule,

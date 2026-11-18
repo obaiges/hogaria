@@ -21,7 +21,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
-| HOG-101 | Implementar el `GroupMemberGuard` con caché de 60 s y 404 | E02 | P0 | 3 | HOG-055, HOG-004 |
 | HOG-150 | Crear el `RealtimeGateway` con autenticación en el handshake y salas de usuario y grupo | E03 | P0 | 5 | HOG-055, HOG-014 |
 | HOG-057 | Crear la CLI `create-owner` para el primer usuario administrador | E01 | P0 | 2 | HOG-050, HOG-058 |
 | HOG-054 | Enviar los emails de verificación y de recuperación de contraseña con Resend | E01 | P0 | 3 | HOG-050, HOG-053 |
@@ -49,6 +48,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-055 | Implementar el `AuthGuard` global, `@CurrentUser`, `@Public` y `GET /me` | E01 | P0 | 3 | HOG-050, HOG-006 |
 | HOG-058 | Añadir rate limiting de auth, `SecurityEvent` y política de contraseñas | E01 | P0 | 5 | HOG-050, HOG-002 |
 | HOG-053 | Crear las pantallas web de entrar, registro y recuperar contraseña | E01 | P0 | 5 | HOG-050, HOG-055, HOG-008 |
+| HOG-101 | Implementar el `GroupMemberGuard` con caché de 60 s y 404 | E02 | P0 | 3 | HOG-055, HOG-004 |
 
 ---
 

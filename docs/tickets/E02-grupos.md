@@ -44,11 +44,11 @@ Implementar el módulo `groups` con la creación transaccional del grupo y su se
 Proteger todas las rutas `/groups/:groupId/**` comprobando la pertenencia al grupo, devolviendo 404 a quien no es miembro y dejando el contexto del grupo (zona horaria) disponible para los servicios.
 
 **Criterios de aceptación**
-- [ ] `common/guards/group-member.guard.ts` aplicado a cualquier controlador con `:groupId` (decorador de clase `@GroupScoped()` que añade el guard y valida `groupId` como UUID).
-- [ ] `groupId` no UUID, grupo inexistente o no miembro → `404 NOT_FOUND` con el mismo cuerpo.
-- [ ] `common/cache/membership-cache.ts`: caché en memoria de 60 s por `userId:groupId` (positivos y negativos), con `invalidate(userId, groupId)` e `invalidateGroup(groupId)`.
-- [ ] `req.groupContext = { groupId, timezone, memberId, laneColor }` y decorador `@CurrentGroup()`.
-- [ ] Una regla de ESLint o un test de arquitectura falla si un controlador con ruta `groups/:groupId` no lleva `@GroupScoped()`.
+- [x] `common/guards/group-member.guard.ts` aplicado a cualquier controlador con `:groupId` (decorador de clase `@GroupScoped()` que añade el guard y valida `groupId` como UUID).
+- [x] `groupId` no UUID, grupo inexistente o no miembro → `404 NOT_FOUND` con el mismo cuerpo.
+- [x] `common/cache/membership-cache.ts`: caché en memoria de 60 s por `userId:groupId` (positivos y negativos), con `invalidate(userId, groupId)` e `invalidateGroup(groupId)`.
+- [x] `req.groupContext = { groupId, timezone, memberId, laneColor }` y decorador `@CurrentGroup()`.
+- [x] Una regla de ESLint o un test de arquitectura falla si un controlador con ruta `groups/:groupId` no lleva `@GroupScoped()`.
 
 **Notas técnicas**
 - La consulta: `groupMember.findUnique({ where: { groupId_userId }, select: { id, laneColor, group: { select: { timezone } } } })`.
