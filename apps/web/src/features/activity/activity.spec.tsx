@@ -81,11 +81,10 @@ describe("activity.created", () => {
     return { queryClient: client, meId: ANA, activeGroupId: G, navigate: vi.fn(), markRipple: vi.fn(), endSession: vi.fn() };
   }
 
-  it("inserta al principio de la primera página sin duplicar, con onda e invalida el Inicio", () => {
+  it("inserta al principio de la primera página sin duplicar, con onda", () => {
     const client = new QueryClient();
     const old = item("2026-11-18T08:00:00.000Z");
     client.setQueryData<ActivityPages>(activityQuery(G).queryKey, { pages: [{ items: [old], nextCursor: "c" }, { items: [], nextCursor: null }], pageParams: [null, "c"] });
-    const invalidate = vi.spyOn(client, "invalidateQueries");
     const c = ctx(client);
     const fresh = item("2026-11-18T09:00:00.000Z");
 
@@ -96,7 +95,6 @@ describe("activity.created", () => {
     expect(pages[0]!.items.map((i) => i.id)).toEqual([fresh.id, old.id]);
     expect(pages).toHaveLength(2);
     expect(c.markRipple).toHaveBeenCalledWith(activityRippleKey(fresh.id));
-    expect(invalidate).toHaveBeenCalledWith({ queryKey: ["group", G, "dashboard"] });
   });
 
   it("sin la query en caché no la crea", () => {

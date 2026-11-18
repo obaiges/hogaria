@@ -79,6 +79,32 @@ describe('dispatcher (RN-03-17 y RN-03-19)', () => {
     error.mockRestore();
   });
 
+  it('varios manejadores del mismo evento: todos, en orden, sin duplicar la misma función', () => {
+    const calls: string[] = [];
+    const first = () => void calls.push('a');
+    const second = () => void calls.push('b');
+    registerHandlers({ 'task.updated': first });
+    registerHandlers({ 'task.updated': second });
+    registerHandlers({ 'task.updated': first });
+    dispatch(envelope('task.updated'));
+    expect(calls).toEqual(['a', 'b']);
+  });
+
+  it('si un manejador de varios falla, los demás se ejecutan igualmente', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const after = vi.fn();
+    registerHandlers({
+      'task.updated': () => {
+        throw new Error('boom');
+      },
+    });
+    registerHandlers({ 'task.updated': after });
+    dispatch(envelope('task.updated'));
+    expect(after).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
   describe('markRipple del contexto', () => {
     function rippleFor(env: RealtimeEnvelope) {
       registerHandlers({ [env.event]: (_e: RealtimeEnvelope, ctx: RealtimeHandlerContext) => ctx.markRipple('task:x') });

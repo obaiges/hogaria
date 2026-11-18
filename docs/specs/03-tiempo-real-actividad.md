@@ -85,7 +85,7 @@ E03 aporta la infraestructura de **todos** los eventos de `docs/04-api-y-tiempo-
 | `activity.created` | Tras el commit de cualquier mutación que escribe `ActivityLog` (RN-03-26). Sala `group` | `ActivityDto` |
 | `session.revoked` | Definido en la spec 01 (RN-01-22). Sala `user` | `{}` |
 
-Manejo en el cliente (`features/activity/realtime.ts`): `activity.created` → si existe la *infinite query* `['group', g, 'activity']`, inserta el elemento al principio de la primera página (si no estaba por `id`) y marca la onda si el actor es otro. También invalida `['group', g, 'dashboard']` si existe (E15 decide si muestra actividad en Inicio).
+Manejo en el cliente (`features/activity/realtime.ts`): `activity.created` → si existe la *infinite query* `['group', g, 'activity']`, inserta el elemento al principio de la primera página (si no estaba por `id`) y marca la onda si el actor es otro. El Inicio la añade a su propia caché con su manejador (spec 15 §6: `setQueryData` sobre `['group', g, 'dashboard', date]`, sin invalidar).
 
 ## 7. Pantallas y UX
 

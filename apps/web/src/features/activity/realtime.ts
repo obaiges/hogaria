@@ -6,7 +6,8 @@ export const activityRippleKey = (id: string) => `activity:${id}`;
 
 /**
  * `activity.created` (spec 03 §6): si la *infinite query* existe, la entrada va al principio de
- * la primera página (sin duplicar por `id`), con onda si es de otro; e invalida el Inicio.
+ * la primera página (sin duplicar por `id`), con onda si es de otro. El Inicio tiene su propio
+ * manejador (`features/dashboard/realtime.ts`, spec 15 §6).
  * No se deduplica por `clientMutationId` (`NON_DEDUPED_EVENTS`): el autor también la ve.
  */
 export const activityHandlers: RealtimeHandlers = {
@@ -20,6 +21,5 @@ export const activityHandlers: RealtimeHandlers = {
       return { ...old, pages: [{ ...first, items: [item, ...first.items] }, ...rest] };
     });
     markRipple(activityRippleKey(item.id));
-    void queryClient.invalidateQueries({ queryKey: ["group", item.groupId, "dashboard"] });
   },
 };

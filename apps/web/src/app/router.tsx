@@ -65,7 +65,7 @@ const groupRoutes: RouteObject = {
   path: "/g/:groupId",
   element: <GroupLayout />,
   children: [
-    { index: true, ...soon("Inicio") },
+    { index: true, lazy: () => import("@/features/dashboard/pages/HomePage").then((m) => ({ Component: m.HomePage })) },
     { path: "/g/:groupId/compra", ...soon("Compra") },
     { path: "/g/:groupId/compra/indispensables", ...soon("Indispensables") },
     { path: "/g/:groupId/compra/historial", ...soon("Historial de compras") },

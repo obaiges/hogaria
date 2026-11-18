@@ -1,5 +1,6 @@
 import { activityHandlers } from '@/features/activity/realtime';
 import { authHandlers } from '@/features/auth/realtime';
+import { dashboardHandlers } from '@/features/dashboard/realtime';
 import { groupHandlers } from '@/features/groups/realtime';
 
 import type { RealtimeEventName, TypedRealtimeEnvelope } from '@hogaria/shared';
@@ -61,14 +62,20 @@ export type RealtimeHandler<E extends RealtimeEventName> = (envelope: TypedRealt
 export type RealtimeHandlers = { [E in RealtimeEventName]?: RealtimeHandler<E> };
 
 /** Manejadores de cada feature. Cada épica añade aquí los suyos (`features/<x>/realtime.ts`). */
-const FEATURE_HANDLERS: RealtimeHandlers[] = [authHandlers, groupHandlers, activityHandlers];
+const FEATURE_HANDLERS: RealtimeHandlers[] = [authHandlers, groupHandlers, activityHandlers, dashboardHandlers];
 
-const registry = new Map<RealtimeEventName, RealtimeHandler<RealtimeEventName>>();
+const registry = new Map<RealtimeEventName, Array<RealtimeHandler<RealtimeEventName>>>();
 
-/** Registra manejadores; un evento ya registrado se sustituye. */
+/**
+ * Registra manejadores. Un evento puede tener varios (p. ej. `activity.created` lo usan
+ * Actividad e Inicio): se ejecutan en orden de registro. Registrar dos veces la misma función
+ * no la duplica (`registerFeatureHandlers()` se llama en cada montaje del provider).
+ */
 export function registerHandlers(handlers: RealtimeHandlers): void {
   for (const [event, handler] of Object.entries(handlers) as Array<[RealtimeEventName, RealtimeHandler<RealtimeEventName> | undefined]>) {
-    if (handler) registry.set(event, handler);
+    if (!handler) continue;
+    const list = registry.get(event) ?? [];
+    if (!list.includes(handler)) registry.set(event, [...list, handler]);
   }
 }
 
@@ -76,8 +83,26 @@ export function registerFeatureHandlers(): void {
   for (const handlers of FEATURE_HANDLERS) registerHandlers(handlers);
 }
 
+/**
+ * Manejador del evento: los registrados, uno detrás de otro. Si uno falla, los demás se
+ * ejecutan igualmente y el error se relanza al final (el dispatcher lo registra).
+ */
 export function getHandler<E extends RealtimeEventName>(event: E): RealtimeHandler<E> | undefined {
-  return registry.get(event) as RealtimeHandler<E> | undefined;
+  const list = registry.get(event) as Array<RealtimeHandler<E>> | undefined;
+  if (!list?.length) return undefined;
+  const [only] = list;
+  if (list.length === 1 && only) return only;
+  return (envelope, ctx) => {
+    let failure: unknown = null;
+    for (const handler of list) {
+      try {
+        handler(envelope, ctx);
+      } catch (error) {
+        failure ??= error;
+      }
+    }
+    if (failure) throw failure;
+  };
 }
 
 /** Solo para tests. */

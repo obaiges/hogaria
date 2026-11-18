@@ -59,7 +59,7 @@ const g = (path: string) => (groupId: string) => `/g/${groupId}${path}`;
 
 export const NAV_ENTRIES: readonly NavEntry[] = [
   // Barra inferior (RN-15-02), siempre 5 y en este orden.
-  { id: "inicio", label: "Inicio", icon: Home, to: g(""), placement: "tab", enabled: false },
+  { id: "inicio", label: "Inicio", icon: Home, to: g(""), placement: "tab", enabled: true },
   { id: "compra", label: "Compra", icon: ShoppingCart, to: g("/compra"), placement: "tab", enabled: false },
   { id: "comidas", label: "Comidas", icon: CookingPot, to: g("/comidas"), placement: "tab", enabled: false },
   { id: "tareas", label: "Tareas", icon: ListChecks, to: g("/tareas"), placement: "tab", enabled: false },

@@ -150,14 +150,14 @@ Fundido cruzado de 150 ms con la View Transitions API al navegar, sin animación
 Página `/g/:groupId` con saludo y fecha, calles por miembro (`Lane` + `LaneRope` + `MemberDot`), actividad reciente, tarjeta "Invita a tu hogar" y todos los estados; renderiza cada sección solo si su clave existe en la respuesta.
 
 **Criterios de aceptación**
-- [ ] Saludo por franja horaria y fecha en español en la zona del grupo.
-- [ ] Calles con "Tú", nombres y "Nada para hoy" cuando no hay contenido.
-- [ ] Actividad reciente (5) con "Ver toda la actividad" y su vacío.
-- [ ] "Invita a tu hogar" si el grupo tiene un único miembro.
-- [ ] Estados cargando, error con "Reintentar" y sin conexión (datos en caché).
-- [ ] `features/dashboard/realtime.ts` con `activity.created` (setQueryData) y eventos de miembros (invalidar); onda en cambios de otros.
-- [ ] Clave `['group', g, 'dashboard', date]` y cambio automático de día a medianoche (RN-15-30).
-- [ ] Componente de sección genérico que no pinta nada si la clave falta (base para HOG-763/764).
+- [x] Saludo por franja horaria y fecha en español en la zona del grupo.
+- [x] Calles con "Tú", nombres y "Nada para hoy" cuando no hay contenido.
+- [x] Actividad reciente (5) con "Ver toda la actividad" y su vacío.
+- [x] "Invita a tu hogar" si el grupo tiene un único miembro.
+- [x] Estados cargando, error con "Reintentar" y sin conexión (datos en caché).
+- [x] `features/dashboard/realtime.ts` con `activity.created` (setQueryData) y eventos de miembros (invalidar); onda en cambios de otros.
+- [x] Clave `['group', g, 'dashboard', date]` y cambio automático de día a medianoche (RN-15-30).
+- [x] Componente de sección genérico que no pinta nada si la clave falta (base para HOG-763/764).
 
 **Notas técnicas**
 - `apps/web/src/features/dashboard/{api.ts, realtime.ts, pages/HomePage.tsx, components/Greeting.tsx, components/TodayLanes.tsx, components/RecentActivity.tsx}`.
