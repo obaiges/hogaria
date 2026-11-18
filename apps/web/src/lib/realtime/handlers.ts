@@ -1,3 +1,4 @@
+import { activityHandlers } from '@/features/activity/realtime';
 import { authHandlers } from '@/features/auth/realtime';
 import { groupHandlers } from '@/features/groups/realtime';
 
@@ -60,7 +61,7 @@ export type RealtimeHandler<E extends RealtimeEventName> = (envelope: TypedRealt
 export type RealtimeHandlers = { [E in RealtimeEventName]?: RealtimeHandler<E> };
 
 /** Manejadores de cada feature. Cada épica añade aquí los suyos (`features/<x>/realtime.ts`). */
-const FEATURE_HANDLERS: RealtimeHandlers[] = [authHandlers, groupHandlers];
+const FEATURE_HANDLERS: RealtimeHandlers[] = [authHandlers, groupHandlers, activityHandlers];
 
 const registry = new Map<RealtimeEventName, RealtimeHandler<RealtimeEventName>>();
 

@@ -72,7 +72,7 @@ export const NAV_ENTRIES: readonly NavEntry[] = [
   { id: "gastos", label: "Gastos", icon: Wallet, to: g("/gastos"), placement: "more", section: "Dinero", enabled: false },
   { id: "facturas", label: "Facturas", icon: Receipt, to: g("/facturas"), placement: "more", section: "Dinero", enabled: false },
   { id: "asistente", label: "Asistente", icon: Sparkles, to: g("/asistente"), placement: "more", section: "IA", enabled: false },
-  { id: "actividad", label: "Actividad", icon: History, to: g("/actividad"), placement: "more", section: "Hogar", enabled: false },
+  { id: "actividad", label: "Actividad", icon: History, to: g("/actividad"), placement: "more", section: "Hogar", enabled: true },
   { id: "ajustes", label: "Ajustes del grupo", icon: Settings, to: g("/ajustes"), placement: "more", section: "Hogar", enabled: true },
   { id: "perfil", label: "Perfil", icon: User, to: () => "/perfil", placement: "more", section: "Tú", enabled: true },
   {

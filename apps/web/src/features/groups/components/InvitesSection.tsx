@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
+import { RippleItem } from "@/components/pool";
 import { Button } from "@/components/ui/Button";
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/Dialog";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -11,7 +12,6 @@ import { ApiError, OfflineError } from "@/lib/apiClient";
 import { useCreateInvite, useInvites, useRevokeInvite } from "../api";
 import { inviteRippleKey } from "../realtime";
 import { InviteLinkSheet } from "./InviteLinkSheet";
-import { RippleItem } from "./RippleItem";
 
 import type { CreatedGroupInviteDto, GroupInviteDto } from "@hogaria/shared";
 

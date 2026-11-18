@@ -1,14 +1,13 @@
 import { ChevronRight, MoreVertical } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
-import { MemberAvatar } from "@/components/pool";
+import { MemberAvatar, RippleItem } from "@/components/pool";
 
 import { DangerZone } from "../components/DangerZone";
 import { EditGroupSheet } from "../components/EditGroupSheet";
 import { InvitesSection } from "../components/InvitesSection";
 import { LaneColorPicker } from "../components/LaneColorPicker";
 import { MemberActions, REMOVE_TEXT } from "../components/RemoveMemberDialog";
-import { RippleItem } from "../components/RippleItem";
 import { useActiveGroup } from "../GroupProvider";
 import { memberRippleKey } from "../realtime";
 

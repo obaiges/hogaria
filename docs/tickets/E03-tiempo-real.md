@@ -129,12 +129,12 @@ Crear el servicio que todos los módulos usan para registrar la actividad dentro
 Exponer el feed de actividad paginado del grupo y mostrarlo agrupado por días en la zona del hogar, con las entradas nuevas llegando en tiempo real.
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/activity/activity.controller.ts`: `GET /groups/:g/activity` con `activityQuery`, orden por `id` desc, `nextCursor`, `actorName` resuelto con una consulta por página.
-- [ ] `features/activity/api.ts`: `useActivity()` (*infinite query* `['group', g, 'activity']`).
-- [ ] `features/activity/pages/ActivityPage.tsx`: grupos "Hoy"/"Ayer"/"lunes 9 de noviembre" en la zona del grupo, filas con `MemberDot` (neutro si no es miembro), "**{actorName}** {summary}" / "Usuario eliminado" / sistema, hora relativa u "HH:mm", paginación infinita con "Cargar más" de respaldo y texto final "No hay actividad anterior (se guarda 90 días)".
-- [ ] Estados: carga (8 filas `Skeleton`), vacío ("Todavía no hay actividad. Lo que hagáis en el hogar aparecerá aquí."), error ("No se ha podido cargar la actividad" + "Reintentar") y sin conexión.
-- [ ] `features/activity/realtime.ts`: `activity.created` inserta al principio de la primera página (sin duplicar por `id`), onda si es de otro, e invalida `['group', g, 'dashboard']`.
-- [ ] La ruta queda accesible desde "Más" cuando exista HOG-750.
+- [x] `apps/api/src/activity/activity.controller.ts`: `GET /groups/:g/activity` con `activityQuery`, orden por `id` desc, `nextCursor`, `actorName` resuelto con una consulta por página.
+- [x] `features/activity/api.ts`: `useActivity()` (*infinite query* `['group', g, 'activity']`).
+- [x] `features/activity/pages/ActivityPage.tsx`: grupos "Hoy"/"Ayer"/"lunes 9 de noviembre" en la zona del grupo, filas con `MemberDot` (neutro si no es miembro), "**{actorName}** {summary}" / "Usuario eliminado" / sistema, hora relativa u "HH:mm", paginación infinita con "Cargar más" de respaldo y texto final "No hay actividad anterior (se guarda 90 días)".
+- [x] Estados: carga (8 filas `Skeleton`), vacío ("Todavía no hay actividad. Lo que hagáis en el hogar aparecerá aquí."), error ("No se ha podido cargar la actividad" + "Reintentar") y sin conexión.
+- [x] `features/activity/realtime.ts`: `activity.created` inserta al principio de la primera página (sin duplicar por `id`), onda si es de otro, e invalida `['group', g, 'dashboard']`.
+- [x] La ruta queda accesible desde "Más" cuando exista HOG-750.
 
 **Tests**
 - Integración: `activity.int.spec.ts` (paginación y `nextCursor`; `actorName` `null` para usuario borrado; 401/404).
