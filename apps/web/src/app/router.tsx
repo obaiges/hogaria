@@ -7,6 +7,7 @@ import { ProfilePage } from "@/features/auth/pages/ProfilePage";
 import { RecoverPasswordPage } from "@/features/auth/pages/RecoverPasswordPage";
 import { SignInPage } from "@/features/auth/pages/SignInPage";
 import { SignUpPage } from "@/features/auth/pages/SignUpPage";
+import { GroupLayout } from "@/features/groups/GroupLayout";
 import { GroupsPage } from "@/features/groups/pages/GroupsPage";
 import { ApiError, NetworkError } from "@/lib/apiClient";
 
@@ -63,25 +64,32 @@ const privateRoutes: RouteObject[] = [
   // Redirección de entrada (RN-02-30).
   { path: "/", element: <RootRedirect /> },
   { path: "/grupos", element: <GroupsPage /> },
-  { path: "/g/:groupId", element: <Page title="Inicio" /> },
-  { path: "/g/:groupId/compra", element: <Page title="Compra" /> },
-  { path: "/g/:groupId/compra/indispensables", element: <Page title="Indispensables" /> },
-  { path: "/g/:groupId/compra/historial", element: <Page title="Historial de compras" /> },
-  { path: "/g/:groupId/compra/:listId", element: <Page title="Lista de la compra" /> },
-  { path: "/g/:groupId/comidas", element: <Page title="Comidas" /> },
-  { path: "/g/:groupId/recetas", element: <Page title="Recetas" /> },
-  { path: "/g/:groupId/recetas/nueva", element: <Page title="Nueva receta" /> },
-  { path: "/g/:groupId/recetas/:id", element: <Page title="Receta" /> },
-  { path: "/g/:groupId/recetas/:id/editar", element: <Page title="Editar receta" /> },
-  { path: "/g/:groupId/nevera", element: <Page title="Nevera" /> },
-  { path: "/g/:groupId/tareas", element: <Page title="Tareas" /> },
-  { path: "/g/:groupId/calendario", element: <Page title="Calendario" /> },
-  { path: "/g/:groupId/horarios", element: <Page title="Horarios" /> },
-  { path: "/g/:groupId/gastos", element: <Page title="Gastos" /> },
-  { path: "/g/:groupId/facturas", element: <Page title="Facturas" /> },
-  { path: "/g/:groupId/asistente", element: <Page title="Asistente" /> },
-  { path: "/g/:groupId/actividad", element: <Page title="Actividad" /> },
-  { path: "/g/:groupId/ajustes", element: <Page title="Ajustes del grupo" /> },
+  // Rutas del grupo activo: el layout carga grupo y miembros y muestra "No encontrado" (HOG-107).
+  {
+    path: "/g/:groupId",
+    element: <GroupLayout />,
+    children: [
+      { index: true, element: <Page title="Inicio" /> },
+      { path: "/g/:groupId/compra", element: <Page title="Compra" /> },
+      { path: "/g/:groupId/compra/indispensables", element: <Page title="Indispensables" /> },
+      { path: "/g/:groupId/compra/historial", element: <Page title="Historial de compras" /> },
+      { path: "/g/:groupId/compra/:listId", element: <Page title="Lista de la compra" /> },
+      { path: "/g/:groupId/comidas", element: <Page title="Comidas" /> },
+      { path: "/g/:groupId/recetas", element: <Page title="Recetas" /> },
+      { path: "/g/:groupId/recetas/nueva", element: <Page title="Nueva receta" /> },
+      { path: "/g/:groupId/recetas/:id", element: <Page title="Receta" /> },
+      { path: "/g/:groupId/recetas/:id/editar", element: <Page title="Editar receta" /> },
+      { path: "/g/:groupId/nevera", element: <Page title="Nevera" /> },
+      { path: "/g/:groupId/tareas", element: <Page title="Tareas" /> },
+      { path: "/g/:groupId/calendario", element: <Page title="Calendario" /> },
+      { path: "/g/:groupId/horarios", element: <Page title="Horarios" /> },
+      { path: "/g/:groupId/gastos", element: <Page title="Gastos" /> },
+      { path: "/g/:groupId/facturas", element: <Page title="Facturas" /> },
+      { path: "/g/:groupId/asistente", element: <Page title="Asistente" /> },
+      { path: "/g/:groupId/actividad", element: <Page title="Actividad" /> },
+      { path: "/g/:groupId/ajustes", element: <Page title="Ajustes del grupo" /> },
+    ],
+  },
   { path: "/perfil", element: <ProfilePage /> },
   { path: "/admin", element: <Page title="Administración" /> },
 ];

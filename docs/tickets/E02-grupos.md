@@ -205,10 +205,10 @@ Permitir salir de un hogar y expulsar a otro miembro, borrando el hogar entero c
 Crear el layout de las rutas `/g/:groupId/*` que carga el grupo y sus miembros, expone el grupo activo al resto de features y muestra "No encontrado" si el grupo no existe o es ajeno.
 
 **Criterios de aceptación**
-- [ ] `features/groups/GroupLayout.tsx` + `GroupProvider` con `useActiveGroup()` → `{ group, members, me: GroupMemberDto, timezone }`.
-- [ ] Carga `['group', g, 'detail']` y `['group', g, 'members']`; si alguno responde 404 → `ErrorState` "No encontrado" + "Este hogar no existe o no formas parte de él." + "Ir a mis hogares".
-- [ ] Al cargar bien, guarda `hogaria:lastGroupId` (con `try/catch`).
-- [ ] Las rutas `/g/:groupId/*` de `app/router.tsx` cuelgan de este layout (HOG-750 monta `AppShell` dentro o alrededor sin duplicar la carga).
+- [x] `features/groups/GroupLayout.tsx` + `GroupProvider` con `useActiveGroup()` → `{ group, members, me: GroupMemberDto, timezone }`.
+- [x] Carga `['group', g, 'detail']` y `['group', g, 'members']`; si alguno responde 404 → `ErrorState` "No encontrado" + "Este hogar no existe o no formas parte de él." + "Ir a mis hogares".
+- [x] Al cargar bien, guarda `hogaria:lastGroupId` (con `try/catch`).
+- [x] Las rutas `/g/:groupId/*` de `app/router.tsx` cuelgan de este layout (HOG-750 monta `AppShell` dentro o alrededor sin duplicar la carga).
 
 **Notas técnicas**
 - `useActiveGroup().timezone` es la zona que deben usar `lib/dates.ts` y todas las pantallas del grupo.

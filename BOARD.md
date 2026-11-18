@@ -21,7 +21,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
-| HOG-107 | Crear el contexto de grupo activo en la web (`GroupLayout`) y la pantalla "No encontrado" | E02 | P0 | 3 | HOG-100, HOG-101, HOG-053, HOG-008 |
 | HOG-754 | Crear la API del Inicio con secciones registrables | E15 | P0 | 3 | HOG-100, HOG-101, HOG-153 |
 
 ## ✅ Done
@@ -62,6 +61,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-153 | Crear el `ActivityService` con escritura en transacción, *summaries* en español, `MaintenanceCron` y purga de retención | E03 | P0 | 3 | HOG-004, HOG-006, HOG-010, HOG-151 |
 | HOG-152 | Crear el `RealtimeProvider` web: despacho a la caché de Query, deduplicación, onda y reconexión | E03 | P0 | 5 | HOG-151, HOG-005, HOG-006, HOG-009, HOG-053 |
 | HOG-151 | Crear el `RealtimePublisher` y el catálogo tipado de eventos en `shared` | E03 | P0 | 3 | HOG-150, HOG-002, HOG-006 |
+| HOG-107 | Crear el contexto de grupo activo en la web (`GroupLayout`) y la pantalla "No encontrado" | E02 | P0 | 3 | HOG-100, HOG-101, HOG-053, HOG-008 |
 ---
 
 ## 📋 Backlog (ordenado por fase y dependencias)
@@ -537,7 +537,7 @@ flowchart LR
 %% progreso (generado por scripts/board-progress.mjs)
   classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
   classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
-  class HOG050,HOG055,HOG053,HOG054,HOG058,HOG057,HOG052,HOG056,HOG101,HOG100,HOG102,HOG104,HOG108,HOG150,HOG151,HOG152,HOG153,HOG155 done
+  class HOG050,HOG055,HOG053,HOG054,HOG058,HOG057,HOG052,HOG056,HOG101,HOG100,HOG102,HOG104,HOG107,HOG108,HOG150,HOG151,HOG152,HOG153,HOG155 done
 ```
 
 ### Fase 2 · Compra + Tareas + Push
