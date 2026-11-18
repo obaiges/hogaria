@@ -1,13 +1,19 @@
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
+  createdGroupInviteDto,
   groupDto,
+  groupInviteDto,
   groupMemberDto,
   myGroupDto,
+  type CreatedGroupInviteDto,
   type CreateGroupInput,
   type GroupDto,
+  type GroupInviteDto,
   type GroupMemberDto,
+  type LaneColor,
   type MyGroupDto,
+  type UpdateGroupInput,
 } from "@hogaria/shared";
 
 import { api, ApiError } from "@/lib/apiClient";
@@ -54,6 +60,119 @@ export function useCreateGroup() {
     onSuccess: (group) => {
       queryClient.setQueryData<MyGroupDto[]>(myGroupsQuery.queryKey, (old) =>
         old ? [...old.filter((g) => g.id !== group.id), group] : old,
+      );
+    },
+  });
+}
+
+export function useGroup(groupId: string) {
+  return useQuery(groupDetailQuery(groupId));
+}
+
+export function useMembers(groupId: string) {
+  return useQuery(groupMembersQuery(groupId));
+}
+
+/**
+ * `PATCH /groups/:g` con actualización optimista del detalle y de `['me', 'groups']`
+ * (RN-02-03, last-write-wins). Si falla, se restaura lo anterior.
+ */
+export function useUpdateGroup(groupId: string) {
+  const queryClient = useQueryClient();
+  const detailKey = groupDetailQuery(groupId).queryKey;
+  return useMutation({
+    mutationFn: (input: UpdateGroupInput) => api.patch<GroupDto>(`/groups/${groupId}`, { body: input, schema: groupDto }),
+    onMutate: async (input) => {
+      await queryClient.cancelQueries({ queryKey: detailKey });
+      const previousDetail = queryClient.getQueryData<GroupDto>(detailKey);
+      const previousMine = queryClient.getQueryData<MyGroupDto[]>(myGroupsQuery.queryKey);
+      queryClient.setQueryData<GroupDto>(detailKey, (old) => (old ? { ...old, ...input } : old));
+      queryClient.setQueryData<MyGroupDto[]>(myGroupsQuery.queryKey, (old) =>
+        old?.map((g) => (g.id === groupId ? { ...g, ...input } : g)),
+      );
+      return { previousDetail, previousMine };
+    },
+    onError: (_error, _input, context) => {
+      if (!context) return;
+      queryClient.setQueryData(detailKey, context.previousDetail);
+      queryClient.setQueryData(myGroupsQuery.queryKey, context.previousMine);
+    },
+    onSuccess: (group) => {
+      queryClient.setQueryData(detailKey, group);
+      queryClient.setQueryData<MyGroupDto[]>(myGroupsQuery.queryKey, (old) =>
+        old?.map((g) => (g.id === groupId ? { ...g, ...group } : g)),
+      );
+    },
+  });
+}
+
+/**
+ * `PATCH /groups/:g/members/me` (RN-02-09): solo el propio color. Optimista sobre
+ * `['group', g, 'members']` y `myLaneColor`; con `409` (otro lo cogió antes) se deshace.
+ */
+export function useUpdateMyLaneColor(groupId: string, myUserId: string) {
+  const queryClient = useQueryClient();
+  const membersKey = groupMembersQuery(groupId).queryKey;
+  return useMutation({
+    mutationFn: (laneColor: LaneColor) =>
+      api.patch<GroupMemberDto>(`/groups/${groupId}/members/me`, { body: { laneColor }, schema: groupMemberDto }),
+    onMutate: async (laneColor) => {
+      await queryClient.cancelQueries({ queryKey: membersKey });
+      const previousMembers = queryClient.getQueryData<GroupMemberDto[]>(membersKey);
+      const previousMine = queryClient.getQueryData<MyGroupDto[]>(myGroupsQuery.queryKey);
+      queryClient.setQueryData<GroupMemberDto[]>(membersKey, (old) =>
+        old?.map((m) => (m.userId === myUserId ? { ...m, laneColor } : m)),
+      );
+      queryClient.setQueryData<MyGroupDto[]>(myGroupsQuery.queryKey, (old) =>
+        old?.map((g) => (g.id === groupId ? { ...g, myLaneColor: laneColor } : g)),
+      );
+      return { previousMembers, previousMine };
+    },
+    onError: (_error, _color, context) => {
+      if (!context) return;
+      queryClient.setQueryData(membersKey, context.previousMembers);
+      queryClient.setQueryData(myGroupsQuery.queryKey, context.previousMine);
+    },
+    onSuccess: (member) => {
+      queryClient.setQueryData<GroupMemberDto[]>(membersKey, (old) => old?.map((m) => (m.id === member.id ? member : m)));
+    },
+  });
+}
+
+/** `GET /groups/:g/invites` → `['group', g, 'invites']`: activas + no activas de los últimos 30 días (RN-02-14). */
+export function groupInvitesQuery(groupId: string) {
+  return queryOptions({
+    queryKey: ["group", groupId, "invites"] as const,
+    queryFn: () => api.get<GroupInviteDto[]>(`/groups/${groupId}/invites`, { schema: groupInviteDto.array() }),
+  });
+}
+
+export function useInvites(groupId: string) {
+  return useQuery(groupInvitesQuery(groupId));
+}
+
+/** `POST /groups/:g/invites`: el token en claro solo viene en esta respuesta (RN-02-11). */
+export function useCreateInvite(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<CreatedGroupInviteDto>(`/groups/${groupId}/invites`, { schema: createdGroupInviteDto }),
+    onSuccess: ({ invite }) => {
+      queryClient.setQueryData<GroupInviteDto[]>(groupInvitesQuery(groupId).queryKey, (old) =>
+        old ? [invite, ...old.filter((i) => i.id !== invite.id)] : old,
+      );
+    },
+  });
+}
+
+/** `DELETE /groups/:g/invites/:id`: devuelve la invitación revocada, que sustituye a la de la caché. */
+export function useRevokeInvite(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (inviteId: string) =>
+      api.delete<GroupInviteDto>(`/groups/${groupId}/invites/${inviteId}`, { schema: groupInviteDto }),
+    onSuccess: (invite) => {
+      queryClient.setQueryData<GroupInviteDto[]>(groupInvitesQuery(groupId).queryKey, (old) =>
+        old?.map((i) => (i.id === invite.id ? invite : i)),
       );
     },
   });

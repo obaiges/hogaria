@@ -83,7 +83,10 @@ const groupRoutes: RouteObject = {
     { path: "/g/:groupId/facturas", ...soon("Facturas") },
     { path: "/g/:groupId/asistente", ...soon("Asistente") },
     { path: "/g/:groupId/actividad", ...soon("Actividad") },
-    { path: "/g/:groupId/ajustes", ...soon("Ajustes del grupo") },
+    {
+      path: "/g/:groupId/ajustes",
+      lazy: () => import("@/features/groups/pages/GroupSettingsPage").then((m) => ({ Component: m.GroupSettingsPage })),
+    },
   ],
 };
 

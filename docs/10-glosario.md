@@ -7,7 +7,7 @@
 | Hogar / grupo | `Group` | En la UI se dice "hogar" o "grupo" según el contexto ("Tus hogares", "Ajustes del grupo"). Ruta `/g/:groupId` |
 | Miembro | `GroupMember` | |
 | Invitación | `GroupInvite` | Enlace `/invite/:token` |
-| Color de calle | `laneColor` / `LaneColor` | Color identificativo del miembro |
+| Color de calle | `laneColor` / `LaneColor` | Color identificativo del miembro. Nombres en la interfaz (`LANE_COLOR_LABEL`): Coral (`CORAL`), Mar (`SEA`), Sol (`SUN`), Hoja (`LEAF`), Violeta (`VIOLET`), Rosa (`ROSE`), Naranja (`ORANGE`), Pizarra (`SLATE`) |
 | Calle | `Lane` (componente) | Fila por miembro en vistas de día y semana |
 | Corchera | `LaneRope` (componente) | Separador decorativo y funcional entre calles |
 | Cifra de profundidad | `DepthFigure` (componente) | Número clave rotulado (totales, contadores) |

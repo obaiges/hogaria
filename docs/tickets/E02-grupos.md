@@ -148,12 +148,12 @@ Implementar la pantalla "Tus hogares" con la creación de hogar en un `Sheet`, y
 Implementar "Ajustes del grupo" con la edición del hogar, la lista de miembros, el selector de color de calle y la gestión de invitaciones con "Compartir enlace" (Web Share API) y "Copiar enlace".
 
 **Criterios de aceptación**
-- [ ] `features/groups/pages/GroupSettingsPage.tsx` en `/g/:groupId/ajustes` con las secciones HOGAR, MIEMBROS, TU COLOR DE CALLE e INVITACIONES y sus textos.
-- [ ] Editar hogar en `Sheet` (nombre, emoji, zona horaria con el aviso) con actualización optimista.
-- [ ] Selector de 8 colores de 44 px; ocupados deshabilitados con la inicial y `aria-label` "Coral, lo tiene Ana"; guardado optimista con rollback y mensaje de `409`; "Todos los colores están en uso" si aplica.
-- [ ] "Invitar a alguien" → `Sheet` con la URL, el aviso "Este enlace solo se muestra ahora…", "Compartir enlace" (solo si existe `navigator.share`; cancelar no es error) y "Copiar enlace" (con alternativa de selección si no hay `clipboard`).
-- [ ] Lista "Pendientes" con "Revocar" (`Dialog`) y "Anteriores (30 días)" plegable.
-- [ ] Estados por sección: carga, error con "Reintentar", vacío ("No hay invitaciones pendientes") y sin conexión.
+- [x] `features/groups/pages/GroupSettingsPage.tsx` en `/g/:groupId/ajustes` con las secciones HOGAR, MIEMBROS, TU COLOR DE CALLE e INVITACIONES y sus textos.
+- [x] Editar hogar en `Sheet` (nombre, emoji, zona horaria con el aviso) con actualización optimista.
+- [x] Selector de 8 colores de 44 px; ocupados deshabilitados con la inicial y `aria-label` "Coral, lo tiene Ana"; guardado optimista con rollback y mensaje de `409`; "Todos los colores están en uso" si aplica.
+- [x] "Invitar a alguien" → `Sheet` con la URL, el aviso "Este enlace solo se muestra ahora…", "Compartir enlace" (solo si existe `navigator.share`; cancelar no es error) y "Copiar enlace" (con alternativa de selección si no hay `clipboard`).
+- [x] Lista "Pendientes" con "Revocar" (`Dialog`) y "Anteriores (30 días)" plegable.
+- [x] Estados por sección: carga, error con "Reintentar", vacío ("No hay invitaciones pendientes") y sin conexión.
 
 **Notas técnicas**
 - Hooks en `features/groups/api.ts`: `useGroup`, `useUpdateGroup`, `useMembers`, `useUpdateMyLaneColor`, `useInvites`, `useCreateInvite`, `useRevokeInvite`; claves `['group', g, 'detail' | 'members' | 'invites']`.
