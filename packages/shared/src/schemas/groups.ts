@@ -86,3 +86,16 @@ export const myGroupDto = groupDto.extend({
   joinedAt: z.iso.datetime(),
 });
 export type MyGroupDto = z.infer<typeof myGroupDto>;
+
+/** Miembro de un grupo (`GET /groups/:groupId/members`, `group.member.*`). */
+export const groupMemberDto = z.object({
+  id: z.uuid(),
+  groupId: z.uuid(),
+  userId: z.uuid(),
+  name: z.string(),
+  username: z.string().nullable(),
+  image: z.string().nullable(),
+  laneColor: laneColorSchema,
+  joinedAt: z.iso.datetime(),
+});
+export type GroupMemberDto = z.infer<typeof groupMemberDto>;

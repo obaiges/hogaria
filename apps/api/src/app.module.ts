@@ -19,6 +19,7 @@ import { ExternalServicesModule } from './external-services.module.js';
 import { HealthModule } from './health/health.module.js';
 import { MeModule } from './me/me.module.js';
 import { GroupsModule } from './modules/groups/groups.module.js';
+import { redactInviteToken } from './modules/groups/invite-token.js';
 import { OpenApiModule } from './openapi/openapi.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
@@ -42,6 +43,10 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
         redact: {
           paths: ['req.headers.authorization', 'req.headers.cookie', 'res.headers["set-cookie"]'],
           censor: '[redacted]',
+        },
+        // El token de invitación va en la ruta (`/invites/:token`): nunca a los logs (HOG-102).
+        serializers: {
+          req: (req: { url?: string }) => (typeof req.url === 'string' ? { ...req, url: redactInviteToken(req.url) } : req),
         },
         transport:
           process.env.NODE_ENV !== 'production'

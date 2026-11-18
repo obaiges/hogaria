@@ -32,6 +32,10 @@ export const LANE_COLOR_TOKEN: Record<LaneColor, string> = {
 
 export const INVITE_TTL_DAYS = 10;
 export const MAX_GROUP_MEMBERS = 20;
+/** Invitaciones `ACTIVE` como mucho por grupo (spec 02, RN-02-12). */
+export const MAX_ACTIVE_INVITES_PER_GROUP = 20;
+/** Invitaciones que puede crear un usuario al día (throttler, RN-02-12). */
+export const MAX_INVITES_PER_USER_PER_DAY = 20;
 
 // ─── Compra ───────────────────────────────────────────────────────────────
 

@@ -22,4 +22,8 @@ export const groupActivity = {
     }
     return 'actualizó los datos del hogar';
   },
+
+  memberJoined: () => 'se unió al hogar',
+  inviteCreated: () => 'creó una invitación',
+  inviteRevoked: () => 'revocó una invitación',
 };

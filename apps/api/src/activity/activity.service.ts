@@ -67,10 +67,14 @@ export class ActivityService {
 
   /**
    * Publica `activity.created` en el grupo. Llamar **después del commit**. Sin consultas:
-   * `actorName` sale del `RequestContext` si el actor es el usuario de la petición.
+   * `actorName` sale del `RequestContext` si el actor es el usuario de la petición, o de
+   * `opts.actorName` si quien llama ya lo conoce (p. ej. el registro con invitación).
    */
-  publishCreated(row: ActivityLog): void {
-    this.realtime.publish(row.groupId, 'activity.created', this.toDto(row));
+  publishCreated(row: ActivityLog, opts: { actorName?: string } = {}): void {
+    const dto = opts.actorName !== undefined ? this.toDto(row, opts.actorName) : this.toDto(row);
+    // Fuera de una petición con usuario (p. ej. el registro), el actor del sobre es el de la fila.
+    const publishOpts = getRequestContext()?.userId ? {} : { actorId: row.actorId };
+    this.realtime.publish(row.groupId, 'activity.created', dto, publishOpts);
   }
 
   /** `ActivityDto` de una fila; `actorName` del `RequestContext` (o `null`). */

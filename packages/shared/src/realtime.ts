@@ -5,7 +5,8 @@
 import { z } from 'zod';
 
 import { activityDto, type ActivityDto } from './schemas/activity.js';
-import { groupDto, type GroupDto } from './schemas/groups.js';
+import { groupDto, groupMemberDto, type GroupDto, type GroupMemberDto } from './schemas/groups.js';
+import { groupInviteDto, type GroupInviteDto } from './schemas/invites.js';
 
 export const REALTIME_CHANNEL = 'evt';
 export const REALTIME_PATH = '/realtime';
@@ -83,6 +84,12 @@ export function isRealtimeEventName(value: unknown): value is RealtimeEventName 
 export interface RealtimeEventDataMap {
   /** `PATCH /groups/:groupId` con cambios reales (HOG-100). */
   'group.updated': GroupDto;
+  /** Tras consumir una invitación (aceptar o registro) (HOG-102). */
+  'group.member.joined': GroupMemberDto;
+  /** Invitaciones, sin token (HOG-102). */
+  'invite.created': GroupInviteDto;
+  'invite.revoked': GroupInviteDto;
+  'invite.used': GroupInviteDto;
   /** Tras el commit de cualquier mutación que escribe `ActivityLog` (HOG-153). */
   'activity.created': ActivityDto;
   /** Sala `user:<id>`, `groupId: null`: el cliente cierra la sesión local. */
@@ -98,6 +105,10 @@ export type PublishableRealtimeEvent = keyof RealtimeEventDataMap;
  */
 export const REALTIME_EVENT_SCHEMAS: { [E in PublishableRealtimeEvent]: z.ZodType<RealtimeEventDataMap[E]> } = {
   'group.updated': groupDto,
+  'group.member.joined': groupMemberDto,
+  'invite.created': groupInviteDto,
+  'invite.revoked': groupInviteDto,
+  'invite.used': groupInviteDto,
   'activity.created': activityDto,
   'session.revoked': z.strictObject({}) as z.ZodType<Record<string, never>>,
 };

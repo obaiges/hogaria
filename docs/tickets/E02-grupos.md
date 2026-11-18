@@ -71,12 +71,12 @@ Proteger todas las rutas `/groups/:groupId/**` comprobando la pertenencia al gru
 Implementar las invitaciones de un solo uso con token aleatorio (solo se guarda el hash), su listado y revocación, la consulta pública que prepara el registro y la aceptación por usuarios con sesión, con un consumo atómico reutilizable por el hook de registro.
 
 **Criterios de aceptación**
-- [ ] `modules/groups/invites.controller.ts`, `public-invites.controller.ts` e `invites.service.ts`; `invite-token.ts` con `generateInviteToken()` y `hashInviteToken()`.
-- [ ] `POST /groups/:g/invites` → `201 createdGroupInviteDto` (token y URL solo aquí); throttler 20/día por usuario; 409 si hay 20 `ACTIVE` o el grupo está lleno; `ActivityLog` "creó una invitación"; `invite.created` sin token.
-- [ ] `GET /groups/:g/invites` según RN-02-14; `DELETE /groups/:g/invites/:id` según RN-02-15 con `ActivityLog` "revocó una invitación" e `invite.revoked`.
-- [ ] `GET /invites/:token` (`@Public`, 30/min por IP): `alreadyMember` si hay sesión y ya es miembro; `410 INVITE_INVALID` si no está activa; cookie `hogaria_invite` (`HttpOnly`, `Secure` en producción, `SameSite=Lax`, `Domain=COOKIE_DOMAIN`, `Path=/api/auth`, `Max-Age=3600`) si es válida y no hay sesión.
-- [ ] `POST /invites/:token/accept` y `InvitesService.consumeForNewUser(token, userId)` comparten `consumeInvite(tx, …)` (RN-02-17); tras el commit: `MembershipCache.invalidate`, `RealtimeRooms.joinGroup`, `group.member.joined`, `invite.used` y `activity.created`.
-- [ ] Esquemas en `packages/shared/src/schemas/invites.ts` (`inviteStatusSchema`, `groupInviteDto`, `createdGroupInviteDto`, `publicInviteDto`, `acceptInviteResultDto`) e `inviteStatus()` en `src/groups/invite-status.ts`; eventos `invite.*` y `group.member.joined` en `RealtimeEventDataMap`.
+- [x] `modules/groups/invites.controller.ts`, `public-invites.controller.ts` e `invites.service.ts`; `invite-token.ts` con `generateInviteToken()` y `hashInviteToken()`.
+- [x] `POST /groups/:g/invites` → `201 createdGroupInviteDto` (token y URL solo aquí); throttler 20/día por usuario; 409 si hay 20 `ACTIVE` o el grupo está lleno; `ActivityLog` "creó una invitación"; `invite.created` sin token.
+- [x] `GET /groups/:g/invites` según RN-02-14; `DELETE /groups/:g/invites/:id` según RN-02-15 con `ActivityLog` "revocó una invitación" e `invite.revoked`.
+- [x] `GET /invites/:token` (`@Public`, 30/min por IP): `alreadyMember` si hay sesión y ya es miembro; `410 INVITE_INVALID` si no está activa; cookie `hogaria_invite` (`HttpOnly`, `Secure` en producción, `SameSite=Lax`, `Domain=COOKIE_DOMAIN`, `Path=/api/auth`, `Max-Age=3600`) si es válida y no hay sesión.
+- [x] `POST /invites/:token/accept` y `InvitesService.consumeForNewUser(token, userId)` comparten `consumeInvite(tx, …)` (RN-02-17); tras el commit: `MembershipCache.invalidate`, `RealtimeRooms.joinGroup`, `group.member.joined`, `invite.used` y `activity.created`.
+- [x] Esquemas en `packages/shared/src/schemas/invites.ts` (`inviteStatusSchema`, `groupInviteDto`, `createdGroupInviteDto`, `publicInviteDto`, `acceptInviteResultDto`) e `inviteStatus()` en `src/groups/invite-status.ts`; eventos `invite.*` y `group.member.joined` en `RealtimeEventDataMap`.
 
 **Notas técnicas**
 - Comparación por hash: `tokenHash` es `@unique`, la búsqueda es por igualdad (no hace falta comparación en tiempo constante).
