@@ -3,6 +3,7 @@ import { redirect } from "react-router";
 
 import { describeUserAgent, meDto, type MeDto, type SessionDto } from "@hogaria/shared";
 
+import { isSafeReturnTo } from "@/app/navigation-utils";
 import { queryClient as appQueryClient } from "@/app/queryClient";
 import { api, ApiError } from "@/lib/apiClient";
 import { authClient } from "@/lib/authClient";
@@ -29,9 +30,7 @@ export function useMe() {
  * por `//` y no contiene `://` ni barras invertidas.
  */
 export function safeVolver(value: string | null | undefined): string | null {
-  if (!value || !value.startsWith("/") || value.startsWith("//")) return null;
-  if (value.includes("://") || value.includes("\\")) return null;
-  return value;
+  return isSafeReturnTo(value) ? value : null;
 }
 
 /** Destino tras entrar: `?volver=` válido o la redirección de entrada (`/`, HOG-104). */

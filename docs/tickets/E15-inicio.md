@@ -16,14 +16,14 @@
 Esqueleto de navegación de la PWA: árbol de rutas con `lazy`, guards `RequireAuth` y `RequireGroup`, cabecera con `GroupSwitcher` y avatar, barra inferior de 5 pestañas, registro de navegación y páginas `NotFoundPage`, `ComingSoonPage` y `RouteErrorPage`.
 
 **Criterios de aceptación**
-- [ ] Router (data mode) en `apps/web/src/app/router.tsx` con todas las rutas de `docs/08` registradas; las de módulos sin implementar apuntan a `ComingSoonPage` (pestañas) o no se enlazan ("Más") según RN-15-05.
-- [ ] `navigation.ts` con el registro de entradas (`id`, `label`, `icon`, `to(groupId)`, `placement: 'tab' | 'more'`, `section`, `enabled`, `requiresAdmin?`).
-- [ ] `BottomNav` con las 5 pestañas, pestaña activa según RN-15-03, `aria-current`, 44 px y `safe-area-inset-bottom`.
-- [ ] `GroupSwitcher` con hoja "Tus hogares" (RN-15-11) y cambio de hogar con RN-15-10; avatar → `/perfil`.
-- [ ] Redirección de `/` (RN-15-06), `hogaria.lastGroupId` (RN-15-07, con `try/catch`), `RequireAuth` con `?volver=` (RN-15-09) y `RequireGroup` → `NotFoundPage` (RN-15-08).
-- [ ] `/perfil` y `/admin` dentro del shell con la barra de `lastGroupId` (RN-15-12).
-- [ ] Rutas fuera del shell según RN-15-01; `*` → `NotFoundPage`.
-- [ ] Enlace "Saltar al contenido"; 375 px y modo oscuro.
+- [x] Router (data mode) en `apps/web/src/app/router.tsx` con todas las rutas de `docs/08` registradas; las de módulos sin implementar apuntan a `ComingSoonPage` (pestañas) o no se enlazan ("Más") según RN-15-05.
+- [x] `navigation.ts` con el registro de entradas (`id`, `label`, `icon`, `to(groupId)`, `placement: 'tab' | 'more'`, `section`, `enabled`, `requiresAdmin?`).
+- [x] `BottomNav` con las 5 pestañas, pestaña activa según RN-15-03, `aria-current`, 44 px y `safe-area-inset-bottom`.
+- [x] `GroupSwitcher` con hoja "Tus hogares" (RN-15-11) y cambio de hogar con RN-15-10; avatar → `/perfil`.
+- [x] Redirección de `/` (RN-15-06), `hogaria:lastGroupId` (RN-15-07, con `try/catch`), `RequireAuth` con `?volver=` (RN-15-09) y `RequireGroup` → `NotFoundPage` (RN-15-08).
+- [x] `/perfil` y `/admin` dentro del shell con la barra de `lastGroupId` (RN-15-12).
+- [x] Rutas fuera del shell según RN-15-01; `*` → `NotFoundPage`.
+- [x] Enlace "Saltar al contenido"; 375 px y modo oscuro.
 
 **Notas técnicas**
 - `apps/web/src/app/{router.tsx, navigation.ts, guards.tsx, layout/AppShell.tsx, layout/BottomNav.tsx, layout/GroupSwitcher.tsx, layout/AppHeader.tsx, pages/NotFoundPage.tsx, pages/ComingSoonPage.tsx, pages/RouteErrorPage.tsx}`.

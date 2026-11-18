@@ -39,3 +39,16 @@ input, textarea, select {
   background-size: 24px 24px;
   padding: 24px;
 }
+
+/* RN-15-15: fundido cruzado de 150 ms al cambiar de pantalla (View Transitions); sin animación con movimiento reducido. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 150ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

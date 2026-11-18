@@ -138,7 +138,7 @@ Círculo con el color de calle y las iniciales (o la foto de Google). Tamaños d
 
 ## 10. Iconografía
 
-lucide-react, trazo de 1.75 y tamaño de 20/24 px. Pestañas: `House`, `ShoppingCart`, `UtensilsCrossed`, `CheckSquare`, `Menu`. IA: `Sparkles` **solo** en las funciones de IA. Los emojis los eligen los usuarios (listas, grupos, categorías) y nunca se usan como iconos del sistema.
+lucide-react, trazo de 1.75 y tamaño de 20/24 px. Pestañas (spec 15 §7.1): `Home`, `ShoppingCart`, `CookingPot`, `ListChecks`, `Menu`. IA: `Sparkles` **solo** en las funciones de IA. Los emojis los eligen los usuarios (listas, grupos, categorías) y nunca se usan como iconos del sistema.
 
 ## 11. Logo
 

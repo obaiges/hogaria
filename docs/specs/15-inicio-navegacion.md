@@ -25,13 +25,13 @@ Dar a la PWA su **esqueleto de navegación** (AppShell mobile-first con cabecera
 - **RN-15-03** Pestaña activa: Inicio si la ruta es exactamente `/g/:g`; Compra si empieza por `/g/:g/compra`; Comidas si empieza por `/g/:g/comidas`; Tareas si empieza por `/g/:g/tareas`; **Más** para cualquier otra ruta de `/g/:g/**` y para `/perfil` y `/admin`.
 - **RN-15-04** La hoja **"Más"** contiene, en este orden y agrupados: *Organización* — Calendario, Horarios; *Cocina* — Recetas, ¿Qué cocino?; *Dinero* — Gastos, Facturas; *IA* — Asistente; *Hogar* — Actividad, Ajustes del grupo; *Tú* — Perfil; y, solo si `me.isPlatformAdmin`, *Plataforma* — Administración (`/admin`).
 - **RN-15-05** **Registro de navegación** (`apps/web/src/app/navigation.ts`): cada entrada tiene `enabled`. Cada épica pone `enabled: true` en el mismo ticket en que crea su ruta. Una entrada de "Más" con `enabled: false` **no se muestra**. Una pestaña de la barra con `enabled: false` **sí se muestra** y su ruta pinta `ComingSoonPage` ("Esta sección llegará pronto").
-- **RN-15-06** Ruta raíz `/`: sin sesión → `/entrar`. Con sesión: si `localStorage['hogaria.lastGroupId']` es un grupo del que sigue siendo miembro → `/g/:lastGroupId`; si no, el primer grupo de `GET /me/groups` (por `joinedAt`); sin grupos → `/grupos`.
-- **RN-15-07** Cada vez que se entra en `/g/:groupId/**` de un grupo válido se guarda `hogaria.lastGroupId` (envuelto en `try/catch`).
-- **RN-15-08** `RequireGroup`: si `groupId` no está en `['me', 'groups']` (tras cargarlo), se pinta `NotFoundPage` con "No encontrado" dentro del shell sin barra inferior (E2E-15). Nunca se distingue "no existe" de "no tienes acceso".
+- **RN-15-06** Ruta raíz `/`: sin sesión → `/entrar`. Con sesión se aplica **RN-02-30** (spec 02): si `localStorage['hogaria:lastGroupId']` es un grupo del que sigue siendo miembro → `/g/:lastGroupId`; si no, con un único grupo → `/g/:groupId`; si no (ninguno o varios) → `/grupos`.
+- **RN-15-07** Cada vez que se entra en `/g/:groupId/**` de un grupo válido se guarda `hogaria:lastGroupId` (envuelto en `try/catch`; lo hace `GroupLayout`, RN-02-31).
+- **RN-15-08** `RequireGroup` (lo implementa `GroupLayout`, RN-02-31): si `groupId` no es un UUID, o `GET /groups/:g` o `GET /groups/:g/members` responden 404, se pinta `NotFoundPage` con "No encontrado" dentro del shell sin barra inferior (E2E-15). Nunca se distingue "no existe" de "no tienes acceso".
 - **RN-15-09** `RequireAuth`: sin sesión en una ruta protegida → `/entrar?volver=<ruta+query codificada>`. Tras iniciar sesión, la página de login navega a `volver` **solo** si empieza por `/` y no por `//` ni contiene `://` (evita redirecciones abiertas); si no, a `/`.
 - **RN-15-10** **Cambio de hogar**: navega a la misma sección del nuevo grupo conservando el primer segmento tras `/g/:groupId` y descartando el resto (p. ej. `/g/A/compra/LIST` → `/g/B/compra`; `/g/A/recetas/ID` → `/g/B/recetas`; `/g/A` → `/g/B`). Desde `/perfil` o `/admin` → `/g/B`.
 - **RN-15-11** El selector de hogar muestra un desplegable (chevron) solo si el usuario tiene **2 o más** grupos. Siempre incluye la acción "Crear o unirme a un hogar" → `/grupos`.
-- **RN-15-12** En `/perfil` y `/admin` la barra inferior usa `hogaria.lastGroupId` (RN-15-06) para construir sus enlaces; si el usuario no tiene grupos, no hay barra inferior.
+- **RN-15-12** En `/perfil` y `/admin` la barra inferior usa `hogaria:lastGroupId` (RN-15-06) para construir sus enlaces; si el usuario no tiene grupos, no hay barra inferior.
 - **RN-15-13** **Deep links** (formato común a notificaciones, asistente y enlaces internos), parámetros de consulta en español:
   - `?fecha=YYYY-MM-DD` → la pantalla abre ese día/semana (Comidas, Calendario, Horarios, Inicio).
   - `?destacar=<id>` → la pantalla hace scroll hasta el elemento, le da foco y reproduce **una** onda (`ripple`). Si el id no existe, se ignora sin error.
@@ -242,7 +242,7 @@ E15 no genera `ActivityLog`. Completar una tarea desde el Inicio usa el servicio
 
 ## 10. Casos límite
 
-- Usuario expulsado del grupo mientras lo ve: llega `group.member.left` con su `userId` → la web invalida `['me', 'groups']`, `RequireGroup` pinta `NotFoundPage` y se borra `hogaria.lastGroupId` si coincidía.
+- Usuario expulsado del grupo mientras lo ve: llega `group.member.left` con su `userId` → la web invalida `['me', 'groups']`, `RequireGroup` pinta `NotFoundPage` y se borra `hogaria:lastGroupId` si coincidía.
 - Grupo borrado (salió el último miembro desde otro dispositivo): igual que el anterior.
 - `localStorage` no disponible (modo privado de Safari): RN-15-06 cae al primer grupo; nada falla.
 - Cambio de hora (último domingo de marzo/octubre): `dayStartUtc`/`dayEndUtc` se calculan con `@date-fns/tz`, nunca sumando 24 h.
