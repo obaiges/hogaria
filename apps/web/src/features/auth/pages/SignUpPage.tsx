@@ -11,8 +11,9 @@ import { appUrl, authClient } from "@/lib/authClient";
 import { parseRetryAfter, rateLimitedMessage } from "../auth-errors";
 import { AuthLayout, FormError, FormNotice } from "../components/AuthLayout";
 import { PasswordInput } from "../components/PasswordInput";
+import { PENDING_INVITE_KEY } from "../pending-invite";
 
-export const PENDING_INVITE_KEY = "hogaria:pendingInvite";
+export { PENDING_INVITE_KEY };
 export const RESEND_COOLDOWN_S = 60;
 
 interface PendingInvite {

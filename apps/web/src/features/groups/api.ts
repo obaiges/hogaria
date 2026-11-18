@@ -1,11 +1,14 @@
 import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
+  acceptInviteResultDto,
   createdGroupInviteDto,
   groupDto,
   groupInviteDto,
   groupMemberDto,
   myGroupDto,
+  publicInviteDto,
+  type AcceptInviteResultDto,
   type CreatedGroupInviteDto,
   type CreateGroupInput,
   type GroupDto,
@@ -13,6 +16,7 @@ import {
   type GroupMemberDto,
   type LaneColor,
   type MyGroupDto,
+  type PublicInviteDto,
   type UpdateGroupInput,
 } from "@hogaria/shared";
 
@@ -175,5 +179,37 @@ export function useRevokeInvite(groupId: string) {
         old?.map((i) => (i.id === invite.id ? invite : i)),
       );
     },
+  });
+}
+
+/** Un `410` (no válida, usada, revocada o caducada) es definitivo: no se reintenta. */
+function retryUnlessGone(failureCount: number, error: Error): boolean {
+  if (error instanceof ApiError && (error.status === 410 || error.status === 404)) return false;
+  return failureCount < 1;
+}
+
+/**
+ * `GET /invites/:token` (público, RN-02-16). Con cookies: si hay sesión dice `alreadyMember`
+ * y, sin sesión, la API deja la cookie `hogaria_invite` para el registro (HOG-052).
+ */
+export function publicInviteQuery(token: string) {
+  return queryOptions({
+    queryKey: ["invite", token] as const,
+    queryFn: () => api.get<PublicInviteDto>(`/invites/${token}`, { schema: publicInviteDto, redirectOn401: false }),
+    retry: retryUnlessGone,
+    staleTime: 0,
+  });
+}
+
+export function usePublicInvite(token: string) {
+  return useQuery(publicInviteQuery(token));
+}
+
+/** `POST /invites/:token/accept` (RN-02-17). Al unirse, `['me', 'groups']` se invalida. */
+export function useAcceptInvite(token: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<AcceptInviteResultDto>(`/invites/${token}/accept`, { schema: acceptInviteResultDto }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: myGroupsQuery.queryKey }),
   });
 }

@@ -1,6 +1,6 @@
 import { request, type APIRequestContext } from '@playwright/test';
 
-import { E2E_API_URL } from './env';
+import { E2E_API_URL, E2E_WEB_URL } from './env';
 
 /** Lo que devuelve `POST /api/v1/test/users` (apps/api/src/test-support). */
 export interface TestUser {
@@ -63,4 +63,19 @@ export async function lastEmailLink(to: string): Promise<string> {
   const link = last?.links[0];
   if (!link) throw new Error(`No hay emails con enlaces para ${to}`);
   return link;
+}
+
+/**
+ * Invitación al hogar de `user` (`POST /api/v1/groups/:g/invites`) creada con su propia
+ * sesión en un contexto aparte. Devuelve el enlace en claro (solo se ve al crearla).
+ */
+export async function createInvite(user: TestUser): Promise<{ token: string; url: string }> {
+  if (!user.groupId) throw new Error(`createInvite: ${user.email} no tiene hogar`);
+  const ctx = await request.newContext({ baseURL: E2E_API_URL, extraHTTPHeaders: { Origin: E2E_WEB_URL } });
+  try {
+    await ok(await ctx.post('/api/auth/sign-in/email', { data: { email: user.email, password: user.password } }), 'createInvite (login)');
+    return await ok<{ token: string; url: string }>(await ctx.post(`/api/v1/groups/${user.groupId}/invites`), 'createInvite');
+  } finally {
+    await ctx.dispose();
+  }
 }

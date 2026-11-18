@@ -55,7 +55,7 @@ const publicRoutes: RouteObject[] = [
     path: "/recuperar",
     lazy: () => import("@/features/auth/pages/RecoverPasswordPage").then((m) => ({ Component: m.RecoverPasswordPage })),
   },
-  { path: "/invite/:token", ...soonPublic("Invitación") },
+  { path: "/invite/:token", lazy: () => import("@/features/groups/pages/InvitePage").then((m) => ({ Component: m.InvitePage })) },
   { path: "/legal/privacidad", ...soonPublic("Privacidad") },
   { path: "/legal/terminos", ...soonPublic("Términos") },
 ];

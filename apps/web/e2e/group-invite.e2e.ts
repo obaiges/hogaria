@@ -1,9 +1,8 @@
 import { expect, test } from '@playwright/test';
 
-import { createUser, E2E_API_URL, E2E_WEB_URL, loginAs, resetDb } from './helpers';
+import { createUser, loginAs, resetDb } from './helpers';
 
-// E2E-04 (HOG-105): A crea un hogar → genera un enlace → B (usuario existente) se une → ambos se ven en MIEMBROS.
-// La pantalla `/invite/:token` llega con HOG-103: hasta entonces B acepta con la API desde su propio contexto.
+// E2E-04 (HOG-105, HOG-103): A crea un hogar → genera un enlace → B (usuario existente) se une → ambos se ven en MIEMBROS.
 test.describe('E2E-04 · invitar a un hogar', () => {
   test.beforeEach(async () => {
     await resetDb();
@@ -43,12 +42,11 @@ test.describe('E2E-04 · invitar a un hogar', () => {
       await linkSheet.getByRole('button', { name: 'Cerrar' }).click();
       await expect(pageA.getByText(/Creada por Ana · caduca en \d+ días/)).toBeVisible();
 
-      // B (ya registrado) acepta la invitación.
+      // B (ya registrado) abre el enlace y se une (HOG-103).
       await loginAs(pageB, luis);
-      const accept = await contextB.request.post(`${E2E_API_URL}/api/v1/invites/${token}/accept`, {
-        headers: { Origin: E2E_WEB_URL },
-      });
-      expect(accept.ok()).toBe(true);
+      await pageB.goto(`/invite/${token}`);
+      await pageB.getByRole('button', { name: 'Unirme a Casa e2e' }).click();
+      await expect(pageB).toHaveURL(new RegExp(`/g/${groupId}$`));
 
       // Los dos se ven como miembros.
       await pageB.goto(`/g/${groupId}/ajustes`);

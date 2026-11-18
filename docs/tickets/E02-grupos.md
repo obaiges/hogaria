@@ -100,11 +100,11 @@ Implementar las invitaciones de un solo uso con token aleatorio (solo se guarda 
 Implementar la página pública de invitación con sus estados (válida con y sin sesión, ya miembro, no válida, hogar lleno) y conectar el registro, el login y Google con la invitación pendiente.
 
 **Criterios de aceptación**
-- [ ] `features/groups/pages/InvitePage.tsx` pide `GET /invites/:token` con `credentials: 'include'` y muestra los textos de la spec.
-- [ ] Sin sesión: "Crear cuenta" guarda `sessionStorage['hogaria:pendingInvite']` y va a `/registro`; "Ya tengo cuenta" va a `/entrar?volver=/invite/:token`; "Continuar con Google" usa `callbackURL = APP_URL/invite/:token`.
-- [ ] Con sesión: "Unirme a {groupName}" → `POST accept` → `/g/:groupId` con toast; `alreadyMember` → navegación directa con "Ya formas parte de {groupName}".
-- [ ] `410` → `ErrorState` "Invitación no válida o caducada"; `409` → "Este hogar ya tiene el máximo de 20 miembros"; sin conexión → botones deshabilitados.
-- [ ] Tras unirse, `['me', 'groups']` se invalida.
+- [x] `features/groups/pages/InvitePage.tsx` pide `GET /invites/:token` con `credentials: 'include'` y muestra los textos de la spec.
+- [x] Sin sesión: "Crear cuenta" guarda `sessionStorage['hogaria:pendingInvite']` y va a `/registro`; "Ya tengo cuenta" va a `/entrar?volver=/invite/:token`; "Continuar con Google" usa `callbackURL = APP_URL/invite/:token`.
+- [x] Con sesión: "Unirme a {groupName}" → `POST accept` → `/g/:groupId` con toast; `alreadyMember` → navegación directa con "Ya formas parte de {groupName}".
+- [x] `410` → `ErrorState` "Invitación no válida o caducada"; `409` → "Este hogar ya tiene el máximo de 20 miembros"; sin conexión → botones deshabilitados.
+- [x] Tras unirse, `['me', 'groups']` se invalida.
 
 **Notas técnicas**
 - `sessionStorage` siempre en `try/catch`.
