@@ -213,11 +213,11 @@ Permitir ver los dispositivos con sesión abierta, cerrar uno o todos los demás
 Permitir crear desde la consola el usuario dueño de la instancia (sin invitación), ya verificado y con `isPlatformAdmin = true`.
 
 **Criterios de aceptación**
-- [ ] `pnpm --filter api cli create-owner --email <email> --username <username> [--name <nombre>]` (`apps/api/src/cli/main.ts` + `create-owner.command.ts`, con `nest-commander` o un *bootstrap* de `NestFactory.createApplicationContext`).
-- [ ] Pide la contraseña dos veces sin eco, o la lee de `OWNER_PASSWORD`; valida `passwordSchema` + `checkPasswordPolicy`.
-- [ ] Crea `User` (`emailVerified = true`, `isPlatformAdmin = true`, `name` = `--name` o el username) y `Account credential` con el hash de Better Auth, en una transacción, sin pasar por los hooks de invitación.
-- [ ] Errores claros y código de salida ≠ 0: email o username ya existen; "Ya existe un administrador de la plataforma".
-- [ ] El comando funciona dentro del contenedor de producción (`docker compose exec api node dist/cli/main.js create-owner …`), documentado en `deploy/README.md`.
+- [x] `pnpm --filter api cli create-owner --email <email> --username <username> [--name <nombre>]` (`apps/api/src/cli/main.ts` + `create-owner.command.ts`, con `nest-commander` o un *bootstrap* de `NestFactory.createApplicationContext`).
+- [x] Pide la contraseña dos veces sin eco, o la lee de `OWNER_PASSWORD`; valida `passwordSchema` + `checkPasswordPolicy`.
+- [x] Crea `User` (`emailVerified = true`, `isPlatformAdmin = true`, `name` = `--name` o el username) y `Account credential` con el hash de Better Auth, en una transacción, sin pasar por los hooks de invitación.
+- [x] Errores claros y código de salida ≠ 0: email o username ya existen; "Ya existe un administrador de la plataforma".
+- [x] El comando funciona dentro del contenedor de producción (`docker compose exec api node dist/cli/main.js create-owner …`), documentado en `deploy/README.md`.
 
 **Notas técnicas**
 - No crea grupos ni invitaciones.
