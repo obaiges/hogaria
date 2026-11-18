@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { APIError } from 'better-auth/api';
@@ -13,11 +14,13 @@ import {
 
 import { uuidv7 } from '../common/ids/uuidv7.js';
 import { CLIENT_IP_HEADER, createAuthHooks } from './auth-hooks.js';
+import { resetPasswordEmail } from './emails/reset-password.js';
+import { verifyEmail } from './emails/verify-email.js';
 import { createInviteDatabaseHooks, SignupInviteConsumerRef } from './invite-hooks.js';
 import { AuthRequestLimiter } from './rate-limit/auth-request-limiter.js';
 import { LoginRateLimiter } from './rate-limit/login-rate-limiter.js';
 
-import type { EmailSender } from '../email/email-sender.js';
+import type { EmailMessage, EmailSender } from '../email/email-sender.js';
 import type { SecurityEventRecorder } from '../security-events/security-event.service.js';
 import type { PrismaClient } from '@prisma/client';
 
@@ -29,6 +32,8 @@ export const SESSION_EXPIRES_IN_S = 365 * 24 * 60 * 60;
 export const SESSION_UPDATE_AGE_S = 24 * 60 * 60;
 /** El enlace de verificación caduca a las 24 h (RN-01-11). */
 export const EMAIL_VERIFICATION_EXPIRES_IN_S = 24 * 60 * 60;
+/** El enlace de restablecimiento caduca a los 30 min (RN-01-17). */
+export const RESET_PASSWORD_EXPIRES_IN_S = 30 * 60;
 
 export interface AuthEnv {
   NODE_ENV?: string;
@@ -82,8 +87,24 @@ export function withAppCallback(url: string, appUrl: string | undefined): string
  * Es una factoría (no un `auth` global) para que Nest le inyecte Prisma y el
  * `EmailSender` (en test, `FakeEmailSender`). Se registra con el token `AUTH`.
  */
+/**
+ * Un fallo del proveedor de email se registra y no se propaga: la respuesta al usuario
+ * sigue siendo la genérica y no revela si la cuenta existe (HOG-054).
+ */
+function createSafeSend(emailSender: EmailSender) {
+  const logger = new Logger('AuthEmails');
+  return async (message: EmailMessage): Promise<void> => {
+    try {
+      await emailSender.send(message);
+    } catch (error) {
+      logger.error(`No se ha podido enviar "${message.subject}": ${error instanceof Error ? error.message : String(error)}`);
+    }
+  };
+}
+
 export function createAuth({ prisma, emailSender, securityEvents, env, loginLimiter, requestLimiter, inviteConsumer }: AuthDeps) {
   const appOrigin = origin(env.APP_URL);
+  const sendEmail = createSafeSend(emailSender);
   const cookieDomain = env.COOKIE_DOMAIN?.trim();
   const { assertSignUpInvite, ...inviteHooks } = createInviteDatabaseHooks({
     prisma,
@@ -131,6 +152,18 @@ export function createAuth({ prisma, emailSender, securityEvents, env, loginLimi
       minPasswordLength: PASSWORD_MIN_LENGTH,
       maxPasswordLength: PASSWORD_MAX_LENGTH,
       requireEmailVerification: true,
+      // RN-01-16/17: Better Auth solo llama a `sendResetPassword` si la cuenta existe; la
+      // respuesta de `/request-password-reset` es la misma en ambos casos.
+      resetPasswordTokenExpiresIn: RESET_PASSWORD_EXPIRES_IN_S,
+      revokeSessionsOnPasswordReset: true,
+      sendResetPassword: async ({ user, url }, request) => {
+        await securityEvents.record('PASSWORD_RESET_REQUESTED', {
+          userId: user.id,
+          ip: request?.headers.get(CLIENT_IP_HEADER) ?? null,
+          userAgent: request?.headers.get('user-agent') ?? null,
+        });
+        await sendEmail(resetPasswordEmail({ to: user.email, url }));
+      },
       onPasswordReset: async ({ user }, request) => {
         await securityEvents.record('PASSWORD_CHANGED', {
           userId: user.id,
@@ -144,15 +177,8 @@ export function createAuth({ prisma, emailSender, securityEvents, env, loginLimi
       sendOnSignIn: true,
       autoSignInAfterVerification: true,
       expiresIn: EMAIL_VERIFICATION_EXPIRES_IN_S,
-      // Texto mínimo: las plantillas y el envío real (Resend) son de HOG-054.
       sendVerificationEmail: async ({ user, url }) => {
-        const link = withAppCallback(url, env.APP_URL);
-        await emailSender.send({
-          to: user.email,
-          subject: 'Confirma tu email en Hogaria',
-          text: `Hola, ${user.name}:\n\nAbre este enlace para activar tu cuenta de Hogaria (caduca en 24 horas):\n${link}\n`,
-          html: `<p>Hola, ${escapeHtml(user.name)}:</p><p><a href="${escapeHtml(link)}">Activa tu cuenta de Hogaria</a> (el enlace caduca en 24 horas).</p>`,
-        });
+        await sendEmail(verifyEmail({ to: user.email, name: user.name, url: withAppCallback(url, env.APP_URL) }));
       },
     },
 
@@ -200,7 +226,3 @@ export function createAuth({ prisma, emailSender, securityEvents, env, loginLimi
 }
 
 export type Auth = ReturnType<typeof createAuth>;
-
-function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
-}

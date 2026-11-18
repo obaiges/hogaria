@@ -130,12 +130,12 @@ Implementar `/entrar`, `/registro` y `/recuperar` con `authClient`, validación 
 Implementar `ResendEmailSender` con las plantillas en español y completar los flujos de verificación (incluido el reenvío al intentar entrar) y de restablecimiento de contraseña.
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/email/resend-email-sender.ts` implementa `EmailSender` con el SDK de Resend y `EMAIL_FROM`; en `NODE_ENV=test` se usa `FakeEmailSender`.
-- [ ] Plantillas `apps/api/src/auth/emails/verify-email.ts` y `reset-password.ts` (HTML con estilos en línea + texto plano) con los textos de la spec 01 §7.
-- [ ] Verificación: `callbackURL = APP_URL/`, caduca en 24 h, `sendOnSignIn` reenvía al intentar entrar sin verificar, `autoSignInAfterVerification`.
-- [ ] Restablecimiento: `sendResetPassword` con `redirectTo = APP_URL/recuperar`, caduca en 30 min, un solo uso, `revokeSessionsOnPasswordReset: true`; `SecurityEvent PASSWORD_RESET_REQUESTED` solo si el usuario existe; `PASSWORD_CHANGED` al restablecer.
-- [ ] `SignInPage` muestra "Tu email aún no está verificado. Te hemos reenviado el enlace." con `EMAIL_NOT_VERIFIED`.
-- [ ] Un fallo de Resend se registra en el log y no revela nada al usuario (la respuesta sigue siendo la genérica).
+- [x] `apps/api/src/email/resend-email-sender.ts` implementa `EmailSender` con el SDK de Resend y `EMAIL_FROM`; en `NODE_ENV=test` se usa `FakeEmailSender`.
+- [x] Plantillas `apps/api/src/auth/emails/verify-email.ts` y `reset-password.ts` (HTML con estilos en línea + texto plano) con los textos de la spec 01 §7.
+- [x] Verificación: `callbackURL = APP_URL/`, caduca en 24 h, `sendOnSignIn` reenvía al intentar entrar sin verificar, `autoSignInAfterVerification`.
+- [x] Restablecimiento: `sendResetPassword` con `redirectTo = APP_URL/recuperar`, caduca en 30 min, un solo uso, `revokeSessionsOnPasswordReset: true`; `SecurityEvent PASSWORD_RESET_REQUESTED` solo si el usuario existe; `PASSWORD_CHANGED` al restablecer.
+- [x] `SignInPage` muestra "Tu email aún no está verificado. Te hemos reenviado el enlace." con `EMAIL_NOT_VERIFIED`.
+- [x] Un fallo de Resend se registra en el log y no revela nada al usuario (la respuesta sigue siendo la genérica).
 
 **Notas técnicas**
 - Límite gratuito de Resend: 100 emails/día (`docs/06-despliegue.md`); los límites de reenvío son de HOG-058.

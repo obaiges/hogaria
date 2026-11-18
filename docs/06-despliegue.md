@@ -91,7 +91,7 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 SIGNUP_REQUIRES_INVITE=true
 
-RESEND_API_KEY=
+RESEND_API_KEY=                # sin ella (o sin EMAIL_FROM) no se envían emails: solo se registra en el log
 EMAIL_FROM="Hogaria <no-reply@hogaria.obaiges.com>"
 
 GEMINI_API_KEY=

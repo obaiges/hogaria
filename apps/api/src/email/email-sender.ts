@@ -7,7 +7,7 @@ export interface EmailMessage {
   html: string;
 }
 
-/** Envío de emails transaccionales. En test: `FakeEmailSender`; el real (Resend) llega en HOG-054. */
+/** Envío de emails transaccionales: `ResendEmailSender`; en test, `FakeEmailSender`. Puede lanzar si el proveedor falla. */
 export interface EmailSender {
   send(message: EmailMessage): Promise<void>;
 }
