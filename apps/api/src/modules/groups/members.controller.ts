@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch } from '@nestjs/common';
 
 import { groupMemberDto, updateMyMemberInput, type GroupMemberDto, type UpdateMyMemberInput } from '@hogaria/shared';
 
@@ -11,7 +11,7 @@ import { MembersService } from './members.service.js';
 
 import type { AuthUser } from '../../common/auth/auth-user.js';
 
-/** `GET /groups/:groupId/members` y `PATCH /groups/:groupId/members/me` (spec 02 §5). */
+/** `GET /groups/:groupId/members`, `PATCH …/members/me` y `DELETE …/members/:userId` (spec 02 §5). */
 @GroupScoped()
 @Controller('groups/:groupId/members')
 export class MembersController {
@@ -31,5 +31,12 @@ export class MembersController {
     @Body(new ZodValidationPipe(updateMyMemberInput)) body: UpdateMyMemberInput,
   ): Promise<GroupMemberDto> {
     return this.members.updateMine(group.groupId, user.id, body);
+  }
+
+  @ApiContract({ summary: 'Expulsar a otro miembro del hogar', response: null })
+  @Delete(':userId')
+  @HttpCode(204)
+  async remove(@CurrentGroup() group: GroupContext, @CurrentUser() user: AuthUser, @Param('userId') userId: string): Promise<void> {
+    await this.members.remove(group.groupId, user.id, userId);
   }
 }

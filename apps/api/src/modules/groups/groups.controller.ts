@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Patch, Post } from '@nestjs/common';
 
 import {
   createGroupInput,
@@ -17,6 +17,7 @@ import { GroupScoped } from '../../common/guards/group-member.guard.js';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe.js';
 import { ApiContract } from '../../openapi/api-contract.decorator.js';
 import { GroupsService } from './groups.service.js';
+import { MembersService } from './members.service.js';
 
 import type { AuthUser } from '../../common/auth/auth-user.js';
 
@@ -36,7 +37,10 @@ export class GroupsController {
 @GroupScoped()
 @Controller('groups/:groupId')
 export class GroupController {
-  constructor(private readonly groups: GroupsService) {}
+  constructor(
+    private readonly groups: GroupsService,
+    private readonly members: MembersService,
+  ) {}
 
   @ApiContract({ summary: 'Datos del hogar', response: groupDto })
   @Get()
@@ -52,5 +56,12 @@ export class GroupController {
     @Body(new ZodValidationPipe(updateGroupInput)) body: UpdateGroupInput,
   ): Promise<GroupDto> {
     return this.groups.update(group.groupId, user.id, body);
+  }
+
+  @ApiContract({ summary: 'Salir del hogar (si eres el último, se borra)', response: null })
+  @Post('leave')
+  @HttpCode(204)
+  async leave(@CurrentGroup() group: GroupContext, @CurrentUser() user: AuthUser): Promise<void> {
+    await this.members.leave(group.groupId, user.id);
   }
 }

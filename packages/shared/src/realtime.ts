@@ -88,6 +88,8 @@ export interface RealtimeEventDataMap {
   'group.member.joined': GroupMemberDto;
   /** `PATCH /groups/:groupId/members/me` con cambio real de color (HOG-108). */
   'group.member.updated': GroupMemberDto;
+  /** Salir, ser expulsado o salir el último y borrar el grupo (HOG-106, RN-02-20 a RN-02-23). */
+  'group.member.left': { userId: string };
   /** Invitaciones, sin token (HOG-102). */
   'invite.created': GroupInviteDto;
   'invite.revoked': GroupInviteDto;
@@ -109,6 +111,7 @@ export const REALTIME_EVENT_SCHEMAS: { [E in PublishableRealtimeEvent]: z.ZodTyp
   'group.updated': groupDto,
   'group.member.joined': groupMemberDto,
   'group.member.updated': groupMemberDto,
+  'group.member.left': z.strictObject({ userId: z.uuid() }),
   'invite.created': groupInviteDto,
   'invite.revoked': groupInviteDto,
   'invite.used': groupInviteDto,

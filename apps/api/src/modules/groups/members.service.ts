@@ -5,18 +5,41 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { RealtimePublisher } from '../../realtime/realtime.publisher.js';
 import { lockGroup } from './group-lock.js';
 import { toGroupMemberDto } from './group-mappers.js';
+import { GroupsService } from './groups.service.js';
 
 import type { GroupMemberDto, UpdateMyMemberInput } from '@hogaria/shared';
 
 const MEMBER_USER = { user: { select: { name: true, username: true, image: true } } } as const;
 
-/** Miembros de un grupo (spec 02 §5): listar y cambiar el propio color de calle. */
+/** Mensaje de RN-02-23 al intentar expulsarse a uno mismo. */
+export const SELF_REMOVE_MESSAGE = 'Para salir del hogar, usa «Salir del hogar»';
+
+/** Miembros de un grupo (spec 02 §5): listar, cambiar el propio color, salir y expulsar. */
 @Injectable()
 export class MembersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimePublisher,
+    private readonly groups: GroupsService,
   ) {}
+
+  /** `POST /groups/:g/leave` (RN-02-20, RN-02-21): si es el último, se borra el hogar. */
+  async leave(groupId: string, userId: string): Promise<void> {
+    const removal = await this.prisma.$transaction((tx) => this.groups.removeMember(tx, groupId, userId, { reason: 'LEFT' }));
+    await this.groups.afterMemberRemoved(removal);
+  }
+
+  /**
+   * `DELETE /groups/:g/members/:userId` (RN-02-23): cualquier miembro expulsa a otro. A uno
+   * mismo → `422`; si `userId` no es miembro → `404`.
+   */
+  async remove(groupId: string, actorId: string, userId: string): Promise<void> {
+    if (userId === actorId) throw new AppError('VALIDATION_ERROR', SELF_REMOVE_MESSAGE);
+    const removal = await this.prisma.$transaction((tx) =>
+      this.groups.removeMember(tx, groupId, userId, { reason: 'REMOVED', actorId }),
+    );
+    await this.groups.afterMemberRemoved(removal);
+  }
 
   /** Miembros por `joinedAt` ascendente. */
   async list(groupId: string): Promise<GroupMemberDto[]> {

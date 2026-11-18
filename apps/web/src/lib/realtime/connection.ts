@@ -23,6 +23,8 @@ export interface BindRealtimeDeps {
   onAuthError: (code: RealtimeAuthErrorCode) => void;
   /** `session.revoked` y la sesión ya no existe: ya se ha desconectado y limpiado la caché; solo queda navegar. */
   onSessionEnded?: () => void;
+  /** Navegación para los manejadores (RN-02-32). */
+  navigate?: (to: string) => void;
 }
 
 function authErrorCode(err: unknown): RealtimeAuthErrorCode | null {
@@ -55,7 +57,13 @@ export function bindRealtime(socket: RealtimeSocketLike, deps: BindRealtimeDeps)
     deps.queryClient.clear();
     deps.onSessionEnded?.();
   };
-  const dispatch = createDispatcher({ queryClient: deps.queryClient, getMeId: deps.getMeId, endSession });
+  const dispatch = createDispatcher({
+    queryClient: deps.queryClient,
+    getMeId: deps.getMeId,
+    endSession,
+    getActiveGroupId: deps.getActiveGroupId,
+    navigate: deps.navigate,
+  });
   let connectedBefore = false;
   socketConnecting();
 

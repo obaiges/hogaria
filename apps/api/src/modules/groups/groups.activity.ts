@@ -24,6 +24,8 @@ export const groupActivity = {
   },
 
   memberJoined: () => 'se unió al hogar',
+  memberLeft: () => 'salió del hogar',
+  memberRemoved: (name: string) => `expulsó a ${truncateName(name)} del hogar`,
   inviteCreated: () => 'creó una invitación',
   inviteRevoked: () => 'revocó una invitación',
 };

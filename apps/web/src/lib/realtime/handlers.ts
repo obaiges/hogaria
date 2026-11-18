@@ -1,4 +1,5 @@
 import { authHandlers } from '@/features/auth/realtime';
+import { groupHandlers } from '@/features/groups/realtime';
 
 import type { RealtimeEventName, TypedRealtimeEnvelope } from '@hogaria/shared';
 import type { QueryClient } from '@tanstack/react-query';
@@ -48,6 +49,10 @@ export interface RealtimeHandlerContext {
    * socket, limpia la caché y vuelve a `/entrar` con el aviso (spec 01 §5).
    */
   endSession: () => void;
+  /** Grupo de la ruta actual (`/g/:groupId/…`) o `null`. */
+  activeGroupId: string | null;
+  /** Navega dentro de la app (p. ej. a `/grupos` si te han sacado del hogar activo, RN-02-32). */
+  navigate: (to: string) => void;
 }
 
 export type RealtimeHandler<E extends RealtimeEventName> = (envelope: TypedRealtimeEnvelope<E>, ctx: RealtimeHandlerContext) => void;
@@ -55,7 +60,7 @@ export type RealtimeHandler<E extends RealtimeEventName> = (envelope: TypedRealt
 export type RealtimeHandlers = { [E in RealtimeEventName]?: RealtimeHandler<E> };
 
 /** Manejadores de cada feature. Cada épica añade aquí los suyos (`features/<x>/realtime.ts`). */
-const FEATURE_HANDLERS: RealtimeHandlers[] = [authHandlers];
+const FEATURE_HANDLERS: RealtimeHandlers[] = [authHandlers, groupHandlers];
 
 const registry = new Map<RealtimeEventName, RealtimeHandler<RealtimeEventName>>();
 

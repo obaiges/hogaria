@@ -1,12 +1,16 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, MoreVertical } from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { MemberAvatar } from "@/components/pool";
 
+import { DangerZone } from "../components/DangerZone";
 import { EditGroupSheet } from "../components/EditGroupSheet";
 import { InvitesSection } from "../components/InvitesSection";
 import { LaneColorPicker } from "../components/LaneColorPicker";
+import { MemberActions, REMOVE_TEXT } from "../components/RemoveMemberDialog";
 import { useActiveGroup } from "../GroupProvider";
+
+import type { GroupMemberDto } from "@hogaria/shared";
 
 export const SETTINGS_TEXT = {
   title: "Ajustes del grupo",
@@ -14,6 +18,7 @@ export const SETTINGS_TEXT = {
   members: (n: number) => `Miembros (${n})`,
   laneColor: "Tu color de calle",
   invites: "Invitaciones",
+  danger: "Zona de peligro",
   editHome: (name: string) => `Editar hogar ${name}`,
 } as const;
 
@@ -31,11 +36,12 @@ function Section({ id, title, children }: { id: string; title: string; children:
 /**
  * `/g/:groupId/ajustes` (spec 02 §7, secciones 1–4): hogar, miembros, color de calle e
  * invitaciones. El grupo y los miembros los carga `GroupLayout`; las invitaciones, su sección.
- * Expulsar y salir del hogar llegan con HOG-106.
+ * La zona de peligro (salir) y el menú de miembro (expulsar) son de HOG-106.
  */
 export function GroupSettingsPage() {
   const { group, members, me, timezone } = useActiveGroup();
   const [editing, setEditing] = useState(false);
+  const [actionsFor, setActionsFor] = useState<GroupMemberDto | null>(null);
 
   return (
     <div className="mx-auto flex max-w-xl flex-col gap-8 px-4 pt-6">
@@ -63,18 +69,32 @@ export function GroupSettingsPage() {
       <Section id="ajustes-miembros" title={SETTINGS_TEXT.members(members.length)}>
         <ul className="divide-y divide-[var(--grout)] rounded-[var(--radius-md)] border border-[var(--grout)] bg-[var(--surface)]">
           {members.map((member) => (
-            <li key={member.id} className="flex min-h-[56px] items-center gap-3 px-3">
+            <li key={member.id} className="flex min-h-[56px] items-center gap-3 pl-3 pr-1">
               <MemberAvatar member={member} size={36} decorative />
-              <span className="flex min-w-0 flex-col">
+              <span className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate text-[16px] text-[var(--ink)]">
                   {member.name}
                   {member.userId === me.userId ? <span className="text-[var(--ink-muted)]"> (tú)</span> : null}
                 </span>
                 {member.username ? <span className="text-[14px] text-[var(--ink-muted)]">@{member.username}</span> : null}
               </span>
+              {member.userId !== me.userId ? (
+                <button
+                  type="button"
+                  onClick={() => setActionsFor(member)}
+                  aria-label={REMOVE_TEXT.options(member.name)}
+                  aria-haspopup="dialog"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-sm)] text-[var(--ink-muted)] hover:bg-[var(--surface-sunken)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                >
+                  <MoreVertical className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+                </button>
+              ) : null}
             </li>
           ))}
         </ul>
+        {actionsFor ? (
+          <MemberActions groupId={group.id} member={actionsFor} onClose={() => setActionsFor(null)} />
+        ) : null}
       </Section>
 
       <Section id="ajustes-color" title={SETTINGS_TEXT.laneColor}>
@@ -83,6 +103,10 @@ export function GroupSettingsPage() {
 
       <Section id="ajustes-invitaciones" title={SETTINGS_TEXT.invites}>
         <InvitesSection groupId={group.id} groupName={group.name} myName={me.name} timezone={timezone} />
+      </Section>
+
+      <Section id="ajustes-peligro" title={SETTINGS_TEXT.danger}>
+        <DangerZone groupId={group.id} groupName={group.name} memberCount={members.length} />
       </Section>
     </div>
   );

@@ -23,7 +23,7 @@ function run() {
   const queryClient = new QueryClient();
   const invalidate = vi.spyOn(queryClient, "invalidateQueries");
   const endSession = vi.fn();
-  authHandlers["session.revoked"]!(envelope, { queryClient, meId: "u1", markRipple: vi.fn(), endSession });
+  authHandlers["session.revoked"]!(envelope, { queryClient, meId: "u1", markRipple: vi.fn(), endSession, activeGroupId: null, navigate: vi.fn() });
   return { invalidate, endSession };
 }
 

@@ -22,6 +22,8 @@ import {
 
 import { api, ApiError } from "@/lib/apiClient";
 
+import { dropMember, forgetGroup } from "./realtime";
+
 /** Un 404 de grupo es definitivo (no existe o es ajeno, RN-02-31): no se reintenta. */
 function retryUnlessNotFound(failureCount: number, error: Error): boolean {
   if (error instanceof ApiError && error.status === 404) return false;
@@ -211,5 +213,23 @@ export function useAcceptInvite(token: string) {
   return useMutation({
     mutationFn: () => api.post<AcceptInviteResultDto>(`/invites/${token}/accept`, { schema: acceptInviteResultDto }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: myGroupsQuery.queryKey }),
+  });
+}
+
+/** `POST /groups/:g/leave` (RN-02-20, RN-02-21). Al terminar, el hogar desaparece de la caché. */
+export function useLeaveGroup(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<void>(`/groups/${groupId}/leave`),
+    onSuccess: () => forgetGroup(queryClient, groupId),
+  });
+}
+
+/** `DELETE /groups/:g/members/:userId` (RN-02-23): expulsar a otro miembro. */
+export function useRemoveMember(groupId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (userId: string) => api.delete<void>(`/groups/${groupId}/members/${userId}`),
+    onSuccess: (_result, userId) => dropMember(queryClient, groupId, userId),
   });
 }

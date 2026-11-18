@@ -175,12 +175,12 @@ Implementar "Ajustes del grupo" con la edición del hogar, la lista de miembros,
 Permitir salir de un hogar y expulsar a otro miembro, borrando el hogar entero cuando sale el último, con el mecanismo de limpieza por módulo y la reacción inmediata en los dispositivos afectados.
 
 **Criterios de aceptación**
-- [ ] `POST /groups/:g/leave` y `DELETE /groups/:g/members/:userId` (204) en `members.service.ts`, con la transacción, los `MemberRemovedHooks`, la actividad ("salió del hogar" / "expulsó a {nombre} del hogar"), y tras el commit: `group.member.left` **antes** de `RealtimeRooms.leaveGroup`, `MembershipCache.invalidate` y `activity.created`.
-- [ ] Último miembro: borra `Reminder` y `AiConversation` del grupo y el `Group`; `MembershipCache.invalidateGroup`; llama a `onGroupDeleted(groupId)` (registro vacío por ahora).
-- [ ] `member-removed.hooks.ts`: registro `register(handler)` y ejecución en la transacción; sin manejadores en E02.
-- [ ] Expulsarse a uno mismo → `422`; `userId` no miembro → `404`.
-- [ ] Web: "ZONA DE PELIGRO" con "Salir del hogar" (texto distinto si es el último: "Salir y borrar hogar") y menú de miembro "Expulsar del hogar", con los diálogos y toasts de la spec.
-- [ ] Manejador de `group.member.left` para el usuario actual (RN-02-32): quita el grupo de `['me', 'groups']`, elimina `['group', g]` y navega a `/grupos` con "Ya no formas parte de {nombre}" si era el activo.
+- [x] `POST /groups/:g/leave` y `DELETE /groups/:g/members/:userId` (204) en `members.service.ts`, con la transacción, los `MemberRemovedHooks`, la actividad ("salió del hogar" / "expulsó a {nombre} del hogar"), y tras el commit: `group.member.left` **antes** de `RealtimeRooms.leaveGroup`, `MembershipCache.invalidate` y `activity.created`.
+- [x] Último miembro: borra `Reminder` y `AiConversation` del grupo y el `Group`; `MembershipCache.invalidateGroup`; llama a `onGroupDeleted(groupId)` (registro vacío por ahora).
+- [x] `member-removed.hooks.ts`: registro `register(handler)` y ejecución en la transacción; sin manejadores en E02.
+- [x] Expulsarse a uno mismo → `422`; `userId` no miembro → `404`.
+- [x] Web: "ZONA DE PELIGRO" con "Salir del hogar" (texto distinto si es el último: "Salir y borrar hogar") y menú de miembro "Expulsar del hogar", con los diálogos y toasts de la spec.
+- [x] Manejador de `group.member.left` para el usuario actual (RN-02-32): quita el grupo de `['me', 'groups']`, elimina `['group', g]` y navega a `/grupos` con "Ya no formas parte de {nombre}" si era el activo.
 
 **Notas técnicas**
 - `onGroupTimezoneChanged` y `onGroupDeleted` viven en `modules/groups/group-lifecycle.hooks.ts` (E12 los usará).

@@ -67,6 +67,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-752 | Integrar el banner de sin conexión (HOG-155) en el AppShell | E15 | P0 | 1 | HOG-155, HOG-750 |
 | HOG-105 | Crear los ajustes del grupo: datos del hogar, miembros, color de calle e invitaciones | E02 | P0 | 5 | HOG-102, HOG-107, HOG-108, HOG-009 |
 | HOG-103 | Crear el flujo web de invitación `/invite/:token` | E02 | P0 | 3 | HOG-102, HOG-052, HOG-054, HOG-107 |
+| HOG-106 | Implementar salir del grupo, expulsar a un miembro y borrar el grupo al salir el último | E02 | P0 | 5 | HOG-105, HOG-150, HOG-152 |
 ---
 
 ## 📋 Backlog (ordenado por fase y dependencias)
@@ -81,7 +82,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ### Fase 1 · Núcleo — 36 tickets, 120 pts
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-106 | Implementar salir del grupo, expulsar a un miembro y borrar el grupo al salir el último | E02 | P0 | 5 | HOG-105, HOG-150, HOG-152 |
 | HOG-755 | Construir la pantalla de Inicio básica | E15 | P0 | 3 | HOG-750, HOG-754, HOG-152 |
 | HOG-051 | Añadir el login con Google y la vinculación de cuentas por email | E01 | P1 | 2 | HOG-050, HOG-023 |
 | HOG-060 | Permitir cambiar la contraseña desde Perfil → Seguridad | E01 | P1 | 2 | HOG-056, HOG-058 |
@@ -537,7 +537,7 @@ flowchart LR
 %% progreso (generado por scripts/board-progress.mjs)
   classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
   classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
-  class HOG050,HOG055,HOG053,HOG054,HOG058,HOG057,HOG052,HOG056,HOG101,HOG100,HOG102,HOG104,HOG107,HOG103,HOG108,HOG105,HOG150,HOG151,HOG152,HOG153,HOG155,HOG750,HOG751,HOG752 done
+  class HOG050,HOG055,HOG053,HOG054,HOG058,HOG057,HOG052,HOG056,HOG101,HOG100,HOG102,HOG104,HOG107,HOG103,HOG108,HOG105,HOG106,HOG150,HOG151,HOG152,HOG153,HOG155,HOG750,HOG751,HOG752 done
 ```
 
 ### Fase 2 · Compra + Tareas + Push

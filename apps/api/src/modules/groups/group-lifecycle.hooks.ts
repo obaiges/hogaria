@@ -8,6 +8,8 @@ import { Injectable, Logger } from '@nestjs/common';
 export interface GroupLifecycleListener {
   name: string;
   onGroupTimezoneChanged?: (groupId: string) => Promise<void> | void;
+  /** El grupo se ha borrado al salir su último miembro (RN-02-21). */
+  onGroupDeleted?: (groupId: string) => Promise<void> | void;
 }
 
 @Injectable()
@@ -27,6 +29,18 @@ export class GroupLifecycleHooks {
         await listener.onGroupTimezoneChanged(groupId);
       } catch (error) {
         this.logger.warn({ err: error, listener: listener.name, groupId }, 'Falló onGroupTimezoneChanged');
+      }
+    }
+  }
+
+  /** Tras borrar el grupo (RN-02-21): E12 cancela sus temporizadores. Un fallo no afecta a la petición. */
+  async onGroupDeleted(groupId: string): Promise<void> {
+    for (const listener of this.listeners) {
+      if (!listener.onGroupDeleted) continue;
+      try {
+        await listener.onGroupDeleted(groupId);
+      } catch (error) {
+        this.logger.warn({ err: error, listener: listener.name, groupId }, 'Falló onGroupDeleted');
       }
     }
   }

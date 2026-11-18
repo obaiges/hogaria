@@ -19,4 +19,9 @@ describe('textos de actividad de grupos (spec 02 §9)', () => {
   it('editar varios campos', () => {
     expect(groupActivity.updated(group, ['name', 'emoji'])).toBe('actualizó los datos del hogar');
   });
+
+  it('salir y expulsar', () => {
+    expect(groupActivity.memberLeft()).toBe('salió del hogar');
+    expect(groupActivity.memberRemoved('Luis')).toBe('expulsó a Luis del hogar');
+  });
 });

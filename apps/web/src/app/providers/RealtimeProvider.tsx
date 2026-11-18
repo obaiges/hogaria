@@ -39,6 +39,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
       queryClient,
       getMeId: () => meIdRef.current,
       getActiveGroupId: () => activeGroupRef.current,
+      navigate: (to) => void navigateRef.current(to, { replace: true }),
       onAuthError: (code: RealtimeAuthErrorCode) => {
         clearMutations();
         clearRipples();

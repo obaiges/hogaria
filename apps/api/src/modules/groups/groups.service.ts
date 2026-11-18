@@ -18,8 +18,23 @@ import { RealtimePublisher } from '../../realtime/realtime.publisher.js';
 import { GroupLifecycleHooks } from './group-lifecycle.hooks.js';
 import { lockGroup } from './group-lock.js';
 import { groupActivity, type GroupField } from './groups.activity.js';
+import { MemberRemovedHooks } from './member-removed.hooks.js';
 
-import type { Group, GroupMember, LaneColor } from '@prisma/client';
+import type { ActivityLog, Group, GroupMember, LaneColor, Prisma } from '@prisma/client';
+
+/** Motivo de la salida (RN-02-22). `ACCOUNT_DELETED` lo usa el borrado de cuenta (HOG-808). */
+export type MemberRemovalReason = 'LEFT' | 'REMOVED' | 'ACCOUNT_DELETED';
+
+export interface RemoveMemberOptions {
+  reason: MemberRemovalReason;
+  /** Quien expulsa (`REMOVED`); en el resto, el propio usuario. */
+  actorId?: string;
+}
+
+/** Resultado de `removeMember`, para los pasos posteriores al commit (`afterMemberRemoved`). */
+export type MemberRemoval =
+  | { groupId: string; userId: string; groupDeleted: true }
+  | { groupId: string; userId: string; groupDeleted: false; activityRow: ActivityLog; actorId: string; actorName: string };
 
 /** Lista que se crea con cada hogar (RN-02-02). */
 const DEFAULT_SHOPPING_LIST = { name: 'Compra', emoji: '🛒' } as const;
@@ -53,6 +68,7 @@ export class GroupsService {
     private readonly rooms: RealtimeRooms,
     private readonly membership: MembershipCache,
     private readonly hooks: GroupLifecycleHooks,
+    private readonly memberRemovedHooks: MemberRemovedHooks,
   ) {}
 
   /** Crea el hogar con su semilla en una sola transacción (RN-02-02). */
@@ -144,5 +160,67 @@ export class GroupsService {
       include: { group: { include: { _count: { select: { members: true } } } } },
     });
     return memberships.map((m) => toMyGroupDto(m.group, m, m.group._count.members));
+  }
+
+  /**
+   * Saca a `userId` del grupo dentro de `tx` (RN-02-20 a RN-02-23). Acepta una transacción
+   * externa para reutilizarla en el borrado de cuenta (spec 16). Si es el último miembro, borra
+   * el grupo entero (RN-02-21). Tras el commit hay que llamar a `afterMemberRemoved`.
+   */
+  async removeMember(tx: Prisma.TransactionClient, groupId: string, userId: string, opts: RemoveMemberOptions): Promise<MemberRemoval> {
+    if (!(await lockGroup(tx, groupId))) throw new AppError('NOT_FOUND');
+    const member = await tx.groupMember.findUnique({
+      where: { groupId_userId: { groupId, userId } },
+      include: { user: { select: { name: true } } },
+    });
+    if (!member) throw new AppError('NOT_FOUND');
+
+    const others = await tx.groupMember.count({ where: { groupId, userId: { not: userId } } });
+    if (others === 0) {
+      // Último miembro: lo que no tiene FK a Group se borra a mano; el resto cae en cascada.
+      await tx.reminder.deleteMany({ where: { groupId } });
+      await tx.aiConversation.deleteMany({ where: { groupId } });
+      await tx.group.delete({ where: { id: groupId } });
+      return { groupId, userId, groupDeleted: true };
+    }
+
+    await this.memberRemovedHooks.run(tx, { groupId, userId });
+    await tx.groupMember.delete({ where: { id: member.id } });
+
+    const removed = opts.reason === 'REMOVED';
+    const actorId = removed && opts.actorId ? opts.actorId : userId;
+    const actor = removed
+      ? await tx.user.findUniqueOrThrow({ where: { id: actorId }, select: { name: true } })
+      : member.user;
+    const activityRow = await this.activity.record(tx, {
+      groupId,
+      actorId,
+      entityType: 'group_member',
+      entityId: member.id,
+      action: removed ? 'removed' : 'left',
+      summary: removed ? groupActivity.memberRemoved(member.user.name) : groupActivity.memberLeft(),
+      ...(removed ? { metadata: { userId } } : {}),
+    });
+    return { groupId, userId, groupDeleted: false, activityRow, actorId, actorName: actor.name };
+  }
+
+  /**
+   * Tras el commit de `removeMember` (RN-02-20, RN-02-21): `group.member.left` **antes** de sacar
+   * los sockets del usuario de la sala (así sus otros dispositivos se enteran), después las
+   * salas, la caché del guard y la actividad. Si se borró el grupo, avisa a los módulos.
+   */
+  async afterMemberRemoved(removal: MemberRemoval): Promise<void> {
+    const { groupId, userId } = removal;
+    const actorId = removal.groupDeleted ? userId : removal.actorId;
+    this.realtime.publish(groupId, 'group.member.left', { userId }, { actorId });
+    this.rooms.leaveGroup(userId, groupId);
+    if (removal.groupDeleted) {
+      this.membership.invalidateGroup(groupId);
+      await this.hooks.onGroupDeleted(groupId);
+      return;
+    }
+    this.membership.invalidate(userId, groupId);
+    this.activity.publishCreated(removal.activityRow, { actorName: removal.actorName });
+    // E12 añadirá aquí `scheduler.cancelForUserInGroup` y `scheduler.rebuildGroup` (RN-02-22).
   }
 }
