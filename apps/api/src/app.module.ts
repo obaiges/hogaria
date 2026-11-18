@@ -6,6 +6,7 @@ import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 
+import { ActivityModule } from './activity/activity.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AuthGuard } from './common/auth/auth.guard.js';
 import { requestContextMiddleware } from './common/context/request-context.js';
@@ -20,6 +21,7 @@ import { MeModule } from './me/me.module.js';
 import { OpenApiModule } from './openapi/openapi.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
+import { SchedulerModule } from './scheduler/scheduler.module.js';
 import { TestSupportModule } from './test-support/test-support.module.js';
 
 import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
@@ -50,6 +52,8 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     PrismaModule,
     GroupAccessModule,
     RealtimeModule,
+    ActivityModule,
+    SchedulerModule,
     ExternalServicesModule,
     AuthModule,
     HealthModule,

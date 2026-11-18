@@ -100,13 +100,13 @@ Conectar la web al socket con un único proveedor que reparte cada evento al man
 Crear el servicio que todos los módulos usan para registrar la actividad dentro de su transacción y publicarla tras el commit, las utilidades de texto y la retención de 90 días (más la de `SecurityEvent`) dentro del único cron de 6 h (`MaintenanceCron` + `SchedulerTickRegistry`, que crea este ticket).
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/activity/activity.service.ts`: `record(tx, input)` (valida `entityType`/`action`, recorta `summary` a 200) y `publishCreated(row)` (construye `ActivityDto` con `actorName` del `RequestContext` y publica `activity.created`), sin consultas extra.
-- [ ] `apps/api/src/activity/summary.ts`: `truncateName(name, 60)` y `quoteRename(name)` → `«name»`.
-- [ ] `packages/shared/src/activity.ts`: `ACTIVITY_ENTITY_TYPES`, `ACTIVITY_ACTIONS` y tipos; `packages/shared/src/schemas/activity.ts`: `activityDto`, `activityQuery`; `activity.created` en `RealtimeEventDataMap`.
-- [ ] `apps/api/src/scheduler/scheduler-tick.registry.ts`: `SchedulerTickRegistry.register({ name, order, run })`, exportado por un `SchedulerModule` global para que los demás módulos registren sus handlers en `onModuleInit`.
-- [ ] `apps/api/src/scheduler/maintenance.cron.ts`: `MaintenanceCron`, el **único** cron de 6 h (`@Cron('0 0 */6 * * *', { timeZone: 'Europe/Madrid' })`, `@nestjs/schedule`), que solo ejecuta los handlers del registro por `order`, aislando los errores (uno que falla se registra y no detiene los demás) y sin solapar ticks.
-- [ ] `apps/api/src/scheduler/retention.job.ts`: handler `retention.purge` (orden 20) que borra `ActivityLog` > 90 días y `SecurityEvent` > 180 días, como mucho una vez cada 24 h (`lastRunAt` en memoria).
-- [ ] Ningún otro cron toca la BBDD (los demás módulos solo registran handlers: `bills.materialize` E11 orden 10, `assistant.purge` E14 orden 30, `reminders.reconcile` E12 orden 100).
+- [x] `apps/api/src/activity/activity.service.ts`: `record(tx, input)` (valida `entityType`/`action`, recorta `summary` a 200) y `publishCreated(row)` (construye `ActivityDto` con `actorName` del `RequestContext` y publica `activity.created`), sin consultas extra.
+- [x] `apps/api/src/activity/summary.ts`: `truncateName(name, 60)` y `quoteRename(name)` → `«name»`.
+- [x] `packages/shared/src/activity.ts`: `ACTIVITY_ENTITY_TYPES`, `ACTIVITY_ACTIONS` y tipos; `packages/shared/src/schemas/activity.ts`: `activityDto`, `activityQuery`; `activity.created` en `RealtimeEventDataMap`.
+- [x] `apps/api/src/scheduler/scheduler-tick.registry.ts`: `SchedulerTickRegistry.register({ name, order, run })`, exportado por un `SchedulerModule` global para que los demás módulos registren sus handlers en `onModuleInit`.
+- [x] `apps/api/src/scheduler/maintenance.cron.ts`: `MaintenanceCron`, el **único** cron de 6 h (`@Cron('0 0 */6 * * *', { timeZone: 'Europe/Madrid' })`, `@nestjs/schedule`), que solo ejecuta los handlers del registro por `order`, aislando los errores (uno que falla se registra y no detiene los demás) y sin solapar ticks.
+- [x] `apps/api/src/scheduler/retention.job.ts`: handler `retention.purge` (orden 20) que borra `ActivityLog` > 90 días y `SecurityEvent` > 180 días, como mucho una vez cada 24 h (`lastRunAt` en memoria).
+- [x] Ningún otro cron toca la BBDD (los demás módulos solo registran handlers: `bills.materialize` E11 orden 10, `assistant.purge` E14 orden 30, `reminders.reconcile` E12 orden 100).
 
 **Notas técnicas**
 - `record` recibe el `tx` de Prisma (`Prisma.TransactionClient`); nunca abre su propia transacción.
