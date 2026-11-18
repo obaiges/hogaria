@@ -21,7 +21,6 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
 | HOG-023 | Configurar los servicios externos: Neon, Google OAuth y Resend | E00 | P1 | 2 | — |
-| HOG-754 | Crear la API del Inicio con secciones registrables | E15 | P0 | 3 | HOG-100, HOG-101, HOG-153 |
 
 ## ✅ Done
 | ID | Título | Épica | Prio | Pts | Depende de |
@@ -70,6 +69,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-106 | Implementar salir del grupo, expulsar a un miembro y borrar el grupo al salir el último | E02 | P0 | 5 | HOG-105, HOG-150, HOG-152 |
 | HOG-109 | Aplicar en la web los eventos en tiempo real de grupos, miembros e invitaciones | E02 | P1 | 2 | HOG-152, HOG-105 |
 | HOG-154 | Crear la pantalla de actividad `/g/:groupId/actividad` y su evento `activity.created` | E03 | P1 | 3 | HOG-153, HOG-152, HOG-107, HOG-101 |
+| HOG-754 | Crear la API del Inicio con secciones registrables | E15 | P0 | 3 | HOG-100, HOG-101, HOG-153 |
 ---
 
 ## 📋 Backlog (ordenado por fase y dependencias)
@@ -538,7 +538,7 @@ flowchart LR
 %% progreso (generado por scripts/board-progress.mjs)
   classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
   classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
-  class HOG050,HOG055,HOG053,HOG054,HOG058,HOG057,HOG052,HOG056,HOG101,HOG100,HOG102,HOG104,HOG107,HOG103,HOG108,HOG105,HOG106,HOG109,HOG150,HOG151,HOG152,HOG153,HOG155,HOG154,HOG750,HOG751,HOG752 done
+  class HOG050,HOG055,HOG053,HOG054,HOG058,HOG057,HOG052,HOG056,HOG101,HOG100,HOG102,HOG104,HOG107,HOG103,HOG108,HOG105,HOG106,HOG109,HOG150,HOG151,HOG152,HOG153,HOG155,HOG154,HOG750,HOG751,HOG752,HOG754 done
 ```
 
 ### Fase 2 · Compra + Tareas + Push

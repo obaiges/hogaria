@@ -9,6 +9,7 @@ export * from './money.js';
 export * from './realtime.js';
 export * from './schemas/activity.js';
 export * from './schemas/auth.js';
+export * from './schemas/dashboard.js';
 export * from './schemas/groups.js';
 export * from './schemas/invites.js';
 export * from './schemas/me.js';

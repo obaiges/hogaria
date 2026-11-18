@@ -122,12 +122,12 @@ Fundido cruzado de 150 ms con la View Transitions API al navegar, sin animación
 `GET /groups/:g/dashboard` con el `DashboardModule`, el token multi-provider `DASHBOARD_SECTIONS` y las secciones base `members` y `activity`; las calles se construyen con los miembros (sin sub-secciones todavía).
 
 **Criterios de aceptación**
-- [ ] `dashboardQuery` y `dashboardDto` en `packages/shared/src/schemas/dashboard.ts` exactamente como la spec.
-- [ ] `date` por defecto = hoy en `Group.timezone`; formato o fecha inválida → 422.
-- [ ] `dayStartUtc`/`dayEndUtc` con `@date-fns/tz` (correcto en cambios de hora).
-- [ ] Providers en paralelo; claves opcionales omitidas si no hay provider (RN-15-20/21).
-- [ ] Calles en el orden de RN-15-22; `members[].isMe`.
-- [ ] `activity` = 5 últimas, reutilizando `ActivityService` (HOG-153).
+- [x] `dashboardQuery` y `dashboardDto` en `packages/shared/src/schemas/dashboard.ts` exactamente como la spec.
+- [x] `date` por defecto = hoy en `Group.timezone`; formato o fecha inválida → 422.
+- [x] `dayStartUtc`/`dayEndUtc` con `@date-fns/tz` (correcto en cambios de hora).
+- [x] Providers en paralelo; claves opcionales omitidas si no hay provider (RN-15-20/21).
+- [x] Calles en el orden de RN-15-22; `members[].isMe`.
+- [x] `activity` = 5 últimas, reutilizando `ActivityService` (HOG-153).
 
 **Notas técnicas**
 - `apps/api/src/modules/dashboard/{dashboard.module.ts, dashboard.controller.ts, dashboard.service.ts, dashboard-section.provider.ts, sections/members.section.ts, sections/activity.section.ts}`.

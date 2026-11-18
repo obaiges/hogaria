@@ -89,6 +89,28 @@ export const UNITS = [
 ] as const;
 export type Unit = (typeof UNITS)[number];
 
+// ─── Calendario y facturas (enums de Prisma `EventCategory` y `BillCategory`) ───
+
+export const EVENT_CATEGORIES = ['GENERAL', 'BIRTHDAY', 'MEDICAL', 'SCHOOL', 'WORK', 'SOCIAL', 'TRAVEL', 'OTHER'] as const;
+export type EventCategory = (typeof EVENT_CATEGORIES)[number];
+
+export const BILL_CATEGORIES = [
+  'RENT',
+  'MORTGAGE',
+  'ELECTRICITY',
+  'WATER',
+  'GAS',
+  'INTERNET',
+  'PHONE',
+  'INSURANCE',
+  'SUBSCRIPTION',
+  'COMMUNITY',
+  'TAXES',
+  'SCHOOL',
+  'OTHER',
+] as const;
+export type BillCategory = (typeof BILL_CATEGORIES)[number];
+
 // ─── Comidas y dieta ──────────────────────────────────────────────────────
 
 export const MEAL_SLOTS = ['BREAKFAST', 'MID_MORNING', 'LUNCH', 'SNACK', 'DINNER'] as const;
