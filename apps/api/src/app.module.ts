@@ -19,6 +19,7 @@ import { HealthModule } from './health/health.module.js';
 import { MeModule } from './me/me.module.js';
 import { OpenApiModule } from './openapi/openapi.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { RealtimeModule } from './realtime/realtime.module.js';
 import { TestSupportModule } from './test-support/test-support.module.js';
 
 import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
@@ -48,6 +49,7 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     ThrottlerModule.forRoot([{ name: 'default', ...DEFAULT_RATE_LIMIT }]),
     PrismaModule,
     GroupAccessModule,
+    RealtimeModule,
     ExternalServicesModule,
     AuthModule,
     HealthModule,

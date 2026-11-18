@@ -15,13 +15,13 @@
 Montar Socket.IO en `/realtime`, autenticar cada conexión con la cookie de Better Auth, unir el socket a su sala de usuario y a las de sus grupos, y ofrecer a los servicios el ajuste de salas y la desconexión por sesión.
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/realtime/realtime.gateway.ts` (`@WebSocketGateway({ path: '/realtime', cors: { origin, credentials: true }, transports: ['websocket', 'polling'] })`) y `realtime.module.ts` global.
-- [ ] Middleware `io.use` (`realtime/socket-auth.middleware.ts`): sesión válida y no bloqueada, `Origin` permitido; si no, `connect_error` con `UNAUTHENTICATED` o `ACCOUNT_BLOCKED` en `err.message` y `err.data.code`.
-- [ ] Al conectar: `socket.data = { userId, sessionId }`, `join('user:<userId>')` y `join('group:<id>')` por cada membresía con **una** consulta.
-- [ ] Sin manejadores `@SubscribeMessage` (socket solo de bajada).
-- [ ] `realtime/realtime-rooms.service.ts` con `joinGroup(userId, groupId)` y `leaveGroup(userId, groupId)`.
-- [ ] `RealtimeGateway.disconnectSessions(userId, { sessionIds?, exceptSessionId? })`.
-- [ ] En local funciona a través del proxy de Vite (`/realtime`, `ws: true`).
+- [x] `apps/api/src/realtime/realtime.gateway.ts` (`@WebSocketGateway({ path: '/realtime', cors: { origin, credentials: true }, transports: ['websocket', 'polling'] })`) y `realtime.module.ts` global.
+- [x] Middleware `io.use` (`realtime/socket-auth.middleware.ts`): sesión válida y no bloqueada, `Origin` permitido; si no, `connect_error` con `UNAUTHENTICATED` o `ACCOUNT_BLOCKED` en `err.message` y `err.data.code`.
+- [x] Al conectar: `socket.data = { userId, sessionId }`, `join('user:<userId>')` y `join('group:<id>')` por cada membresía con **una** consulta.
+- [x] Sin manejadores `@SubscribeMessage` (socket solo de bajada).
+- [x] `realtime/realtime-rooms.service.ts` con `joinGroup(userId, groupId)` y `leaveGroup(userId, groupId)`.
+- [x] `RealtimeGateway.disconnectSessions(userId, { sessionIds?, exceptSessionId? })`.
+- [x] En local funciona a través del proxy de Vite (`/realtime`, `ws: true`).
 
 **Notas técnicas**
 - Sin adaptador Redis (una instancia). Mantén los valores por defecto de `pingInterval`/`pingTimeout`.

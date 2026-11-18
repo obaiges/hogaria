@@ -27,6 +27,20 @@ const TEST_ORIGIN = 'https://hogaria.test';
  * ```
  */
 export async function loginAs(user: User, server: Parameters<typeof request.agent>[0]): Promise<SessionAgent> {
+  return (await signIn(user, server)).agent;
+}
+
+/**
+ * Cabecera `Cookie` con la sesión de `user` (login real, como `loginAs`). Para clientes
+ * que no son supertest, como `socket.io-client`.
+ */
+export async function sessionCookieFor(user: User, server: Parameters<typeof request.agent>[0]): Promise<string> {
+  const { res } = await signIn(user, server);
+  const setCookie = res.headers['set-cookie'] as unknown as string[] | undefined;
+  return (setCookie ?? []).map((c) => c.split(';')[0]).join('; ');
+}
+
+async function signIn(user: User, server: Parameters<typeof request.agent>[0]) {
   let password = knownPasswords.get(user.id);
   if (!password) {
     password = LOGIN_AS_PASSWORD;
@@ -43,5 +57,5 @@ export async function loginAs(user: User, server: Parameters<typeof request.agen
   if (res.status !== 200) {
     throw new Error(`loginAs(${user.email}) falló: ${res.status} ${JSON.stringify(res.body)}`);
   }
-  return agent;
+  return { agent, res };
 }

@@ -2,13 +2,13 @@ import { ConfigService } from '@nestjs/config';
 import { toNodeHandler } from 'better-auth/node';
 import helmet from 'helmet';
 
-
 import { API_PREFIX } from './app.constants.js';
 import { CLIENT_IP_HEADER } from './auth/auth-hooks.js';
 import { AUTH, AUTH_BASE_PATH, type Auth } from './auth/auth.js';
 import { getAllowedOrigins } from './common/security/allowed-origins.js';
 import { bodyParserErrorHandler, jsonBodyParser } from './common/security/body-parser.js';
 import { setupApiDocs } from './openapi/api-docs.js';
+import { RealtimeIoAdapter } from './realtime/realtime-io.adapter.js';
 
 import type { INestApplication } from '@nestjs/common';
 import type { Express, NextFunction, Request, Response } from 'express';
@@ -34,14 +34,18 @@ export function configureApp(app: INestApplication, options: ConfigureAppOptions
   // La web y la API son el mismo sitio (obaiges.com): `same-site` en vez de `same-origin`.
   app.use(helmet({ crossOriginResourcePolicy: { policy: 'same-site' } }));
 
+  const allowedOrigins = getAllowedOrigins({ NODE_ENV: config.get('NODE_ENV'), APP_URL: config.get('APP_URL') });
   app.enableCors({
-    origin: getAllowedOrigins({ NODE_ENV: config.get('NODE_ENV'), APP_URL: config.get('APP_URL') }),
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'X-Client-Mutation-Id'],
     exposedHeaders: ['Retry-After', 'X-Request-Id'],
     maxAge: 600,
   });
+
+  // Socket.IO en /realtime con el mismo CORS (spec 03, RN-03-01).
+  app.useWebSocketAdapter(new RealtimeIoAdapter(app, allowedOrigins));
 
   if (options.apiDocs ?? config.get('NODE_ENV') === 'development') setupApiDocs(app);
 
