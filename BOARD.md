@@ -25,7 +25,11 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-054 | Enviar los emails de verificación y de recuperación de contraseña con Resend | E01 | P0 | 3 | HOG-050, HOG-053 |
 | HOG-056 | Gestionar sesiones: listar, cerrar una, cerrar las demás y cerrar sesión, con `session.revoked` | E01 | P1 | 5 | HOG-053, HOG-055, HOG-150, HOG-151 |
 | HOG-155 | Mostrar el banner de sin conexión y bloquear la edición | E03 | P0 | 3 | HOG-152, HOG-008, HOG-009 |
-| HOG-100 | Crear la API de grupos: crear con semilla, ver, editar y `/me/groups` | E02 | P0 | 5 | HOG-101, HOG-151, HOG-153 |
+| HOG-102 | Crear la API de invitaciones: crear, listar, revocar, consultar pública y aceptar | E02 | P0 | 5 | HOG-100, HOG-150, HOG-151, HOG-153 |
+| HOG-104 | Crear el selector y la creación de hogares (`/grupos`) y la redirección de entrada | E02 | P0 | 3 | HOG-100, HOG-053, HOG-008, HOG-009 |
+| HOG-107 | Crear el contexto de grupo activo en la web (`GroupLayout`) y la pantalla "No encontrado" | E02 | P0 | 3 | HOG-100, HOG-101, HOG-053, HOG-008 |
+| HOG-108 | Crear la API de miembros: listar y cambiar el color de calle propio | E02 | P0 | 2 | HOG-100 |
+| HOG-754 | Crear la API del Inicio con secciones registrables | E15 | P0 | 3 | HOG-100, HOG-101, HOG-153 |
 
 ## ✅ Done
 | ID | Título | Épica | Prio | Pts | Depende de |
@@ -53,6 +57,7 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 | HOG-101 | Implementar el `GroupMemberGuard` con caché de 60 s y 404 | E02 | P0 | 3 | HOG-055, HOG-004 |
 | HOG-150 | Crear el `RealtimeGateway` con autenticación en el handshake y salas de usuario y grupo | E03 | P0 | 5 | HOG-055, HOG-014 |
 
+| HOG-100 | Crear la API de grupos: crear con semilla, ver, editar y `/me/groups` | E02 | P0 | 5 | HOG-101, HOG-151, HOG-153 |
 | HOG-153 | Crear el `ActivityService` con escritura en transacción, *summaries* en español, `MaintenanceCron` y purga de retención | E03 | P0 | 3 | HOG-004, HOG-006, HOG-010, HOG-151 |
 | HOG-152 | Crear el `RealtimeProvider` web: despacho a la caché de Query, deduplicación, onda y reconexión | E03 | P0 | 5 | HOG-151, HOG-005, HOG-006, HOG-009, HOG-053 |
 | HOG-151 | Crear el `RealtimePublisher` y el catálogo tipado de eventos en `shared` | E03 | P0 | 3 | HOG-150, HOG-002, HOG-006 |
@@ -70,18 +75,13 @@ _Generado el 2026-11-11 a partir de docs/tickets/. Si añades tickets, añádelo
 ### Fase 1 · Núcleo — 36 tickets, 120 pts
 | ID | Título | Épica | Prio | Pts | Depende de |
 |---|---|---|---|---|---|
-| HOG-102 | Crear la API de invitaciones: crear, listar, revocar, consultar pública y aceptar | E02 | P0 | 5 | HOG-100, HOG-150, HOG-151, HOG-153 |
 | HOG-052 | Exigir invitación al registrarse (hooks de Better Auth y cookie `hogaria_invite`) | E01 | P0 | 3 | HOG-050, HOG-053, HOG-102 |
-| HOG-104 | Crear el selector y la creación de hogares (`/grupos`) y la redirección de entrada | E02 | P0 | 3 | HOG-100, HOG-053, HOG-008, HOG-009 |
-| HOG-107 | Crear el contexto de grupo activo en la web (`GroupLayout`) y la pantalla "No encontrado" | E02 | P0 | 3 | HOG-100, HOG-101, HOG-053, HOG-008 |
 | HOG-103 | Crear el flujo web de invitación `/invite/:token` | E02 | P0 | 3 | HOG-102, HOG-052, HOG-054, HOG-107 |
-| HOG-108 | Crear la API de miembros: listar y cambiar el color de calle propio | E02 | P0 | 2 | HOG-100 |
 | HOG-105 | Crear los ajustes del grupo: datos del hogar, miembros, color de calle e invitaciones | E02 | P0 | 5 | HOG-102, HOG-107, HOG-108, HOG-009 |
 | HOG-106 | Implementar salir del grupo, expulsar a un miembro y borrar el grupo al salir el último | E02 | P0 | 5 | HOG-105, HOG-150, HOG-152 |
 | HOG-750 | Crear el AppShell con barra inferior, rutas y selector de hogar | E15 | P0 | 5 | HOG-005, HOG-007, HOG-008, HOG-009, HOG-104 |
 | HOG-751 | Crear la hoja "Más" | E15 | P0 | 2 | HOG-750 |
 | HOG-752 | Integrar el banner de sin conexión (HOG-155) en el AppShell | E15 | P0 | 1 | HOG-155, HOG-750 |
-| HOG-754 | Crear la API del Inicio con secciones registrables | E15 | P0 | 3 | HOG-100, HOG-101, HOG-153 |
 | HOG-755 | Construir la pantalla de Inicio básica | E15 | P0 | 3 | HOG-750, HOG-754, HOG-152 |
 | HOG-051 | Añadir el login con Google y la vinculación de cuentas por email | E01 | P1 | 2 | HOG-050, HOG-023 |
 | HOG-060 | Permitir cambiar la contraseña desde Perfil → Seguridad | E01 | P1 | 2 | HOG-056, HOG-058 |
@@ -537,7 +537,7 @@ flowchart LR
 %% progreso (generado por scripts/board-progress.mjs)
   classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
   classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
-  class HOG050,HOG055,HOG053,HOG058,HOG101,HOG150,HOG151,HOG152,HOG153 done
+  class HOG050,HOG055,HOG053,HOG058,HOG101,HOG100,HOG150,HOG151,HOG152,HOG153 done
 ```
 
 ### Fase 2 · Compra + Tareas + Push

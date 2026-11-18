@@ -18,6 +18,7 @@ import { validateEnv } from './config/env.js';
 import { ExternalServicesModule } from './external-services.module.js';
 import { HealthModule } from './health/health.module.js';
 import { MeModule } from './me/me.module.js';
+import { GroupsModule } from './modules/groups/groups.module.js';
 import { OpenApiModule } from './openapi/openapi.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
@@ -58,6 +59,7 @@ import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
     AuthModule,
     HealthModule,
     MeModule,
+    GroupsModule,
     OpenApiModule,
     // Solo con NODE_ENV=test (e2e, HOG-011); vacío en desarrollo y producción.
     TestSupportModule.forEnv(),

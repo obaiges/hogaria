@@ -5,6 +5,7 @@
 import { z } from 'zod';
 
 import { activityDto, type ActivityDto } from './schemas/activity.js';
+import { groupDto, type GroupDto } from './schemas/groups.js';
 
 export const REALTIME_CHANNEL = 'evt';
 export const REALTIME_PATH = '/realtime';
@@ -80,6 +81,8 @@ export function isRealtimeEventName(value: unknown): value is RealtimeEventName 
  * eventos con entrada: publicar uno sin ella no compila.
  */
 export interface RealtimeEventDataMap {
+  /** `PATCH /groups/:groupId` con cambios reales (HOG-100). */
+  'group.updated': GroupDto;
   /** Tras el commit de cualquier mutación que escribe `ActivityLog` (HOG-153). */
   'activity.created': ActivityDto;
   /** Sala `user:<id>`, `groupId: null`: el cliente cierra la sesión local. */
@@ -94,6 +97,7 @@ export type PublishableRealtimeEvent = keyof RealtimeEventDataMap;
  * detectar DTOs incompletos en los tests (RN-03-12).
  */
 export const REALTIME_EVENT_SCHEMAS: { [E in PublishableRealtimeEvent]: z.ZodType<RealtimeEventDataMap[E]> } = {
+  'group.updated': groupDto,
   'activity.created': activityDto,
   'session.revoked': z.strictObject({}) as z.ZodType<Record<string, never>>,
 };

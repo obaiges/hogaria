@@ -15,12 +15,12 @@
 Implementar el módulo `groups` con la creación transaccional del grupo y su semilla, la consulta y edición del grupo y la lista de grupos del usuario, publicando eventos y actividad.
 
 **Criterios de aceptación**
-- [ ] `apps/api/src/modules/groups/`: `groups.module.ts`, `groups.controller.ts`, `groups.service.ts`, `me-groups.controller.ts`.
-- [ ] `POST /groups` (`createGroupInput`) crea en una transacción `Group`, `GroupMember` CORAL, `ShoppingList` "Compra" 🛒, las 9 `ExpenseCategory` de `DEFAULT_EXPENSE_CATEGORIES` y `ActivityLog` "creó el hogar {emoji} {name}"; responde `201 myGroupDto`.
-- [ ] `GET /groups/:groupId` → `groupDto`; `PATCH /groups/:groupId` (`updateGroupInput`, al menos un campo) → `groupDto`, `ActivityLog` según §9 (solo si hay cambios reales), `group.updated` y `activity.created` tras el commit; si cambia `timezone`, `MembershipCache.invalidateGroup` y llamada a `onGroupTimezoneChanged` (registro vacío por ahora).
-- [ ] `GET /me/groups` → `myGroupDto[]` por `joinedAt` asc con `memberCount` y `myLaneColor`.
-- [ ] Esquemas en `packages/shared/src/schemas/groups.ts` (`groupNameSchema`, `groupEmojiSchema`, `timezoneSchema`, `createGroupInput`, `updateGroupInput`, `groupDto`, `myGroupDto`) y `pickLaneColor` en `src/groups/lane-colors.ts`.
-- [ ] `RealtimeEventDataMap` incluye `group.updated: GroupDto`.
+- [x] `apps/api/src/modules/groups/`: `groups.module.ts`, `groups.controller.ts`, `groups.service.ts`, `me-groups.controller.ts`.
+- [x] `POST /groups` (`createGroupInput`) crea en una transacción `Group`, `GroupMember` CORAL, `ShoppingList` "Compra" 🛒, las 9 `ExpenseCategory` de `DEFAULT_EXPENSE_CATEGORIES` y `ActivityLog` "creó el hogar {emoji} {name}"; responde `201 myGroupDto`.
+- [x] `GET /groups/:groupId` → `groupDto`; `PATCH /groups/:groupId` (`updateGroupInput`, al menos un campo) → `groupDto`, `ActivityLog` según §9 (solo si hay cambios reales), `group.updated` y `activity.created` tras el commit; si cambia `timezone`, `MembershipCache.invalidateGroup` y llamada a `onGroupTimezoneChanged` (registro vacío por ahora).
+- [x] `GET /me/groups` → `myGroupDto[]` por `joinedAt` asc con `memberCount` y `myLaneColor`.
+- [x] Esquemas en `packages/shared/src/schemas/groups.ts` (`groupNameSchema`, `groupEmojiSchema`, `timezoneSchema`, `createGroupInput`, `updateGroupInput`, `groupDto`, `myGroupDto`) y `pickLaneColor` en `src/groups/lane-colors.ts`.
+- [x] `RealtimeEventDataMap` incluye `group.updated: GroupDto`.
 
 **Notas técnicas**
 - Patrón de mutación de `docs/01-arquitectura.md`: transacción → commit → `realtime.publish` → DTO.
