@@ -17,6 +17,7 @@
     "test:e2e": "turbo run test:e2e",
     "db:migrate": "pnpm --filter @hogaria/api db:migrate",
     "db:seed": "pnpm --filter @hogaria/api db:seed",
+    "board:progress": "node scripts/board-progress.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

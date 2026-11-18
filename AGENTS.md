@@ -49,7 +49,7 @@ Cuando dos documentos se contradicen, gana el que está más arriba. Corrige des
 4. Implementa **solo** lo que pide el ticket. Si descubres trabajo extra, crea un ticket nuevo (ver §6) en lugar de ampliar el alcance.
 5. Escribe los tests que pide el ticket (ver `docs/07-testing.md`). `pnpm lint && pnpm typecheck && pnpm test` deben pasar.
 6. Si cambias el modelo de datos, la API o una decisión, **actualiza el documento canónico en el mismo commit**. Si cambia una decisión, añade un ADR.
-7. Marca los criterios de aceptación del ticket como `[x]` y mueve el ticket a **"Done"** en `BOARD.md`.
+7. Marca los criterios de aceptación del ticket como `[x]`, mueve el ticket a **"Done"** en `BOARD.md` y ejecuta `pnpm board:progress`. El script pinta de verde en los diagramas de `BOARD.md` los tickets cerrados, y de verde claro o verde las épicas y fases empezadas o terminadas. Los cambios van en el mismo commit que el ticket, así el progreso se ve en GitHub en cuanto se sube.
 8. Haz commit siguiendo `docs/08-convenciones.md` (por ejemplo `feat(shopping): HOG-204 marcar producto como comprado`).
 
 ## 5. Reglas que nunca se rompen
@@ -83,6 +83,7 @@ pnpm typecheck            # tsc --noEmit en todos los paquetes
 pnpm test                 # Vitest (unitarios + integración)
 pnpm test:e2e             # Playwright (requiere pnpm dev o lo levanta solo)
 pnpm db:migrate           # prisma migrate dev
+pnpm board:progress       # colorea en BOARD.md los tickets en Done (y épicas/fases), idempotente
 pnpm db:seed              # seed: mínimo (owner + grupo + 2 miembros, HOG-013) ampliado con datos de todos los módulos (HOG-865)
 pnpm --filter api cli create-owner --email x --username y   # primer usuario (administrador de la plataforma)
 pnpm --filter api cli delete-user --id <uuid>               # borra una cuenta (p. ej. tras restaurar una copia)

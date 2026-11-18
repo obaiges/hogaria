@@ -306,6 +306,10 @@ flowchart LR
   F5["Fase 5<br/>Gastos + Facturas<br/><small>E10 E11</small>"]
   F6["Fase 6<br/>Asistente + Inicio completo + RGPD + Producción<br/><small>E14 E15 E16 E17</small>"]
   F0 --> F1 --> F2 --> F3 --> F4 --> F5 --> F6
+%% progreso (generado por scripts/board-progress.mjs)
+  classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
+  classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
+  class F0,F1 started
 ```
 
 ## 🧩 Dependencias entre épicas
@@ -336,6 +340,10 @@ flowchart TD
   E13 --> E15
   E14 --> E17
   E16 --> E17
+%% progreso (generado por scripts/board-progress.mjs)
+  classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
+  classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
+  class E00,E01,E02,E03 started
 ```
 
 ## 🔀 Flujo de tickets por fase
@@ -400,6 +408,10 @@ flowchart LR
   HOG006 --> HOG016
   HOG012 --> HOG022
   HOG021 --> HOG022
+%% progreso (generado por scripts/board-progress.mjs)
+  classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
+  classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
+  class HOG001,HOG002,HOG003,HOG004,HOG005,HOG006,HOG007,HOG008,HOG009,HOG010,HOG011,HOG014,HOG012,HOG015,HOG013,HOG016 done
 ```
 
 ### Fase 1 · Núcleo
@@ -522,6 +534,10 @@ flowchart LR
   HOG051 --> HOG061
   HOG056 --> HOG061
   HOG750 --> HOG753
+%% progreso (generado por scripts/board-progress.mjs)
+  classDef done fill:#2e9e5b,stroke:#1d6b3c,color:#ffffff
+  classDef started fill:#c8ecd5,stroke:#2e9e5b,color:#10331f
+  class HOG050,HOG055,HOG053,HOG058,HOG101,HOG150 done
 ```
 
 ### Fase 2 · Compra + Tareas + Push
