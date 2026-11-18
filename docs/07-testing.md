@@ -105,16 +105,16 @@ Las notificaciones push no se prueban de punta a punta (Playwright no las soport
 ## CI (GitHub Actions)
 
 ```
-on: [push, pull_request]
+on: workflow_dispatch (input e2e: boolean, por defecto true) — ADR-020
 jobs:
   checks:   pnpm install → lint → typecheck → test (unit + integración con service postgres)
             → size-limit → pnpm audit --audit-level high → gitleaks
-  e2e:      solo en pull_request a main y push a main; needs checks → build web + api
+  e2e:      si inputs.e2e; needs checks → build web + api
             → playwright (Pixel 7 + iPhone 14, 2 shards, retries 1) → subir informe y trazas si falla
-  lhci:     solo en pull_request a main y push a main; needs checks → Lighthouse CI móvil (informes como artefacto)
-  deploy:   solo push a main, needs [checks, e2e, lhci] → ver docs/06-despliegue.md
+  lhci:     (E17) needs checks; disparador por decidir sin romper ADR-020 → Lighthouse CI móvil (informes como artefacto)
+  deploy:   (HOG-022) needs [checks, e2e, lhci]; disparador por decidir sin romper ADR-020 → ver docs/06-despliegue.md
 ```
-El job `e2e` **no** corre en cada push a ramas de trabajo para no agotar los 2000 min/mes de GitHub Free (spec 17, RN-17-10); `checks` sí.
+El CI **solo se lanza a mano** (`workflow_dispatch`: Actions → CI → *Run workflow*, o `gh workflow run ci.yml --ref main`) para no agotar los 2000 min/mes de GitHub Free (spec 17, RN-17-10, ADR-020). El input `e2e` (por defecto `true`) decide si corre también el job `e2e`. Un agente de IA no lo lanza por su cuenta: verifica en local y solo lo dispara cuando el usuario lo pide.
 
 **Estado actual (`.github/workflows/ci.yml`, HOG-012):** `checks` (install `--frozen-lockfile` → lint → typecheck → test con el servicio `postgres:17` en `:5433` → `pnpm audit --prod --audit-level=high` **no bloqueante** por ahora) y `e2e` (`needs: checks`; navegadores de Playwright en caché por versión; el `webServer` compila API y web; sube `playwright-report` y `test-results` si falla). `concurrency` cancela la ejecución anterior de la misma rama. Caché de pnpm (`setup-node`) y de `.turbo`. Pendientes de sus tickets: `gitleaks`, `size-limit`, shards de e2e, `lhci` (E17) y `deploy` (HOG-022). Dependabot (`.github/dependabot.yml`): `npm` y `github-actions` semanal, grupos `minor-and-patch`, máximo 5 PR; `docker` llega con HOG-021.
 

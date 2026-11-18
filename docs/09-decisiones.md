@@ -85,3 +85,9 @@
 - E14: se borran sus `AiConversation` de ese grupo (`AssistantConversationsService.deleteAllForMember`).
 El contenido compartido (listas, recetas, tareas creadas, facturas, actividad) se queda en el grupo. Los datos personales que no son de un grupo (horarios, dieta) siguen siendo del usuario.
 **Consecuencias:** salir de un grupo es destructivo para el contenido personal y la interfaz lo avisa antes de confirmar. No hay transferencia de contenido entre miembros. Cada módulo nuevo con datos personales o referencias a miembros debe registrar su manejador.
+
+### ADR-020 · CI solo bajo demanda — Aceptado (2026-11-18)
+**Contexto:** el workflow `CI` se ejecutaba en cada push y pull request. Con varios commits al día (incluidos los de agentes de IA) y las PR semanales de Dependabot, los 2000 min/mes de GitHub Free se agotarían sin aportar nada: lint, typecheck y tests ya se pasan en local antes de cada commit (AGENTS.md §4).
+**Decisión:** `.github/workflows/ci.yml` solo tiene el disparador `workflow_dispatch`. Se lanza a mano cuando el propietario lo pide (Actions → CI → *Run workflow* o `gh workflow run ci.yml --ref main`), con un input `e2e` (por defecto `true`) para incluir o no los e2e. Ni push ni pull request (tampoco las de Dependabot) lo ejecutan.
+**Consecuencias:** sustituye la regla de disparadores de spec 17 RN-17-10. Un agente de IA no lanza el CI por su cuenta: verifica en local y solo ejecuta `gh workflow run` cuando el usuario se lo pide. Las PR de Dependabot llegan sin CI; antes de fusionarlas se lanza el workflow sobre su rama. Cuando lleguen `lhci`, `gitleaks` y `deploy` (E17, HOG-022) se decidirá su disparador sin romper este ADR.
+
