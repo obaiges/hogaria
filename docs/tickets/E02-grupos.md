@@ -230,10 +230,10 @@ Crear el layout de las rutas `/g/:groupId/*` que carga el grupo y sus miembros, 
 Exponer la lista de miembros del grupo y el cambio del color de calle del propio usuario, con conflicto si el color está ocupado.
 
 **Criterios de aceptación**
-- [ ] `modules/groups/members.controller.ts` y `members.service.ts`.
-- [ ] `GET /groups/:g/members` → `groupMemberDto[]` por `joinedAt` asc (con `name`, `username`, `image` del usuario).
-- [ ] `PATCH /groups/:g/members/me` (`updateMyMemberInput`): en transacción con `lockGroup`; ocupado → `409 CONFLICT` "Ese color ya lo tiene {nombre}"; mismo color → 200 sin evento; cambio → `group.member.updated` (sin actividad).
-- [ ] `groupMemberDto` y `updateMyMemberInput` en `packages/shared/src/schemas/groups.ts`; `group.member.updated` en `RealtimeEventDataMap`.
+- [x] `modules/groups/members.controller.ts` y `members.service.ts`.
+- [x] `GET /groups/:g/members` → `groupMemberDto[]` por `joinedAt` asc (con `name`, `username`, `image` del usuario).
+- [x] `PATCH /groups/:g/members/me` (`updateMyMemberInput`): en transacción con `lockGroup`; ocupado → `409 CONFLICT` "Ese color ya lo tiene {nombre}"; mismo color → 200 sin evento; cambio → `group.member.updated` (sin actividad).
+- [x] `groupMemberDto` y `updateMyMemberInput` en `packages/shared/src/schemas/groups.ts`; `group.member.updated` en `RealtimeEventDataMap`.
 
 **Tests**
 - Integración: `members.int.spec.ts` (lista ordenada; color ocupado → 409; cambios simultáneos al mismo color → uno 200 y otro 409; autorización 401/404).

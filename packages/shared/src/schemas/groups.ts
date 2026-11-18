@@ -99,3 +99,7 @@ export const groupMemberDto = z.object({
   joinedAt: z.iso.datetime(),
 });
 export type GroupMemberDto = z.infer<typeof groupMemberDto>;
+
+/** `PATCH /groups/:groupId/members/me`: el propio color de calle (RN-02-09). */
+export const updateMyMemberInput = z.object({ laneColor: laneColorSchema });
+export type UpdateMyMemberInput = z.infer<typeof updateMyMemberInput>;

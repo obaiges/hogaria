@@ -86,6 +86,8 @@ export interface RealtimeEventDataMap {
   'group.updated': GroupDto;
   /** Tras consumir una invitación (aceptar o registro) (HOG-102). */
   'group.member.joined': GroupMemberDto;
+  /** `PATCH /groups/:groupId/members/me` con cambio real de color (HOG-108). */
+  'group.member.updated': GroupMemberDto;
   /** Invitaciones, sin token (HOG-102). */
   'invite.created': GroupInviteDto;
   'invite.revoked': GroupInviteDto;
@@ -106,6 +108,7 @@ export type PublishableRealtimeEvent = keyof RealtimeEventDataMap;
 export const REALTIME_EVENT_SCHEMAS: { [E in PublishableRealtimeEvent]: z.ZodType<RealtimeEventDataMap[E]> } = {
   'group.updated': groupDto,
   'group.member.joined': groupMemberDto,
+  'group.member.updated': groupMemberDto,
   'invite.created': groupInviteDto,
   'invite.revoked': groupInviteDto,
   'invite.used': groupInviteDto,
